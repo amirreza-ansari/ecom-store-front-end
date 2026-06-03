@@ -10,8 +10,13 @@ import {
 } from "react-icons/hi2";
 import SearchBar from "../ui/SearchBar";
 import { loginUser, logoutUser } from "../../features/auth/authSlice";
+import LoginModal from "../../features/auth/LoginModal";
+import ForgotPasswordModal from "../../features/auth/ForgotPasswordModal";
 
 export default function Header() {
+  // Inside the Header component, add state:
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { totalItems } = useSelector((state) => state.cart);
@@ -112,7 +117,10 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <button className='block w-full text-left px-4 py-2 text-sm text-[#0F1111] hover:bg-[#F7FAFA] rounded-t-lg'>
+                  <button
+                    onClick={() => setLoginOpen(true)}
+                    className='block w-full text-left px-4 py-2 text-sm text-[#0F1111] hover:bg-[#F7FAFA] rounded-t-lg'
+                  >
                     Sign In
                   </button>
                   <button className='block w-full text-left px-4 py-2 text-sm text-[#0F1111] hover:bg-[#F7FAFA] rounded-b-lg'>
@@ -196,6 +204,27 @@ export default function Header() {
           </Link>
         </div>
       )}
+      <LoginModal
+        isOpen={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onSwitchToRegister={() => {
+          setLoginOpen(false);
+          // We'll add register modal trigger in Feature 6
+        }}
+        onSwitchToForgot={() => {
+          setLoginOpen(false);
+          setForgotOpen(true);
+        }}
+      />
+
+      <ForgotPasswordModal
+        isOpen={forgotOpen}
+        onClose={() => setForgotOpen(false)}
+        onSwitchToLogin={() => {
+          setForgotOpen(false);
+          setLoginOpen(true);
+        }}
+      />
     </header>
   );
 }
