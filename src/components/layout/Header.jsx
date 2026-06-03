@@ -12,11 +12,13 @@ import SearchBar from "../ui/SearchBar";
 import { loginUser, logoutUser } from "../../features/auth/authSlice";
 import LoginModal from "../../features/auth/LoginModal";
 import ForgotPasswordModal from "../../features/auth/ForgotPasswordModal";
+import RegisterModal from "../../features/auth/RegisterModal";
 
 export default function Header() {
   // Inside the Header component, add state:
   const [loginOpen, setLoginOpen] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { totalItems } = useSelector((state) => state.cart);
@@ -123,7 +125,10 @@ export default function Header() {
                   >
                     Sign In
                   </button>
-                  <button className='block w-full text-left px-4 py-2 text-sm text-[#0F1111] hover:bg-[#F7FAFA] rounded-b-lg'>
+                  <button
+                    onClick={() => setRegisterOpen(true)}
+                    className='block w-full text-left px-4 py-2 text-sm text-[#0F1111] hover:bg-[#F7FAFA] rounded-b-lg'
+                  >
                     Register
                   </button>
                 </>
@@ -210,6 +215,7 @@ export default function Header() {
         onSwitchToRegister={() => {
           setLoginOpen(false);
           // We'll add register modal trigger in Feature 6
+          setRegisterOpen(true);
         }}
         onSwitchToForgot={() => {
           setLoginOpen(false);
@@ -222,6 +228,15 @@ export default function Header() {
         onClose={() => setForgotOpen(false)}
         onSwitchToLogin={() => {
           setForgotOpen(false);
+          setLoginOpen(true);
+        }}
+      />
+
+      <RegisterModal
+        isOpen={registerOpen}
+        onClose={() => setRegisterOpen(false)}
+        onSwitchToLogin={() => {
+          setRegisterOpen(false);
           setLoginOpen(true);
         }}
       />
