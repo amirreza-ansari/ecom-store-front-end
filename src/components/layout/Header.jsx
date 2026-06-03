@@ -28,6 +28,7 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    localStorage.removeItem("accessToken");
     navigate("/");
   };
 
