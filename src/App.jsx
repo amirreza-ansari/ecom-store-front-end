@@ -10,8 +10,20 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AddressPage from "./pages/AddressPage";
+import { useEffect } from "react";
+import { useAppDispatch } from "./app/hooks";
+import { fetchCurrentUser } from "./features/auth/authSlice";
 
 function App() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [dispatch]);
+
   return (
     <Routes>
       <Route element={<CustomerLayout />}>

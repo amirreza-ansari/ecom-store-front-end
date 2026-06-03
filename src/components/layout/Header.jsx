@@ -9,7 +9,7 @@ import {
   HiXMark,
 } from "react-icons/hi2";
 import SearchBar from "../ui/SearchBar";
-import { logout } from "../../features/auth/authSlice";
+import { loginUser, logoutUser } from "../../features/auth/authSlice";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,7 +20,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutUser());
     navigate("/");
   };
 
