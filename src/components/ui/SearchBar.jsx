@@ -22,7 +22,7 @@ export default function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder='Search products...'
-          className='w-full px-4 py-2 text-sm border border-[#D5D9D9] rounded-l-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-transparent'
+          className='w-full px-4 py-2 text-sm border border-[#D5D9D9] rounded-l-lg text-white placeholder-white  focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-transparent'
         />
         <button
           type='submit'
