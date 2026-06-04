@@ -4,8 +4,16 @@ import { setUser } from "../features/auth/authSlice";
 import { userApi } from "../features/users/userApi";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
-import { HiUser, HiEnvelope, HiLockClosed, HiCheck } from "react-icons/hi2";
+import {
+  HiUser,
+  HiEnvelope,
+  HiLockClosed,
+  HiCheck,
+  HiMapPin,
+} from "react-icons/hi2";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { addressApi } from "../features/users/addressApi";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -24,6 +32,17 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const [addresses, setAddresses] = useState([]);
+
+  useEffect(() => {
+    addressApi
+      .getAll()
+      .then(({ data }) => {
+        setAddresses(data.data.addresses || []);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -92,6 +111,7 @@ export default function ProfilePage() {
         {[
           { key: "profile", label: "Profile", icon: HiUser },
           { key: "password", label: "Password", icon: HiLockClosed },
+          { key: "addresses", label: "Addresses", icon: HiMapPin },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -219,6 +239,42 @@ export default function ProfilePage() {
             {saving ? "Updating..." : "Update Password"}
           </Button>
         </form>
+      )}
+
+      {/* Addressed Section */}
+      {activeTab === "addresses" && (
+        <div className='bg-white rounded-lg p-6 shadow-sm'>
+          <div className='flex items-center justify-between mb-4'>
+            <h2 className='text-lg font-semibold text-[#0F1111]'>
+              My Addresses
+            </h2>
+            <Link to='/profile/addresses'>
+              <Button variant='outline' size='sm'>
+                Manage Addresses
+              </Button>
+            </Link>
+          </div>
+          {/* Show first 2 addresses as preview */}
+          {addresses.length === 0 ? (
+            <p className='text-sm text-[#565959]'>No addresses added yet.</p>
+          ) : (
+            <div className='space-y-3'>
+              {addresses.slice(0, 2).map((addr) => (
+                <div key={addr._id} className='p-3 bg-[#F7FAFA] rounded-lg'>
+                  <p className='text-sm font-medium'>{addr.label}</p>
+                  <p className='text-xs text-[#565959]'>
+                    {addr.street}, {addr.city}
+                  </p>
+                </div>
+              ))}
+              {addresses.length > 2 && (
+                <p className='text-xs text-[#565959]'>
+                  +{addresses.length - 2} more
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

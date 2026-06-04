@@ -29,8 +29,12 @@ import {
   HiCheck,
   HiShieldCheck,
   HiTruck,
+  HiHandThumbUp,
+  HiPencil,
+  HiTrash,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
+import { reviewApi } from "../features/reviews/reviewApi";
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -38,7 +42,7 @@ export default function ProductPage() {
   const { currentProduct: product, isLoading } = useAppSelector(
     (state) => state.products,
   );
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -47,6 +51,25 @@ export default function ProductPage() {
   const [addingToCart, setAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
+
+  const [reviews, setReviews] = useState([]);
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [reviewsPagination, setReviewsPagination] = useState(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  // Review form
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+
+  // Edit review
+  const [editingReview, setEditingReview] = useState(null);
+  const [editRating, setEditRating] = useState(5);
+  const [editTitle, setEditTitle] = useState("");
+  const [editComment, setEditComment] = useState("");
 
   useEffect(() => {
     dispatch(fetchProductBySlug(slug));
@@ -104,6 +127,105 @@ export default function ProductPage() {
         dispatch(addToWishlist(product._id));
         toast.success("Added to wishlist");
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  const fetchReviews = async (page = 1) => {
+    if (!product) return;
+    setReviewsLoading(true);
+    try {
+      const { data } = await reviewApi.getByProduct(product._id, {
+        page,
+        limit: 5,
+        sort: "-createdAt",
+      });
+      setReviews(data.data.reviews);
+      setReviewsPagination(data.pagination);
+      setReviewsPage(page);
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (product) fetchReviews();
+  }, [product]);
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!reviewComment.trim()) {
+      setReviewError("Please write a review");
+      return;
+    }
+    setReviewSubmitting(true);
+    setReviewError("");
+    try {
+      await reviewApi.create(product._id, {
+        rating: reviewRating,
+        title: reviewTitle,
+        comment: reviewComment,
+      });
+      setShowReviewForm(false);
+      setReviewTitle("");
+      setReviewComment("");
+      setReviewRating(5);
+      toast.success("Review submitted!");
+      fetchReviews();
+    } catch (error) {
+      setReviewError(
+        error.response?.data?.message || "Failed to submit review",
+      );
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleEditReview = (review) => {
+    setEditingReview(review._id);
+    setEditRating(review.rating);
+    setEditTitle(review.title || "");
+    setEditComment(review.comment);
+  };
+
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+    setReviewSubmitting(true);
+    try {
+      await reviewApi.update(editingReview, {
+        rating: editRating,
+        title: editTitle,
+        comment: editComment,
+      });
+      setEditingReview(null);
+      toast.success("Review updated!");
+      fetchReviews(reviewsPage);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!confirm("Delete your review?")) return;
+    try {
+      await reviewApi.delete(reviewId);
+      toast.success("Review deleted");
+      fetchReviews(reviewsPage);
+    } catch (error) {
+      toast.error("Failed to delete review");
+    }
+  };
+
+  const handleHelpful = async (reviewId) => {
+    try {
+      await reviewApi.markHelpful(reviewId);
+      fetchReviews(reviewsPage);
+      toast.success("Thanks for your feedback!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
@@ -379,16 +501,221 @@ export default function ProductPage() {
 
           {activeTab === "reviews" && (
             <div>
-              <div className='flex items-center gap-4 mb-4'>
-                <StarRating rating={product.ratingsAverage} size='lg' />
-                <span className='text-sm text-[#565959]'>
-                  {product.ratingsQuantity} review
-                  {product.ratingsQuantity !== 1 ? "s" : ""}
-                </span>
+              <div className='flex items-center justify-between mb-6'>
+                <div className='flex items-center gap-4'>
+                  <StarRating rating={product.ratingsAverage} size='lg' />
+                  <span className='text-sm text-[#565959]'>
+                    {product.ratingsQuantity} review
+                    {product.ratingsQuantity !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                {isAuthenticated && !showReviewForm && !editingReview && (
+                  <Button onClick={() => setShowReviewForm(true)} size='sm'>
+                    Write a Review
+                  </Button>
+                )}
               </div>
-              <p className='text-[#565959] text-sm'>
-                Reviews will be loaded here in the reviews feature.
-              </p>
+
+              {/* New Review Form */}
+              {showReviewForm && (
+                <form
+                  onSubmit={handleSubmitReview}
+                  className='bg-[#F7FAFA] rounded-lg p-4 mb-4 space-y-4'
+                >
+                  <h3 className='font-semibold text-[#0F1111]'>
+                    Write a Review
+                  </h3>
+                  {reviewError && (
+                    <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-[#B12704]'>
+                      {reviewError}
+                    </div>
+                  )}
+                  <div>
+                    <label className='block text-sm mb-1'>Rating</label>
+                    <StarRating
+                      rating={reviewRating}
+                      interactive
+                      onChange={setReviewRating}
+                      size='md'
+                    />
+                  </div>
+                  <div>
+                    <label className='block text-sm mb-1'>
+                      Title (optional)
+                    </label>
+                    <input
+                      type='text'
+                      value={reviewTitle}
+                      onChange={(e) => setReviewTitle(e.target.value)}
+                      placeholder='Summarize your review'
+                      maxLength={100}
+                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg'
+                    />
+                  </div>
+                  <div>
+                    <label className='block text-sm mb-1'>Review *</label>
+                    <textarea
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      placeholder='Share your experience...'
+                      rows={3}
+                      maxLength={1000}
+                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg resize-none'
+                    />
+                  </div>
+                  <div className='flex gap-2'>
+                    <Button
+                      type='submit'
+                      variant='primary'
+                      size='sm'
+                      disabled={reviewSubmitting}
+                    >
+                      {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={() => setShowReviewForm(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
+
+              {/* Reviews List */}
+              {reviewsLoading ? (
+                <Spinner className='py-8' />
+              ) : reviews.length > 0 ? (
+                <div className='space-y-4'>
+                  {reviews.map((review) => (
+                    <div
+                      key={review._id}
+                      className='border-b border-[#D5D9D9] pb-4 last:border-0'
+                    >
+                      {/* Edit Form */}
+                      {editingReview === review._id ? (
+                        <form
+                          onSubmit={handleUpdateReview}
+                          className='bg-[#F7FAFA] rounded-lg p-4 space-y-3'
+                        >
+                          <div>
+                            <label className='block text-sm mb-1'>Rating</label>
+                            <StarRating
+                              rating={editRating}
+                              interactive
+                              onChange={setEditRating}
+                              size='md'
+                            />
+                          </div>
+                          <input
+                            type='text'
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className='w-full px-3 py-2 text-sm border rounded-lg'
+                          />
+                          <textarea
+                            value={editComment}
+                            onChange={(e) => setEditComment(e.target.value)}
+                            rows={3}
+                            className='w-full px-3 py-2 text-sm border rounded-lg resize-none'
+                          />
+                          <div className='flex gap-2'>
+                            <Button type='submit' variant='primary' size='sm'>
+                              Save
+                            </Button>
+                            <Button
+                              type='button'
+                              variant='outline'
+                              size='sm'
+                              onClick={() => setEditingReview(null)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </form>
+                      ) : (
+                        <>
+                          <div className='flex items-start gap-3'>
+                            <div className='w-8 h-8 bg-[#FFA41C] rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0'>
+                              {review.user?.name?.charAt(0)?.toUpperCase() ||
+                                "?"}
+                            </div>
+                            <div className='flex-1'>
+                              <p className='text-sm font-medium text-[#0F1111]'>
+                                {review.user?.name || "Anonymous"}
+                              </p>
+                              <StarRating
+                                rating={review.rating}
+                                size='sm'
+                                showValue={false}
+                              />
+                              {review.title && (
+                                <p className='text-sm font-medium text-[#0F1111] mt-1'>
+                                  {review.title}
+                                </p>
+                              )}
+                              <p className='text-sm text-[#565959] mt-1'>
+                                {review.comment}
+                              </p>
+                              <p className='text-xs text-[#565959] mt-2'>
+                                {new Date(
+                                  review.createdAt,
+                                ).toLocaleDateString()}
+                              </p>
+                              <div className='flex items-center gap-4 mt-2'>
+                                <button
+                                  onClick={() => handleHelpful(review._id)}
+                                  className='flex items-center gap-1 text-xs text-[#565959] hover:text-[#FF9900]'
+                                >
+                                  <HiHandThumbUp className='w-3 h-3' /> Helpful
+                                  ({review.helpfulCount || 0})
+                                </button>
+                                {review.user?._id === user?._id && (
+                                  <>
+                                    <button
+                                      onClick={() => handleEditReview(review)}
+                                      className='text-xs text-[#565959] hover:text-[#FF9900]'
+                                    >
+                                      <HiPencil className='w-3 h-3 inline mr-1' />{" "}
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteReview(review._id)
+                                      }
+                                      className='text-xs text-[#565959] hover:text-[#B12704]'
+                                    >
+                                      <HiTrash className='w-3 h-3 inline mr-1' />{" "}
+                                      Delete
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Pagination */}
+                  {reviewsPagination && reviewsPagination.pages > 1 && (
+                    <div className='mt-4'>
+                      <Pagination
+                        currentPage={reviewsPage}
+                        totalPages={reviewsPagination.pages}
+                        onPageChange={fetchReviews}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className='text-[#565959] text-sm text-center py-8'>
+                  No reviews yet. Be the first to review!
+                </p>
+              )}
             </div>
           )}
         </div>
