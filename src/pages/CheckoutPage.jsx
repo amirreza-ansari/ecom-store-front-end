@@ -15,6 +15,7 @@ import {
   HiCreditCard,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
+import PaymentModal from "../features/payment/PaymentModal";
 
 export default function CheckoutPage() {
   const dispatch = useAppDispatch();
@@ -49,6 +50,8 @@ export default function CheckoutPage() {
     country: "US",
     phone: "",
   });
+  const [showPayment, setShowPayment] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState(null);
 
   useEffect(() => {
     fetchCartAndAddresses();
@@ -113,8 +116,9 @@ export default function CheckoutPage() {
         paymentMethod,
         notes,
       });
-      toast.success("Order placed successfully!");
-      navigate(`/orders/${data.data.order._id}`);
+      setPlacedOrder(data.data.order);
+      setShowPayment(true);
+      toast.success("Order created! Complete payment to confirm.");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to place order");
     } finally {
@@ -690,6 +694,19 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+      {placedOrder && (
+        <PaymentModal
+          isOpen={showPayment}
+          onClose={() => setShowPayment(false)}
+          orderId={placedOrder._id}
+          orderTotal={placedOrder.total}
+          orderNumber={placedOrder.orderNumber}
+          onSuccess={() => {
+            setShowPayment(false);
+            navigate(`/orders/${placedOrder._id}`);
+          }}
+        />
+      )}
     </div>
   );
 }
