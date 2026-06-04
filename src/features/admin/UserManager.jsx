@@ -10,6 +10,7 @@ import {
   HiNoSymbol,
   HiCheck,
   HiTrash,
+  HiXMark,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
 import TableSkeleton from "../../components/ui/TableSkeleton";
@@ -87,139 +88,123 @@ export default function UserManager() {
   };
 
   return (
-    <div className='space-y-6'>
-      <h1 className='text-2xl font-bold text-[#0F1111]'>Users</h1>
+    <div className='space-y-8'>
+      <div>
+        <h1 className='text-2xl font-bold text-slate-900'>Users</h1>
+        <p className='text-slate-500 text-sm mt-1'>
+          Manage your platform users and their access levels.
+        </p>
+      </div>
 
-      {/* Search */}
       <form onSubmit={handleSearch} className='flex gap-2 max-w-md'>
         <input
           type='text'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder='Search by name or email...'
-          className='flex-1 px-4 py-2 text-sm border border-[#D5D9D9] rounded-lg'
+          className='flex-1 px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-200 outline-none'
         />
-        <Button type='submit' size='sm'>
+        <Button type='submit'>
           <HiMagnifyingGlass className='w-4 h-4' />
         </Button>
       </form>
 
-      {/* Users Table */}
-      <div className='bg-white rounded-lg shadow-sm border overflow-x-auto'>
+      <div className='bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden'>
         {loading ? (
-          <TableSkeleton rows={5} cols={5} />
+          <TableSkeleton rows={5} cols={6} />
         ) : users.length === 0 ? (
-          <div className='p-8 text-center text-[#565959]'>No users found</div>
+          <div className='p-12 text-center text-slate-500'>No users found</div>
         ) : (
-          <table className='w-full text-sm'>
-            <thead>
-              <tr className='border-b border-[#D5D9D9] bg-[#F7FAFA]'>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  User
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Role
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Status
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Verified
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Joined
-                </th>
-                <th className='text-right py-3 px-4 font-medium text-[#565959]'>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr
-                  key={user._id}
-                  className='border-b border-[#D5D9D9] hover:bg-[#F7FAFA]'
-                >
-                  <td className='py-3 px-4'>
-                    <div className='flex items-center gap-3'>
-                      <div className='w-8 h-8 bg-[#FF9900] rounded-full flex items-center justify-center text-white text-sm font-bold'>
-                        {user.name?.charAt(0)?.toUpperCase() || "?"}
-                      </div>
-                      <div>
-                        <p className='font-medium text-[#0F1111]'>
-                          {user.name}
-                        </p>
-                        <p className='text-xs text-[#565959]'>{user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='py-3 px-4'>
-                    <Badge variant={user.role === "admin" ? "warning" : "info"}>
-                      {user.role}
-                    </Badge>
-                  </td>
-                  <td className='py-3 px-4'>
-                    <Badge variant={user.isActive ? "success" : "danger"}>
-                      {user.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </td>
-                  <td className='py-3 px-4'>
-                    {user.isEmailVerified ? (
-                      <span className='text-[#067D62] text-xs'>
-                        ✅ Verified
-                      </span>
-                    ) : (
-                      <span className='text-[#565959] text-xs'>
-                        ❌ Not verified
-                      </span>
-                    )}
-                  </td>
-                  <td className='py-3 px-4 text-[#565959] text-xs'>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className='py-3 px-4 text-right'>
-                    <div className='flex items-center justify-end gap-1'>
-                      <button
-                        onClick={() => viewUserDetails(user._id)}
-                        className='p-1.5 hover:bg-[#F7FAFA] rounded text-[#FF9900]'
-                        title='View'
-                      >
-                        <HiEye className='w-4 h-4' />
-                      </button>
-                      {user.role !== "admin" && (
-                        <>
-                          <button
-                            onClick={() =>
-                              handleDeactivate(
-                                user._id,
-                                user.name,
-                                user.isActive,
-                              )
-                            }
-                            className='p-1.5 hover:bg-[#F7FAFA] rounded text-[#FF9900]'
-                            title={user.isActive ? "Deactivate" : "Activate"}
-                          >
-                            {user.isActive ? (
-                              <HiNoSymbol className='w-4 h-4' />
-                            ) : (
-                              <HiCheck className='w-4 h-4' />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleDelete(user._id, user.name)}
-                            className='p-1.5 hover:bg-[#F7FAFA] rounded text-[#B12704]'
-                            title='Delete'
-                          >
-                            <HiTrash className='w-4 h-4' />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
+          <div className='overflow-x-auto'>
+            <table className='w-full text-sm text-left'>
+              <thead className='bg-slate-50 text-slate-500 uppercase text-xs font-semibold'>
+                <tr>
+                  <th className='py-4 px-6'>User</th>
+                  <th className='py-4 px-6'>Role</th>
+                  <th className='py-4 px-6'>Status</th>
+                  <th className='py-4 px-6'>Verification</th>
+                  <th className='py-4 px-6'>Joined</th>
+                  <th className='py-4 px-6 text-right'>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className='divide-y divide-slate-100'>
+                {users.map((user) => (
+                  <tr
+                    key={user._id}
+                    className='hover:bg-slate-50/50 transition-colors'
+                  >
+                    <td className='py-4 px-6'>
+                      <div className='flex items-center gap-3'>
+                        <div className='w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 text-xs font-bold'>
+                          {user.name?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                        <div>
+                          <p className='font-semibold text-slate-900'>
+                            {user.name}
+                          </p>
+                          <p className='text-xs text-slate-500'>{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className='py-4 px-6'>
+                      <Badge
+                        variant={user.role === "admin" ? "warning" : "info"}
+                      >
+                        {user.role}
+                      </Badge>
+                    </td>
+                    <td className='py-4 px-6'>
+                      <Badge variant={user.isActive ? "success" : "danger"}>
+                        {user.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </td>
+                    <td className='py-4 px-6 text-slate-600 text-xs'>
+                      {user.isEmailVerified ? "✅ Verified" : "❌ Pending"}
+                    </td>
+                    <td className='py-4 px-6 text-slate-500'>
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className='py-4 px-6 text-right'>
+                      <div className='flex items-center justify-end gap-1'>
+                        <button
+                          onClick={() => viewUserDetails(user._id)}
+                          className='p-2 hover:bg-slate-200 rounded-lg text-slate-500'
+                        >
+                          <HiEye className='w-4 h-4' />
+                        </button>
+                        {user.role !== "admin" && (
+                          <>
+                            <button
+                              onClick={() =>
+                                handleDeactivate(
+                                  user._id,
+                                  user.name,
+                                  user.isActive,
+                                )
+                              }
+                              className='p-2 hover:bg-slate-200 rounded-lg text-slate-500'
+                            >
+                              {user.isActive ? (
+                                <HiNoSymbol className='w-4 h-4' />
+                              ) : (
+                                <HiCheck className='w-4 h-4' />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleDelete(user._id, user.name)}
+                              className='p-2 hover:bg-red-50 rounded-lg text-red-500'
+                            >
+                              <HiTrash className='w-4 h-4' />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -231,58 +216,73 @@ export default function UserManager() {
         />
       )}
 
-      {/* User Details Modal */}
       {selectedUser && (
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
           <div
-            className='fixed inset-0 bg-black/50'
+            className='fixed inset-0 bg-slate-900/40 backdrop-blur-sm'
             onClick={() => setSelectedUser(null)}
           />
-          <div className='relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6'>
-            <div className='text-center mb-4'>
-              <div className='w-16 h-16 bg-[#FF9900] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3'>
+          <div className='relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8'>
+            <button
+              onClick={() => setSelectedUser(null)}
+              className='absolute top-4 right-4 text-slate-400 hover:text-slate-600'
+            >
+              <HiXMark className='w-6 h-6' />
+            </button>
+
+            <div className='text-center mb-6'>
+              <div className='w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 text-3xl font-bold mx-auto mb-4'>
                 {selectedUser.name?.charAt(0)?.toUpperCase() || "?"}
               </div>
-              <h2 className='text-lg font-bold'>{selectedUser.name}</h2>
-              <p className='text-sm text-[#565959]'>{selectedUser.email}</p>
+              <h2 className='text-xl font-bold text-slate-900'>
+                {selectedUser.name}
+              </h2>
+              <p className='text-sm text-slate-500'>{selectedUser.email}</p>
             </div>
 
-            <div className='space-y-3 text-sm'>
-              <div className='flex justify-between py-2 border-b'>
-                <span className='text-[#565959]'>Role</span>
-                <Badge
-                  variant={selectedUser.role === "admin" ? "warning" : "info"}
+            <div className='space-y-4 text-sm mb-6'>
+              {[
+                { label: "Role", value: selectedUser.role, badge: true },
+                {
+                  label: "Status",
+                  value: selectedUser.isActive ? "Active" : "Inactive",
+                  badge: true,
+                },
+                {
+                  label: "Verified",
+                  value: selectedUser.isEmailVerified ? "Yes" : "No",
+                },
+                {
+                  label: "Joined",
+                  value: new Date(selectedUser.createdAt).toLocaleDateString(),
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className='flex justify-between py-2 border-b border-slate-100'
                 >
-                  {selectedUser.role}
-                </Badge>
-              </div>
-              <div className='flex justify-between py-2 border-b'>
-                <span className='text-[#565959]'>Status</span>
-                <Badge variant={selectedUser.isActive ? "success" : "danger"}>
-                  {selectedUser.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-              <div className='flex justify-between py-2 border-b'>
-                <span className='text-[#565959]'>Email Verified</span>
-                <span>{selectedUser.isEmailVerified ? "✅ Yes" : "❌ No"}</span>
-              </div>
-              <div className='flex justify-between py-2 border-b'>
-                <span className='text-[#565959]'>Joined</span>
-                <span>
-                  {new Date(selectedUser.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div className='flex justify-between py-2 border-b'>
-                <span className='text-[#565959]'>User ID</span>
-                <span className='text-xs font-mono'>{selectedUser._id}</span>
-              </div>
+                  <span className='text-slate-500'>{item.label}</span>
+                  {item.badge ? (
+                    <Badge
+                      variant={
+                        item.value === "admin" || item.value === "Active"
+                          ? "success"
+                          : "neutral"
+                      }
+                    >
+                      {item.value}
+                    </Badge>
+                  ) : (
+                    <span className='font-medium'>{item.value}</span>
+                  )}
+                </div>
+              ))}
             </div>
 
             {selectedUser.role !== "admin" && (
-              <div className='flex gap-2 mt-4'>
+              <div className='flex gap-3'>
                 <Button
                   variant='outline'
-                  size='sm'
                   className='flex-1'
                   onClick={() =>
                     handleDeactivate(
@@ -297,7 +297,6 @@ export default function UserManager() {
                 </Button>
                 <Button
                   variant='danger'
-                  size='sm'
                   className='flex-1'
                   onClick={() =>
                     handleDelete(selectedUser._id, selectedUser.name)
@@ -307,17 +306,6 @@ export default function UserManager() {
                 </Button>
               </div>
             )}
-
-            <div className='mt-4'>
-              <Button
-                variant='outline'
-                size='sm'
-                className='w-full'
-                onClick={() => setSelectedUser(null)}
-              >
-                Close
-              </Button>
-            </div>
           </div>
         </div>
       )}

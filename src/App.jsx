@@ -30,6 +30,7 @@ import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import ChatWidget from "./features/chat/ChatWidget";
 import ChatManager from "./features/admin/ChatManager";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -81,6 +82,10 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/shop' element={<ShopPage />} />
             <Route path='/product/:slug' element={<ProductPage />} />
+            <Route
+              path='/reset-password/:token'
+              element={<ResetPasswordPage />}
+            />
             <Route
               path='/cart'
               element={

@@ -71,7 +71,6 @@ export default function CategoryManager() {
     setSaving(true);
     try {
       if (editingId) {
-        // Update: include isActive
         await api.put(`/categories/${editingId}`, {
           name: form.name,
           description: form.description,
@@ -80,7 +79,6 @@ export default function CategoryManager() {
         });
         toast.success("Category updated");
       } else {
-        // Create: don't send isActive
         await api.post("/categories", {
           name: form.name,
           description: form.description,
@@ -97,16 +95,6 @@ export default function CategoryManager() {
     }
   };
 
-  // const handleDelete = async (catId, catName) => {
-  //   if (!confirm(`Delete "${catName}"?`)) return;
-  //   try {
-  //     await api.delete(`/categories/${catId}`);
-  //     toast.success("Category deleted");
-  //     fetchCategories();
-  //   } catch (error) {
-  //     toast.error(error.response?.data?.message || "Failed to delete");
-  //   }
-  // };
   const handleDelete = async (catId, catName) => {
     if (!confirm(`Delete "${catName}"?`)) return;
     try {
@@ -131,85 +119,81 @@ export default function CategoryManager() {
   };
 
   const renderCategory = (cat, level = 0) => (
-    <div key={cat._id}>
+    <div key={cat._id} className='border-b last:border-b-0 border-slate-100'>
       <div
-        className='flex items-center justify-between py-3 px-4 hover:bg-[#F7FAFA] border-b border-[#D5D9D9]'
+        className='flex items-center justify-between py-4 px-4 hover:bg-slate-50 transition-colors'
         style={{ paddingLeft: `${16 + level * 24}px` }}
       >
         <div className='flex items-center gap-3'>
           {cat.subcategories?.length > 0 ? (
-            <HiFolderOpen className='w-5 h-5 text-[#FF9900]' />
+            <HiFolderOpen className='w-5 h-5 text-orange-500' />
           ) : (
-            <HiFolder className='w-5 h-5 text-[#565959]' />
+            <HiFolder className='w-5 h-5 text-slate-400' />
           )}
           <div>
-            <p className='font-medium text-[#0F1111]'>{cat.name}</p>
+            <p className='font-medium text-slate-900 text-sm'>{cat.name}</p>
             {cat.description && (
-              <p className='text-xs text-[#565959]'>{cat.description}</p>
+              <p className='text-xs text-slate-500 mt-0.5'>{cat.description}</p>
             )}
           </div>
         </div>
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-4'>
           <Badge variant={cat.isActive ? "success" : "neutral"}>
             {cat.isActive ? "Active" : "Inactive"}
           </Badge>
-          <span className='text-xs text-[#565959]'>
+          <span className='text-xs text-slate-400 hidden sm:block'>
             {cat.subcategories?.length || 0} sub
           </span>
           <div className='flex gap-1'>
             <button
               onClick={() => handleEdit(cat)}
-              className='p-1.5 hover:bg-white rounded text-[#FF9900]'
+              className='p-2 text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all'
             >
               <HiPencil className='w-4 h-4' />
             </button>
             <button
               onClick={() => handleDelete(cat._id, cat.name)}
-              className='p-1.5 hover:bg-white rounded text-[#B12704]'
+              className='p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all'
             >
               <HiTrash className='w-4 h-4' />
             </button>
           </div>
         </div>
       </div>
-      {/* Subcategories */}
       {cat.subcategories?.map((sub) => renderCategory(sub, level + 1))}
     </div>
   );
 
   return (
-    <div className='space-y-6'>
+    <div className='max-w-4xl mx-auto space-y-6 p-1'>
       <div className='flex items-center justify-between'>
-        <h1 className='text-2xl font-bold text-[#0F1111]'>Categories</h1>
-        <Button onClick={handleAdd} size='sm'>
+        <h1 className='text-xl font-bold text-slate-900'>Categories</h1>
+        <Button onClick={handleAdd} size='sm' className='rounded-lg shadow-sm'>
           <HiPlus className='w-4 h-4 mr-1' /> Add Category
         </Button>
       </div>
 
-      {/* Form Modal */}
       {showForm && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-          <div
-            className='fixed inset-0 bg-black/50'
-            onClick={() => setShowForm(false)}
-          />
-          <div className='relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6'>
-            <h2 className='text-lg font-bold mb-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-sm'>
+          <div className='bg-white rounded-xl shadow-xl w-full max-w-md p-6 border border-slate-200'>
+            <h2 className='text-lg font-bold text-slate-900 mb-5'>
               {editingId ? "Edit Category" : "New Category"}
             </h2>
             <form onSubmit={handleSubmit} className='space-y-4'>
               <div>
-                <label className='block text-sm font-medium mb-1'>Name *</label>
+                <label className='block text-xs font-semibold uppercase text-slate-500 mb-1.5'>
+                  Name *
+                </label>
                 <input
                   type='text'
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className='w-full px-3 py-2 text-sm border rounded-lg'
+                  className='w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none'
                   required
                 />
               </div>
               <div>
-                <label className='block text-sm font-medium mb-1'>
+                <label className='block text-xs font-semibold uppercase text-slate-500 mb-1.5'>
                   Description
                 </label>
                 <textarea
@@ -218,17 +202,17 @@ export default function CategoryManager() {
                     setForm({ ...form, description: e.target.value })
                   }
                   rows={2}
-                  className='w-full px-3 py-2 text-sm border rounded-lg resize-none'
+                  className='w-full px-3 py-2 text-sm border border-slate-200 rounded-lg resize-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none'
                 />
               </div>
               <div>
-                <label className='block text-sm font-medium mb-1'>
+                <label className='block text-xs font-semibold uppercase text-slate-500 mb-1.5'>
                   Parent Category
                 </label>
                 <select
                   value={form.parent}
                   onChange={(e) => setForm({ ...form, parent: e.target.value })}
-                  className='w-full px-3 py-2 text-sm border rounded-lg'
+                  className='w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none'
                 >
                   <option value=''>None (Top Level)</option>
                   {parentCategories
@@ -240,19 +224,19 @@ export default function CategoryManager() {
                     ))}
                 </select>
               </div>
-              <label className='flex items-center gap-2 cursor-pointer'>
+              <label className='flex items-center gap-2 cursor-pointer pt-2'>
                 <input
                   type='checkbox'
                   checked={form.isActive}
                   onChange={(e) =>
                     setForm({ ...form, isActive: e.target.checked })
                   }
-                  className='w-4 h-4 text-[#FF9900] rounded'
+                  className='w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500'
                 />
-                <span className='text-sm'>Active</span>
+                <span className='text-sm text-slate-700'>Set as active</span>
               </label>
-              <div className='flex gap-3'>
-                <Button type='submit' disabled={saving}>
+              <div className='flex gap-3 pt-2'>
+                <Button type='submit' className='flex-1' disabled={saving}>
                   {saving ? "Saving..." : editingId ? "Update" : "Create"}
                 </Button>
                 <Button
@@ -268,18 +252,19 @@ export default function CategoryManager() {
         </div>
       )}
 
-      {/* Categories List */}
-      <div className='bg-white rounded-lg shadow-sm border'>
+      <div className='bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden'>
         {loading ? (
-          <div className='p-8 flex justify-center'>
+          <div className='p-12 flex justify-center'>
             <Spinner />
           </div>
         ) : categories.length === 0 ? (
-          <div className='p-8 text-center text-[#565959]'>
-            No categories found
+          <div className='p-12 text-center text-slate-400'>
+            No categories available
           </div>
         ) : (
-          categories.map((cat) => renderCategory(cat))
+          <div className='divide-y divide-slate-100'>
+            {categories.map((cat) => renderCategory(cat))}
+          </div>
         )}
       </div>
     </div>

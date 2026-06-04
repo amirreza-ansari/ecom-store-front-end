@@ -4,7 +4,7 @@ import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
 import Badge from "../../components/ui/Badge";
 import Pagination from "../../components/ui/Pagination";
-import { HiEye, HiMagnifyingGlass } from "react-icons/hi2";
+import { HiEye, HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
 import toast from "react-hot-toast";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 
@@ -105,8 +105,13 @@ export default function OrderManager() {
   };
 
   return (
-    <div className='space-y-6'>
-      <h1 className='text-2xl font-bold text-[#0F1111]'>Orders</h1>
+    <div className='space-y-8'>
+      <div>
+        <h1 className='text-2xl font-bold text-slate-900'>Orders</h1>
+        <p className='text-slate-500 text-sm mt-1'>
+          Manage and track customer orders.
+        </p>
+      </div>
 
       {/* Status Filter */}
       <div className='flex gap-2 flex-wrap'>
@@ -117,90 +122,82 @@ export default function OrderManager() {
               setStatusFilter(status);
               setPage(1);
             }}
-            className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
               statusFilter === status
-                ? "bg-[#FF9900] text-white font-medium"
-                : "bg-white text-[#565959] hover:bg-[#F7FAFA] border border-[#D5D9D9]"
+                ? "bg-slate-900 text-white shadow-sm"
+                : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
             }`}
           >
-            {status || "All"}
+            {status || "All Orders"}
           </button>
         ))}
       </div>
 
       {/* Orders Table */}
-      <div className='bg-white rounded-lg shadow-sm border overflow-x-auto'>
+      <div className='bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden'>
         {loading ? (
-          <TableSkeleton rows={5} cols={5} />
+          <TableSkeleton rows={5} cols={6} />
         ) : orders.length === 0 ? (
-          <div className='p-8 text-center text-[#565959]'>No orders found</div>
+          <div className='p-12 text-center text-slate-500'>No orders found</div>
         ) : (
-          <table className='w-full text-sm'>
-            <thead>
-              <tr className='border-b border-[#D5D9D9] bg-[#F7FAFA]'>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Order
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Customer
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Total
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Payment
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Status
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Date
-                </th>
-                <th className='text-right py-3 px-4 font-medium text-[#565959]'>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr
-                  key={order._id}
-                  className='border-b border-[#D5D9D9] hover:bg-[#F7FAFA]'
-                >
-                  <td className='py-3 px-4 font-medium'>
-                    #{order.orderNumber}
-                  </td>
-                  <td className='py-3 px-4'>{order.user?.name || "N/A"}</td>
-                  <td className='py-3 px-4 font-medium'>
-                    ${order.total?.toFixed(2)}
-                  </td>
-                  <td className='py-3 px-4'>
-                    <Badge
-                      variant={paymentBadges[order.paymentStatus] || "neutral"}
-                    >
-                      {order.paymentStatus}
-                    </Badge>
-                  </td>
-                  <td className='py-3 px-4'>
-                    <Badge variant={statusBadges[order.status] || "neutral"}>
-                      {order.status}
-                    </Badge>
-                  </td>
-                  <td className='py-3 px-4 text-[#565959] text-xs'>
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className='py-3 px-4 text-right'>
-                    <button
-                      onClick={() => viewOrderDetails(order._id)}
-                      className='p-1.5 hover:bg-[#F7FAFA] rounded text-[#FF9900]'
-                    >
-                      <HiEye className='w-4 h-4' />
-                    </button>
-                  </td>
+          <div className='overflow-x-auto'>
+            <table className='w-full text-sm text-left'>
+              <thead className='bg-slate-50 text-slate-500 uppercase text-xs font-semibold'>
+                <tr>
+                  <th className='py-4 px-6'>Order</th>
+                  <th className='py-4 px-6'>Customer</th>
+                  <th className='py-4 px-6'>Total</th>
+                  <th className='py-4 px-6'>Payment</th>
+                  <th className='py-4 px-6'>Status</th>
+                  <th className='py-4 px-6'>Date</th>
+                  <th className='py-4 px-6 text-right'>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className='divide-y divide-slate-100'>
+                {orders.map((order) => (
+                  <tr
+                    key={order._id}
+                    className='hover:bg-slate-50/50 transition-colors'
+                  >
+                    <td className='py-4 px-6 font-semibold text-slate-900'>
+                      #{order.orderNumber}
+                    </td>
+                    <td className='py-4 px-6 text-slate-700'>
+                      {order.user?.name || "N/A"}
+                    </td>
+                    <td className='py-4 px-6 font-medium'>
+                      ${order.total?.toFixed(2)}
+                    </td>
+                    <td className='py-4 px-6'>
+                      <Badge
+                        variant={
+                          paymentBadges[order.paymentStatus] || "neutral"
+                        }
+                      >
+                        {order.paymentStatus}
+                      </Badge>
+                    </td>
+                    <td className='py-4 px-6'>
+                      <Badge variant={statusBadges[order.status] || "neutral"}>
+                        {order.status}
+                      </Badge>
+                    </td>
+                    <td className='py-4 px-6 text-slate-500'>
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className='py-4 px-6 text-right'>
+                      <button
+                        onClick={() => viewOrderDetails(order._id)}
+                        className='p-2 hover:bg-slate-200 rounded-lg text-slate-500'
+                      >
+                        <HiEye className='w-4 h-4' />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -216,113 +213,91 @@ export default function OrderManager() {
       {selectedOrder && (
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
           <div
-            className='fixed inset-0 bg-black/50'
+            className='fixed inset-0 bg-slate-900/40 backdrop-blur-sm'
             onClick={() => setSelectedOrder(null)}
           />
-          <div className='relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto p-6'>
-            <h2 className='text-lg font-bold mb-4'>
-              Order #{selectedOrder.orderNumber}
-            </h2>
-
-            {/* Customer Info */}
-            <div className='grid grid-cols-2 gap-4 mb-4 text-sm'>
+          <div className='relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8'>
+            <div className='flex justify-between items-start mb-6'>
               <div>
-                <p className='text-[#565959]'>Customer</p>
-                <p className='font-medium'>{selectedOrder.user?.name}</p>
-                <p className='text-xs text-[#565959]'>
-                  {selectedOrder.user?.email}
+                <h2 className='text-xl font-bold text-slate-900'>
+                  Order #{selectedOrder.orderNumber}
+                </h2>
+                <p className='text-slate-500 text-sm'>
+                  Customer: {selectedOrder.user?.name} (
+                  {selectedOrder.user?.email})
                 </p>
               </div>
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className='text-slate-400 hover:text-slate-600'
+              >
+                <HiXMark className='w-6 h-6' />
+              </button>
+            </div>
+
+            <div className='grid grid-cols-2 gap-6 mb-8 bg-slate-50 p-4 rounded-xl'>
               <div>
-                <p className='text-[#565959]'>Total</p>
-                <p className='font-bold text-lg'>
+                <p className='text-xs font-semibold text-slate-400 uppercase'>
+                  Status
+                </p>
+                <div className='mt-1'>
+                  <Badge variant={statusBadges[selectedOrder.status]}>
+                    {selectedOrder.status}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <p className='text-xs font-semibold text-slate-400 uppercase'>
+                  Total Amount
+                </p>
+                <p className='text-2xl font-bold text-slate-900 mt-1'>
                   ${selectedOrder.total?.toFixed(2)}
                 </p>
               </div>
             </div>
 
-            {/* Current Status */}
-            <div className='flex items-center gap-3 mb-4'>
-              <span className='text-sm text-[#565959]'>Current Status:</span>
-              <Badge variant={statusBadges[selectedOrder.status] || "neutral"}>
-                {selectedOrder.status}
-              </Badge>
-              <Badge
-                variant={
-                  paymentBadges[selectedOrder.paymentStatus] || "neutral"
-                }
-              >
-                {selectedOrder.paymentStatus}
-              </Badge>
-            </div>
-
-            {/* Items */}
-            <div className='mb-4'>
-              <h3 className='text-sm font-bold mb-2'>Items</h3>
-              {selectedOrder.items?.map((item) => (
-                <div
-                  key={item._id}
-                  className='flex justify-between text-sm py-2 border-b'
-                >
-                  <span>
-                    {item.name} x {item.quantity}
-                  </span>
-                  <span className='font-medium'>
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Status History */}
-            {selectedOrder.statusHistory?.length > 0 && (
-              <div className='mb-4'>
-                <h3 className='text-sm font-bold mb-2'>Status History</h3>
-                <div className='space-y-2 text-xs'>
-                  {selectedOrder.statusHistory.map((entry, i) => (
-                    <div
-                      key={i}
-                      className='flex justify-between text-[#565959]'
-                    >
-                      <span className='capitalize'>{entry.status}</span>
-                      <span>{new Date(entry.date).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
+            <div className='mb-8'>
+              <h3 className='text-sm font-bold text-slate-900 mb-3'>
+                Order Items
+              </h3>
+              <div className='space-y-2'>
+                {selectedOrder.items?.map((item) => (
+                  <div
+                    key={item._id}
+                    className='flex justify-between text-sm py-2 border-b border-slate-100 last:border-0'
+                  >
+                    <span className='text-slate-700'>
+                      {item.name}{" "}
+                      <span className='text-slate-400'>x{item.quantity}</span>
+                    </span>
+                    <span className='font-medium text-slate-900'>
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
 
-            {/* Update Status */}
             {validTransitions[selectedOrder.status]?.length > 0 && (
-              <div className='border-t pt-4'>
-                <h3 className='text-sm font-bold mb-3'>Update Status</h3>
-                <div className='space-y-3'>
+              <div className='bg-slate-50 p-5 rounded-xl border border-slate-100'>
+                <h3 className='text-sm font-bold mb-4'>Change Order Status</h3>
+                <div className='space-y-4'>
                   {selectedOrder.status === "processing" && (
-                    <div>
-                      <label className='block text-xs mb-1'>
-                        Tracking Number
-                      </label>
-                      <input
-                        type='text'
-                        value={trackingNumber}
-                        onChange={(e) => setTrackingNumber(e.target.value)}
-                        placeholder='Enter tracking number'
-                        className='w-full px-3 py-2 text-sm border rounded-lg'
-                      />
-                    </div>
-                  )}
-                  <div>
-                    <label className='block text-xs mb-1'>
-                      Note (optional)
-                    </label>
                     <input
                       type='text'
-                      value={statusNote}
-                      onChange={(e) => setStatusNote(e.target.value)}
-                      placeholder='Add a note'
-                      className='w-full px-3 py-2 text-sm border rounded-lg'
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      placeholder='Enter tracking number'
+                      className='w-full px-4 py-2 text-sm border rounded-lg'
                     />
-                  </div>
+                  )}
+                  <input
+                    type='text'
+                    value={statusNote}
+                    onChange={(e) => setStatusNote(e.target.value)}
+                    placeholder='Add a note (optional)'
+                    className='w-full px-4 py-2 text-sm border rounded-lg'
+                  />
                   <div className='flex gap-2 flex-wrap'>
                     {validTransitions[selectedOrder.status].map((newStatus) => (
                       <Button
@@ -336,23 +311,13 @@ export default function OrderManager() {
                         }
                         disabled={updating}
                       >
-                        {updating ? "..." : `Mark as ${newStatus}`}
+                        {updating ? "Updating..." : `Set to ${newStatus}`}
                       </Button>
                     ))}
                   </div>
                 </div>
               </div>
             )}
-
-            <div className='mt-4'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => setSelectedOrder(null)}
-              >
-                Close
-              </Button>
-            </div>
           </div>
         </div>
       )}

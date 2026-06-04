@@ -39,49 +39,58 @@ export default function LoginModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title='Sign In'>
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+    <Modal isOpen={isOpen} onClose={handleClose} title='Welcome Back' size='sm'>
+      <div className='mb-6'>
+        <p className='text-sm text-slate-500'>
+          Enter your credentials to access your account.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
         {error && (
-          <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-[#B12704]'>
+          <div className='p-3.5 bg-rose-50/80 border border-rose-200 rounded-xl text-sm font-medium text-rose-600 flex items-center gap-2'>
+            <div className='w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0'></div>
             {error}
           </div>
         )}
 
-        <Input
-          label='Email'
-          type='email'
-          placeholder='Enter your email'
-          error={errors.email?.message}
-          {...register("email", loginSchema.email)}
-        />
-
-        <div className='relative'>
+        <div className='space-y-4'>
           <Input
-            label='Password'
-            type={showPassword ? "text" : "password"}
-            placeholder='Enter your password'
-            error={errors.password?.message}
-            {...register("password", loginSchema.password)}
+            label='Email Address'
+            type='email'
+            placeholder='name@example.com'
+            error={errors.email?.message}
+            {...register("email", loginSchema.email)}
           />
-          <button
-            type='button'
-            onClick={() => setShowPassword(!showPassword)}
-            className='absolute top-8 right-3 text-xs text-[#565959] hover:text-[#FF9900]'
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
+
+          <div className='relative'>
+            <Input
+              label='Password'
+              type={showPassword ? "text" : "password"}
+              placeholder='••••••••'
+              error={errors.password?.message}
+              {...register("password", loginSchema.password)}
+            />
+            <button
+              type='button'
+              onClick={() => setShowPassword(!showPassword)}
+              className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
 
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-end'>
           <button
             type='button'
             onClick={() => {
               handleClose();
               onSwitchToForgot?.();
             }}
-            className='text-sm text-[#FF9900] hover:underline'
+            className='text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors'
           >
-            Forgot password?
+            Forgot your password?
           </button>
         </div>
 
@@ -89,13 +98,13 @@ export default function LoginModal({
           type='submit'
           variant='primary'
           size='lg'
-          className='w-full'
+          className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70'
           disabled={isLoading}
         >
-          {isLoading ? "Signing in..." : "Sign In"}
+          {isLoading ? "Authenticating..." : "Sign In"}
         </Button>
 
-        <p className='text-center text-sm text-[#565959]'>
+        <p className='text-center text-sm font-medium text-slate-500 pt-2'>
           Don't have an account?{" "}
           <button
             type='button'
@@ -103,7 +112,7 @@ export default function LoginModal({
               handleClose();
               onSwitchToRegister?.();
             }}
-            className='text-[#FF9900] hover:underline font-medium'
+            className='text-slate-900 font-bold hover:underline decoration-2 underline-offset-2'
           >
             Create one
           </button>

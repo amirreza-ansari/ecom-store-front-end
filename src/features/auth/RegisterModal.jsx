@@ -39,10 +39,22 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title='Create Account'>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title='Create Account'
+      size='sm'
+    >
+      <div className='mb-6'>
+        <p className='text-sm text-slate-500'>
+          Join us to streamline your shopping experience.
+        </p>
+      </div>
+
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
         {error && (
-          <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-[#B12704]'>
+          <div className='p-3.5 bg-rose-50/80 border border-rose-200 rounded-xl text-sm font-medium text-rose-600 flex items-center gap-2'>
+            <div className='w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0'></div>
             {error}
           </div>
         )}
@@ -50,15 +62,15 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
         <Input
           label='Full Name'
           type='text'
-          placeholder='Enter your full name'
+          placeholder='Nastaran Heidari'
           error={errors.name?.message}
           {...register("name", registerSchema.name)}
         />
 
         <Input
-          label='Email'
+          label='Email Address'
           type='email'
-          placeholder='Enter your email'
+          placeholder='name@example.com'
           error={errors.email?.message}
           {...register("email", registerSchema.email)}
         />
@@ -67,14 +79,14 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
           <Input
             label='Password'
             type={showPassword ? "text" : "password"}
-            placeholder='Create a password'
+            placeholder='Create a secure password'
             error={errors.password?.message}
             {...register("password", registerSchema.password)}
           />
           <button
             type='button'
             onClick={() => setShowPassword(!showPassword)}
-            className='absolute top-8 right-3 text-xs text-[#565959] hover:text-[#FF9900]'
+            className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
           >
             {showPassword ? "Hide" : "Show"}
           </button>
@@ -95,60 +107,78 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
           <button
             type='button'
             onClick={() => setShowConfirm(!showConfirm)}
-            className='absolute top-8 right-3 text-xs text-[#565959] hover:text-[#FF9900]'
+            className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
           >
             {showConfirm ? "Hide" : "Show"}
           </button>
         </div>
 
+        {/* Polished Password Strength Indicator */}
         {password && (
-          <div className='space-y-1'>
-            <p className='text-xs text-[#565959]'>Password strength:</p>
-            <div className='flex gap-1'>
+          <div className='space-y-1.5 pt-1'>
+            <div className='flex gap-1.5 h-1.5'>
               <div
-                className={`h-1 flex-1 rounded ${password.length >= 1 ? "bg-red-400" : "bg-[#D5D9D9]"}`}
+                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 1 ? "bg-rose-400" : "bg-slate-100"}`}
               />
               <div
-                className={`h-1 flex-1 rounded ${password.length >= 4 ? "bg-yellow-400" : "bg-[#D5D9D9]"}`}
+                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 4 ? "bg-amber-400" : "bg-slate-100"}`}
               />
               <div
-                className={`h-1 flex-1 rounded ${password.length >= 6 ? "bg-green-400" : "bg-[#D5D9D9]"}`}
+                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 6 ? "bg-emerald-400" : "bg-slate-100"}`}
               />
               <div
-                className={`h-1 flex-1 rounded ${password.length >= 8 ? "bg-green-500" : "bg-[#D5D9D9]"}`}
+                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 8 ? "bg-emerald-600" : "bg-slate-100"}`}
               />
             </div>
+            <p className='text-[10px] font-medium text-slate-400 text-right uppercase tracking-wider'>
+              {password.length < 4
+                ? "Weak"
+                : password.length < 8
+                  ? "Good"
+                  : "Strong"}
+            </p>
           </div>
         )}
 
-        <p className='text-xs text-[#565959]'>
-          By creating an account, you agree to our Terms of Service and Privacy
-          Policy.
-        </p>
-
-        <Button
-          type='submit'
-          variant='primary'
-          size='lg'
-          className='w-full'
-          disabled={isLoading}
-        >
-          {isLoading ? "Creating account..." : "Create Account"}
-        </Button>
-
-        <p className='text-center text-sm text-[#565959]'>
-          Already have an account?{" "}
-          <button
-            type='button'
-            onClick={() => {
-              handleClose();
-              onSwitchToLogin?.();
-            }}
-            className='text-[#FF9900] hover:underline font-medium'
+        <div className='pt-2'>
+          <Button
+            type='submit'
+            variant='primary'
+            size='lg'
+            className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70'
+            disabled={isLoading}
           >
-            Sign In
-          </button>
-        </p>
+            {isLoading ? "Setting up..." : "Create Account"}
+          </Button>
+        </div>
+
+        <div className='space-y-4 pt-2'>
+          <p className='text-center text-[11px] font-medium text-slate-400 leading-relaxed px-4'>
+            By continuing, you agree to our{" "}
+            <span className='text-slate-700 underline cursor-pointer'>
+              Terms of Service
+            </span>{" "}
+            and{" "}
+            <span className='text-slate-700 underline cursor-pointer'>
+              Privacy Policy
+            </span>
+            .
+          </p>
+
+          <p className='text-center text-sm font-medium text-slate-500 border-t border-slate-100 pt-4'>
+            Already have an account?{" "}
+            <button
+              type='button'
+              onClick={() => {
+                handleClose();
+                onSwitchToLogin?.();
+              }}
+              className='text-slate-900 font-bold hover:underline decoration-2 underline-offset-2'
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
       </form>
     </Modal>
   );
