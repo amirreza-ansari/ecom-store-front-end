@@ -7,3 +7,10 @@ export const chatApi = {
   sendMessage: (chatId, message) =>
     api.post(`/chat/${chatId}/message`, { message }),
 };
+
+export const adminChatApi = {
+  getAllConversations: (params) =>
+    api.get("/chat/admin/conversations", { params }),
+  closeConversation: (chatId) => api.put(`/chat/${chatId}/close`),
+  assignToMe: (chatId) => api.put(`/chat/${chatId}/assign`),
+};

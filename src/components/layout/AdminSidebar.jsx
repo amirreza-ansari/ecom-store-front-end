@@ -9,6 +9,7 @@ import {
   HiArchiveBox,
   HiHome,
   HiXMark,
+  HiChatBubbleLeftRight,
 } from "react-icons/hi2";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { to: "/admin/users", icon: HiUsers, label: "Users" },
   { to: "/admin/coupons", icon: HiTicket, label: "Coupons" },
   { to: "/admin/inventory", icon: HiArchiveBox, label: "Inventory" },
+  { to: "/admin/chats", icon: HiChatBubbleLeftRight, label: "Live Chat" },
 ];
 
 export default function AdminSidebar({ isOpen, onClose }) {

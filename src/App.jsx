@@ -29,6 +29,7 @@ import InventoryManager from "./features/admin/InventoryManager";
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import ChatWidget from "./features/chat/ChatWidget";
+import ChatManager from "./features/admin/ChatManager";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -146,6 +147,7 @@ function App() {
             <Route path='users' element={<UserManager />} />
             <Route path='coupons' element={<CouponManager />} />
             <Route path='inventory' element={<InventoryManager />} />
+            <Route path='chats' element={<ChatManager />} />
           </Route>
         </Routes>
       </AnimatePresence>
