@@ -15,6 +15,7 @@ import {
   HiMagnifyingGlass,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function InventoryManager() {
   const [products, setProducts] = useState([]);
@@ -206,9 +207,7 @@ export default function InventoryManager() {
       {/* Products Table */}
       <div className='bg-white rounded-xl shadow-sm border overflow-hidden'>
         {loading ? (
-          <div className='p-12 flex justify-center'>
-            <Spinner size='lg' />
-          </div>
+          <TableSkeleton rows={5} cols={5} />
         ) : products.length === 0 ? (
           <div className='p-12 text-center'>
             <HiArchiveBox className='w-16 h-16 text-[#D5D9D9] mx-auto mb-4' />

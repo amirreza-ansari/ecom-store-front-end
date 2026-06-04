@@ -7,6 +7,8 @@ import ProductCard from "../features/products/ProductCard";
 import CategoryCard from "../features/products/CategoryCard";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
+import ProductCardSkeleton from "../features/products/ProductCardSkeleton";
+import CategoryCardSkeleton from "../features/products/CategoryCardSkeleton";
 
 const banners = [
   {
@@ -111,10 +113,7 @@ export default function HomePage() {
           ) : (
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
               {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className='h-40 bg-[#D5D9D9] rounded-lg animate-pulse'
-                />
+                <CategoryCardSkeleton key={i} />
               ))}
             </div>
           )}
@@ -137,11 +136,7 @@ export default function HomePage() {
           {isLoading ? (
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
               {[...Array(8)].map((_, i) => (
-                <div key={i} className='bg-white rounded-lg p-4 animate-pulse'>
-                  <div className='aspect-square bg-[#D5D9D9] rounded-lg mb-4' />
-                  <div className='h-4 bg-[#D5D9D9] rounded w-3/4 mb-2' />
-                  <div className='h-4 bg-[#D5D9D9] rounded w-1/2' />
-                </div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : featuredProducts.length > 0 ? (

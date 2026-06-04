@@ -7,6 +7,7 @@ import ProductCard from "../features/products/ProductCard";
 import Pagination from "../components/ui/Pagination";
 import Spinner from "../components/ui/Spinner";
 import { HiFunnel, HiXMark, HiMagnifyingGlass } from "react-icons/hi2";
+import ProductCardSkeleton from "../features/products/ProductCardSkeleton";
 
 export default function ShopPage() {
   const dispatch = useAppDispatch();
@@ -226,11 +227,7 @@ export default function ShopPage() {
           {isLoading ? (
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {[...Array(6)].map((_, i) => (
-                <div key={i} className='bg-white rounded-lg p-4 animate-pulse'>
-                  <div className='aspect-square bg-[#D5D9D9] rounded-lg mb-4' />
-                  <div className='h-4 bg-[#D5D9D9] rounded w-3/4 mb-2' />
-                  <div className='h-4 bg-[#D5D9D9] rounded w-1/2' />
-                </div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : products.length > 0 ? (

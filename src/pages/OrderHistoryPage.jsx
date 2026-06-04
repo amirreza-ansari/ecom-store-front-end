@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
 import Pagination from "../components/ui/Pagination";
 import { HiShoppingBag, HiChevronRight } from "react-icons/hi2";
+import OrderCardSkeleton from "../features/orders/OrderCardSkeleton";
 
 const statusBadges = {
   pending: "warning",
@@ -62,8 +63,10 @@ export default function OrderHistoryPage() {
 
   if (loading && orders.length === 0) {
     return (
-      <div className='flex justify-center items-center min-h-[60vh]'>
-        <Spinner size='lg' />
+      <div className='space-y-4'>
+        {[...Array(5)].map((_, i) => (
+          <OrderCardSkeleton key={i} />
+        ))}
       </div>
     );
   }

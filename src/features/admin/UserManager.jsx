@@ -12,6 +12,7 @@ import {
   HiTrash,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function UserManager() {
   const [users, setUsers] = useState([]);
@@ -106,9 +107,7 @@ export default function UserManager() {
       {/* Users Table */}
       <div className='bg-white rounded-lg shadow-sm border overflow-x-auto'>
         {loading ? (
-          <div className='p-8 flex justify-center'>
-            <Spinner />
-          </div>
+          <TableSkeleton rows={5} cols={5} />
         ) : users.length === 0 ? (
           <div className='p-8 text-center text-[#565959]'>No users found</div>
         ) : (
