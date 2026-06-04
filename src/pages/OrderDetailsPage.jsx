@@ -4,7 +4,7 @@ import { orderApi } from "../features/orders/orderApi";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
-import { HiArrowLeft, HiXMark } from "react-icons/hi2";
+import { HiArrowLeft, HiArrowDownTray, HiXMark } from "react-icons/hi2";
 import toast from "react-hot-toast";
 
 const statusBadges = {
@@ -58,6 +58,31 @@ export default function OrderDetailsPage() {
       toast.error(error.response?.data?.message || "Failed to cancel");
     } finally {
       setCancelling(false);
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/orders/${order._id}/invoice`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `invoice-${order.orderNumber}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      toast.success("Invoice downloaded!");
+    } catch (error) {
+      toast.error("Failed to download invoice");
     }
   };
 
@@ -225,6 +250,14 @@ export default function OrderDetailsPage() {
                 <span>${order.total?.toFixed(2)}</span>
               </div>
             </div>
+
+            <button
+              onClick={handleDownloadInvoice}
+              className='flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#F7FAFA] border border-[#D5D9D9] rounded-lg text-sm font-medium text-[#0F1111] hover:bg-white hover:border-[#FF9900] transition-all mt-4'
+            >
+              <HiArrowDownTray className='w-4 h-4' />
+              Download Invoice (PDF)
+            </button>
 
             {/* Tracking */}
             {order.trackingNumber && (
