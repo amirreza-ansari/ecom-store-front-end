@@ -3,14 +3,6 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className='bg-[#131A22] text-white mt-auto'>
-      {/* Back to top */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className='w-full bg-[#232F3E] hover:bg-[#37475A] py-3 text-sm text-center transition-colors'
-      >
-        Back to top
-      </button>
-
       {/* Main footer */}
       <div className='max-w-7xl mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
