@@ -18,6 +18,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AddressPage from "./pages/AddressPage";
+import AdminLayout from "./components/layout/AdminLayout";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -120,6 +121,65 @@ function App() {
             <ProtectedRoute>
               <AddressPage />
             </ProtectedRoute>
+          }
+        />
+      </Route>
+      {/* Admin Routes */}
+      <Route path='/admin' element={<AdminLayout />}>
+        <Route
+          index
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Admin Dashboard</h1>
+            </div>
+          }
+        />
+        <Route
+          path='products'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Products</h1>
+            </div>
+          }
+        />
+        <Route
+          path='categories'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Categories</h1>
+            </div>
+          }
+        />
+        <Route
+          path='orders'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Orders</h1>
+            </div>
+          }
+        />
+        <Route
+          path='users'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Users</h1>
+            </div>
+          }
+        />
+        <Route
+          path='coupons'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Coupons</h1>
+            </div>
+          }
+        />
+        <Route
+          path='inventory'
+          element={
+            <div className='p-8'>
+              <h1 className='text-2xl font-bold'>Inventory</h1>
+            </div>
           }
         />
       </Route>
