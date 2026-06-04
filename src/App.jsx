@@ -24,6 +24,7 @@ import ProductManager from "./features/admin/ProductManager";
 import CategoryManager from "./features/admin/CategoryManager";
 import OrderManager from "./features/admin/OrderManager";
 import UserManager from "./features/admin/UserManager";
+import CouponManager from "./features/admin/CouponManager";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -139,14 +140,7 @@ function App() {
 
         <Route path='orders' element={<OrderManager />} />
         <Route path='users' element={<UserManager />} />
-        <Route
-          path='coupons'
-          element={
-            <div className='p-8'>
-              <h1 className='text-2xl font-bold'>Coupons</h1>
-            </div>
-          }
-        />
+        <Route path='coupons' element={<CouponManager />} />
         <Route
           path='inventory'
           element={
