@@ -6,3 +6,5 @@ export const updateCartItem = (itemId, data) =>
   api.put(`/cart/${itemId}`, data);
 export const removeFromCart = (itemId) => api.delete(`/cart/${itemId}`);
 export const clearCart = () => api.delete("/cart");
+export const applyCoupon = (data) => api.post("/cart/coupon", data);
+export const removeCoupon = () => api.delete("/cart/coupon");

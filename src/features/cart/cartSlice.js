@@ -41,8 +41,15 @@ const cartSlice = createSlice({
       state.total = 0;
       state.coupon = null;
     },
+    setCoupon: (state, action) => {
+      state.coupon = action.payload;
+    },
+    removeCoupon: (state) => {
+      state.coupon = null;
+    },
   },
 });
 
-export const { setCart, clearCart } = cartSlice.actions;
+export const { setCart, clearCart, setCoupon, removeCoupon } =
+  cartSlice.actions;
 export default cartSlice.reducer;

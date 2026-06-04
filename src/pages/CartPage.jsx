@@ -14,19 +14,45 @@ import {
 import QuantitySelector from "../components/ui/QuantitySelector";
 import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
-import { HiTrash, HiShoppingBag, HiArrowLeft } from "react-icons/hi2";
+import {
+  HiTrash,
+  HiShoppingBag,
+  HiArrowLeft,
+  HiTicket,
+  HiXMark,
+} from "react-icons/hi2";
 import toast from "react-hot-toast";
+import {
+  applyCoupon,
+  removeCoupon as removeCouponApi,
+} from "../features/cart/cartApi";
+import {
+  setCoupon,
+  removeCoupon as removeCouponAction,
+} from "../features/cart/cartSlice";
+import { couponApi } from "../features/coupons/couponApi";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
-  const { items, subtotal, total, totalItems, isLoading } = useAppSelector(
-    (state) => state.cart,
-  );
+
+  const { items, subtotal, total, totalItems, isLoading, discount } =
+    useAppSelector((state) => state.cart);
   const [fetching, setFetching] = useState(true);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const { coupon } = useAppSelector((state) => state.cart);
 
   useEffect(() => {
     fetchCart();
   }, []);
+
+  // test
+  useEffect(() => {
+    if (coupon) {
+      console.log("Coupon data:", coupon);
+    }
+  }, [coupon]);
 
   const fetchCart = async () => {
     try {
@@ -69,6 +95,46 @@ export default function CartPage() {
       toast.success("Cart cleared");
     } catch (error) {
       toast.error("Failed to clear cart");
+    }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError("");
+
+    try {
+      const code = couponCode.trim().toUpperCase();
+      await applyCoupon({ code });
+      const { data } = await getCart();
+      dispatch(setCart(data.data.cart));
+
+      // Store coupon info locally since backend doesn't return it
+      dispatch(
+        setCoupon({
+          code,
+          discount: data.data.cart.discount,
+        }),
+      );
+
+      setCouponCode("");
+      toast.success("Coupon applied!");
+    } catch (error) {
+      setCouponError(error.response?.data?.message || "Invalid coupon");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = async () => {
+    try {
+      await removeCouponApi();
+      const { data } = await getCart();
+      dispatch(setCart(data.data.cart));
+      dispatch(removeCouponAction());
+      toast.success("Coupon removed");
+    } catch (error) {
+      toast.error("Failed to remove coupon");
     }
   };
 
@@ -203,6 +269,67 @@ export default function CartPage() {
                 </span>
               </div>
             </div>
+
+            {/* Coupon Section */}
+            <div className='border-t border-[#D5D9D9] mt-4 pt-4'>
+              {coupon ? (
+                <div className='flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2'>
+                  <div className='flex items-center gap-2'>
+                    <HiTicket className='w-5 h-5 text-[#067D62]' />
+                    <div>
+                      <p className='text-sm font-medium text-[#067D62]'>
+                        {coupon.code}
+                      </p>
+                      <p className='text-xs text-[#067D62]'>
+                        -${coupon.discount?.toFixed(2) || discount?.toFixed(2)}{" "}
+                        off
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleRemoveCoupon}
+                    className='p-1 hover:bg-green-200 rounded-full transition-colors'
+                  >
+                    <HiXMark className='w-5 h-5 text-[#067D62]' />
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div className='flex gap-2'>
+                    <input
+                      type='text'
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleApplyCoupon()
+                      }
+                      placeholder='Enter coupon code'
+                      className='flex-1 px-3 py-2 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-transparent uppercase'
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                      className='px-4 py-2 bg-[#FF9900] text-white text-sm font-medium rounded-lg hover:bg-[#E88B00] disabled:opacity-50 transition-colors'
+                    >
+                      {couponLoading ? "..." : "Apply"}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className='text-xs text-[#B12704] mt-1'>{couponError}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Discount */}
+            {discount > 0 && (
+              <div className='flex justify-between text-sm mt-3'>
+                <span className='text-[#067D62]'>Discount</span>
+                <span className='text-[#067D62] font-medium'>
+                  -${discount.toFixed(2)}
+                </span>
+              </div>
+            )}
 
             <div className='border-t border-[#D5D9D9] mt-4 pt-4'>
               <div className='flex justify-between text-lg font-bold text-[#0F1111]'>
