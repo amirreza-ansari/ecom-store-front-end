@@ -20,6 +20,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AddressPage from "./pages/AddressPage";
 import AdminLayout from "./components/layout/AdminLayout";
 import Dashboard from "./features/admin/Dashboard";
+import ProductManager from "./features/admin/ProductManager";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -129,14 +130,8 @@ function App() {
       <Route path='/admin' element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
 
-        <Route
-          path='products'
-          element={
-            <div className='p-8'>
-              <h1 className='text-2xl font-bold'>Products</h1>
-            </div>
-          }
-        />
+        <Route path='products' element={<ProductManager />} />
+
         <Route
           path='categories'
           element={
