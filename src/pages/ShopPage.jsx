@@ -320,6 +320,27 @@ function FiltersPanel({
   clearFilters,
   hasActiveFilters,
 }) {
+  const renderCategoryOptions = (cats, level = 0) => {
+    return cats.flatMap((cat) => [
+      <button
+        key={cat._id}
+        onClick={() => updateParams("category", cat._id)}
+        className={`block w-full text-left text-sm px-2 py-1.5 rounded ${
+          currentCategory === cat._id
+            ? "bg-[#FF9900] text-white font-medium"
+            : "text-[#0F1111] hover:bg-[#F7FAFA]"
+        }`}
+        style={{ paddingLeft: `${8 + level * 16}px` }}
+      >
+        {level > 0 && "└ "}
+        {cat.name}
+      </button>,
+      ...(cat.subcategories?.length > 0
+        ? renderCategoryOptions(cat.subcategories, level + 1)
+        : []),
+    ]);
+  };
+
   return (
     <div className='space-y-6'>
       {hasActiveFilters && (
@@ -343,15 +364,7 @@ function FiltersPanel({
           >
             All Categories
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat._id}
-              onClick={() => updateParams("category", cat._id)}
-              className={`block w-full text-left text-sm px-2 py-1.5 rounded ${currentCategory === cat._id ? "bg-[#FF9900] text-white font-medium" : "text-[#0F1111] hover:bg-[#F7FAFA]"}`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          {categories.map((cat) => renderCategoryOptions([cat]))}
         </div>
       </div>
 

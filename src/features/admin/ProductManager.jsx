@@ -23,6 +23,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
 
   const emptyProduct = {
     name: "",
@@ -58,6 +59,18 @@ export default function ProductManager() {
     }
   };
 
+  const renderCategoryOptions = (cats, level = 0) => {
+    return cats.flatMap((cat) => [
+      <option key={cat._id} value={cat._id}>
+        {"— ".repeat(level)}
+        {cat.name}
+      </option>,
+      ...(cat.subcategories?.length > 0
+        ? renderCategoryOptions(cat.subcategories, level + 1)
+        : []),
+    ]);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1);
@@ -84,6 +97,8 @@ export default function ProductManager() {
   const handleAdd = () => {
     setEditingId(null);
     setForm(emptyProduct);
+    setImageFiles([]);
+    setExistingImages([]);
     setShowForm(true);
   };
 
@@ -109,20 +124,36 @@ export default function ProductManager() {
           : [],
       };
 
+      let productId;
+
       if (editingId) {
-        await productApi.getById(editingId); // just check exists
-        // Use update endpoint
-        const { data } = await productApi.getAll({}); // We need a proper update API
-        // For now use the raw API
-        const api = (await import("../../utils/axios")).default;
         await api.put(`/products/${editingId}`, productData);
+        productId = editingId;
         toast.success("Product updated");
       } else {
-        const api = (await import("../../utils/axios")).default;
-        await api.post("/products", productData);
+        const { data } = await api.post("/products", productData);
+        productId = data.data.product._id;
         toast.success("Product created");
       }
+
+      // Upload images if there are files selected
+      if (imageFiles.length > 0 && productId) {
+        const formData = new FormData();
+        imageFiles.forEach((file) => formData.append("images", file));
+
+        try {
+          await api.post(`/products/${productId}/images`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          toast.success("Images uploaded successfully!");
+        } catch (error) {
+          toast.error("Product created but image upload failed");
+        }
+      }
+
       setShowForm(false);
+      setImageFiles([]);
+      setExistingImages([]);
       fetchProducts();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to save product");
@@ -291,11 +322,7 @@ export default function ProductManager() {
                     required
                   >
                     <option value=''>Select category</option>
-                    {categories.map((cat) => (
-                      <option key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </option>
-                    ))}
+                    {categories.map((cat) => renderCategoryOptions([cat]))}
                   </select>
                 </div>
                 <div>
@@ -335,74 +362,77 @@ export default function ProductManager() {
                 />
                 <span className='text-sm'>Featured product</span>
               </label>
-              {editingId && (
-                <div>
-                  <label className='block text-sm font-medium mb-2'>
-                    Images
-                  </label>
+              {/* Image Upload Section */}
+              <div>
+                <label className='block text-sm font-medium mb-2'>
+                  Product Images
+                </label>
 
-                  {/* Existing images */}
-                  {existingImages.length > 0 && (
-                    <div className='flex gap-2 flex-wrap mb-3'>
-                      {existingImages.map((img) => (
-                        <div key={img._id} className='relative w-20 h-20 group'>
-                          <img
-                            src={img.url}
-                            alt=''
-                            className='w-full h-full object-cover rounded-lg'
-                          />
-                          <button
-                            type='button'
-                            onClick={() =>
-                              handleDeleteImage(editingId, img._id)
-                            }
-                            className='absolute -top-1 -right-1 bg-[#B12704] text-white rounded-full w-5 h-5 items-center justify-center text-xs hidden group-hover:flex'
-                          >
-                            <HiXMark className='w-3 h-3' />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                {/* Existing images (edit mode only) */}
+                {editingId && existingImages.length > 0 && (
+                  <div className='flex gap-2 flex-wrap mb-3'>
+                    {existingImages.map((img) => (
+                      <div key={img._id} className='relative w-20 h-20 group'>
+                        <img
+                          src={img.url}
+                          alt=''
+                          className='w-full h-full object-cover rounded-lg'
+                        />
+                        <button
+                          type='button'
+                          onClick={() => handleDeleteImage(editingId, img._id)}
+                          className='absolute -top-1 -right-1 bg-[#B12704] text-white rounded-full w-5 h-5 items-center justify-center text-xs hidden group-hover:flex'
+                        >
+                          <HiXMark className='w-3 h-3' />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* File input - behaves differently for add vs edit */}
+                <label
+                  className={`flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                    uploadingImages
+                      ? "border-[#FF9900] bg-[#FFF8F0]"
+                      : "border-[#D5D9D9] hover:border-[#FF9900] hover:bg-[#F7FAFA]"
+                  }`}
+                >
+                  {uploadingImages ? (
+                    <>
+                      <div className='w-4 h-4 border-2 border-[#D5D9D9] border-t-[#FF9900] rounded-full animate-spin' />
+                      <span className='text-sm text-[#565959]'>
+                        Uploading...
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <HiArrowUpTray className='w-4 h-4 text-[#565959]' />
+                      <span className='text-sm text-[#565959]'>
+                        {editingId
+                          ? "Click to add more images (auto-upload)"
+                          : imageFiles.length > 0
+                            ? `${imageFiles.length} file(s) selected`
+                            : "Click to select images"}
+                      </span>
+                    </>
                   )}
+                  <input
+                    type='file'
+                    multiple
+                    accept='image/*'
+                    className='hidden'
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files);
+                      if (files.length === 0) return;
 
-                  {/* Auto-upload input */}
-                  <label
-                    className={`flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
-                      uploadingImages
-                        ? "border-[#FF9900] bg-[#FFF8F0]"
-                        : "border-[#D5D9D9] hover:border-[#FF9900] hover:bg-[#F7FAFA]"
-                    }`}
-                  >
-                    {uploadingImages ? (
-                      <>
-                        <div className='w-4 h-4 border-2 border-[#D5D9D9] border-t-[#FF9900] rounded-full animate-spin' />
-                        <span className='text-sm text-[#565959]'>
-                          Uploading...
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <HiArrowUpTray className='w-4 h-4 text-[#565959]' />
-                        <span className='text-sm text-[#565959]'>
-                          Click to upload images
-                        </span>
-                      </>
-                    )}
-                    <input
-                      type='file'
-                      multiple
-                      accept='image/*'
-                      className='hidden'
-                      onChange={async (e) => {
-                        const files = Array.from(e.target.files);
-                        if (files.length === 0) return;
-
+                      if (editingId) {
+                        // Edit mode: upload immediately
                         setUploadingImages(true);
                         const formData = new FormData();
                         files.forEach((file) =>
                           formData.append("images", file),
                         );
-
                         try {
                           const { data } = await api.post(
                             `/products/${editingId}/images`,
@@ -415,27 +445,25 @@ export default function ProductManager() {
                           );
                           setExistingImages(data.data.images);
                           await fetchProducts();
-                          toast.success(
-                            `${files.length} image(s) uploaded successfully!`,
-                          );
+                          toast.success(`${files.length} image(s) uploaded!`);
                         } catch (error) {
-                          toast.error(
-                            error.response?.data?.message || "Failed to upload",
-                          );
+                          toast.error("Upload failed");
                         } finally {
                           setUploadingImages(false);
                         }
-                      }}
-                    />
-                  </label>
-
-                  {uploadingImages && (
-                    <p className='text-xs text-[#565959] mt-1'>
-                      Uploading images, please wait...
-                    </p>
-                  )}
-                </div>
-              )}
+                      } else {
+                        // Add mode: save files for later upload after product creation
+                        setImageFiles(files);
+                      }
+                    }}
+                  />
+                </label>
+                {!editingId && imageFiles.length > 0 && (
+                  <p className='text-xs text-[#FF9900] mt-1'>
+                    Images will be uploaded after you save
+                  </p>
+                )}
+              </div>
               <div className='flex gap-3'>
                 <Button type='submit' disabled={saving}>
                   {saving ? "Saving..." : editingId ? "Update" : "Create"}
