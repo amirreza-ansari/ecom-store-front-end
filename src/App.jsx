@@ -23,6 +23,7 @@ import Dashboard from "./features/admin/Dashboard";
 import ProductManager from "./features/admin/ProductManager";
 import CategoryManager from "./features/admin/CategoryManager";
 import OrderManager from "./features/admin/OrderManager";
+import UserManager from "./features/admin/UserManager";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -137,14 +138,7 @@ function App() {
         <Route path='categories' element={<CategoryManager />} />
 
         <Route path='orders' element={<OrderManager />} />
-        <Route
-          path='users'
-          element={
-            <div className='p-8'>
-              <h1 className='text-2xl font-bold'>Users</h1>
-            </div>
-          }
-        />
+        <Route path='users' element={<UserManager />} />
         <Route
           path='coupons'
           element={
