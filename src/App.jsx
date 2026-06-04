@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { fetchCurrentUser } from "./features/auth/authSlice";
@@ -22,15 +22,18 @@ import AddressPage from "./pages/AddressPage";
 function App() {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      dispatch(fetchCurrentUser());
+      dispatch(fetchCurrentUser()).finally(() => setAppReady(true));
+    } else {
+      setAppReady(true);
     }
   }, [dispatch]);
 
-  // Fetch cart and wishlist when user is authenticated
+  // Fetch cart and wishlist when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       getCart()
@@ -48,6 +51,14 @@ function App() {
         .catch(() => {});
     }
   }, [isAuthenticated, dispatch]);
+
+  if (!appReady) {
+    return (
+      <div className='flex justify-center items-center min-h-screen'>
+        <div className='w-8 h-8 border-2 border-[#D5D9D9] border-t-[#FF9900] rounded-full animate-spin' />
+      </div>
+    );
+  }
 
   return (
     <Routes>

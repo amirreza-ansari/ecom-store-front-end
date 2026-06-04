@@ -31,6 +31,19 @@ export const registerUser = createAsyncThunk(
   },
 );
 
+// export const fetchCurrentUser = createAsyncThunk(
+//   "auth/fetchCurrentUser",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const { data } = await authApi.getMe();
+//       return data.data.user;
+//     } catch (error) {
+//       localStorage.removeItem("accessToken");
+//       return rejectWithValue("Session expired");
+//     }
+//   },
+// );
+
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
@@ -38,7 +51,10 @@ export const fetchCurrentUser = createAsyncThunk(
       const { data } = await authApi.getMe();
       return data.data.user;
     } catch (error) {
-      localStorage.removeItem("accessToken");
+      // Only remove token if it's truly invalid (401), not network error
+      if (error.response?.status === 401) {
+        localStorage.removeItem("accessToken");
+      }
       return rejectWithValue("Session expired");
     }
   },
@@ -115,10 +131,19 @@ const authSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
       })
-      .addCase(fetchCurrentUser.rejected, (state) => {
+      // .addCase(fetchCurrentUser.rejected, (state) => {
+      //   state.isLoading = false;
+      //   state.user = null;
+      //   state.isAuthenticated = false;
+      // })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.user = null;
-        state.isAuthenticated = false;
+        // Don't logout on network errors — only if token was removed
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          state.user = null;
+          state.isAuthenticated = false;
+        }
       })
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {
