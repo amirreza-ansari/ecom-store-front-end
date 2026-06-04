@@ -13,6 +13,14 @@ import {
   HiEye,
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
+import {
+  addToWishlist as addToWishlistAction,
+  removeFromWishlist as removeFromWishlistAction,
+} from "../wishlist/wishlistSlice";
+import {
+  addToWishlist as addToWishlistApi,
+  removeFromWishlist as removeFromWishlistApi,
+} from "../wishlist/wishlistApi";
 
 export default function ProductCard({ product }) {
   const dispatch = useAppDispatch();
@@ -104,14 +112,26 @@ export default function ProductCard({ product }) {
 
         {/* Wishlist button */}
         <button
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (!isAuthenticated) {
               toast.error("Please sign in");
               return;
             }
-            // Wishlist toggle handled by parent or here
+            try {
+              if (isInWishlist) {
+                await removeFromWishlistApi(product._id);
+                dispatch(removeFromWishlistAction(product._id));
+                toast.success("Removed from wishlist");
+              } else {
+                await addToWishlistApi(product._id);
+                dispatch(addToWishlistAction(product._id));
+                toast.success("Added to wishlist");
+              }
+            } catch (error) {
+              toast.error("Something went wrong");
+            }
           }}
           className={`absolute top-2 right-2 p-2 rounded-full shadow-sm transition-all duration-300 ${
             isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
