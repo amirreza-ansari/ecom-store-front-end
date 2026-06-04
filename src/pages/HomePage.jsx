@@ -152,7 +152,7 @@ export default function HomePage() {
   const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 8);
   const newArrivals = [...products]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 4);
+    .slice(0, 6);
   const bestSellers = [...products]
     .sort((a, b) => (b.ratingsQuantity || 0) - (a.ratingsQuantity || 0))
     .slice(0, 6);
@@ -375,14 +375,14 @@ export default function HomePage() {
               </Link>
             </div>
             {isLoading ? (
-              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
                 {[...Array(4)].map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
               </div>
             ) : (
               <StaggerContainer>
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
                   {featuredProducts.map((p) => (
                     <StaggerItem key={p._id}>
                       <ProductCard product={p} />
@@ -473,7 +473,7 @@ export default function HomePage() {
               </div>
             </div>
             <StaggerContainer>
-              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
+              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
                 {bestSellers
                   .slice(bestSellerPage * 3, bestSellerPage * 3 + 3)
                   .map((p) => (
@@ -498,7 +498,7 @@ export default function HomePage() {
               </p>
             </div>
             <StaggerContainer>
-              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+              <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
                 {newArrivals.map((p) => (
                   <StaggerItem key={p._id}>
                     <ProductCard product={p} />
