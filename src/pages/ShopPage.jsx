@@ -8,6 +8,7 @@ import Pagination from "../components/ui/Pagination";
 import Spinner from "../components/ui/Spinner";
 import { HiFunnel, HiXMark, HiMagnifyingGlass } from "react-icons/hi2";
 import ProductCardSkeleton from "../features/products/ProductCardSkeleton";
+import { StaggerContainer, StaggerItem } from "../components/ui/StaggerList";
 
 export default function ShopPage() {
   const dispatch = useAppDispatch();
@@ -232,11 +233,15 @@ export default function ShopPage() {
             </div>
           ) : products.length > 0 ? (
             <>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
-              </div>
+              <StaggerContainer>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                  {products.map((product) => (
+                    <StaggerItem key={product._id}>
+                      <ProductCard product={product} />
+                    </StaggerItem>
+                  ))}
+                </div>
+              </StaggerContainer>
 
               {/* Pagination */}
               {pagination && pagination.pages > 1 && (

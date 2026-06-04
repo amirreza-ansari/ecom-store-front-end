@@ -26,11 +26,14 @@ import OrderManager from "./features/admin/OrderManager";
 import UserManager from "./features/admin/UserManager";
 import CouponManager from "./features/admin/CouponManager";
 import InventoryManager from "./features/admin/InventoryManager";
+import { AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 function App() {
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [appReady, setAppReady] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -69,82 +72,81 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route element={<CustomerLayout />}>
-        <Route path='/' element={<HomePage />} />
-        <Route path='/shop' element={<ShopPage />} />
-        <Route path='/product/:slug' element={<ProductPage />} />
-        <Route
-          path='/cart'
-          element={
-            <ProtectedRoute>
-              <CartPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/wishlist'
-          element={
-            <ProtectedRoute>
-              <WishlistPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/checkout'
-          element={
-            <ProtectedRoute>
-              <CheckoutPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/orders'
-          element={
-            <ProtectedRoute>
-              <OrderHistoryPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/orders/:id'
-          element={
-            <ProtectedRoute>
-              <OrderDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/profile'
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/profile/addresses'
-          element={
-            <ProtectedRoute>
-              <AddressPage />
-            </ProtectedRoute>
-          }
-        />
-      </Route>
-      {/* Admin Routes */}
-      <Route path='/admin' element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-
-        <Route path='products' element={<ProductManager />} />
-
-        <Route path='categories' element={<CategoryManager />} />
-
-        <Route path='orders' element={<OrderManager />} />
-        <Route path='users' element={<UserManager />} />
-        <Route path='coupons' element={<CouponManager />} />
-        <Route path='inventory' element={<InventoryManager />} />
-      </Route>
-    </Routes>
+    <AnimatePresence mode='wait'>
+      <Routes location={location} key={location.pathname}>
+        <Route element={<CustomerLayout />}>
+          <Route path='/' element={<HomePage />} />
+          <Route path='/shop' element={<ShopPage />} />
+          <Route path='/product/:slug' element={<ProductPage />} />
+          <Route
+            path='/cart'
+            element={
+              <ProtectedRoute>
+                <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/wishlist'
+            element={
+              <ProtectedRoute>
+                <WishlistPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/checkout'
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/orders'
+            element={
+              <ProtectedRoute>
+                <OrderHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/orders/:id'
+            element={
+              <ProtectedRoute>
+                <OrderDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/profile'
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/profile/addresses'
+            element={
+              <ProtectedRoute>
+                <AddressPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        {/* Admin Routes */}
+        <Route path='/admin' element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path='products' element={<ProductManager />} />
+          <Route path='categories' element={<CategoryManager />} />
+          <Route path='orders' element={<OrderManager />} />
+          <Route path='users' element={<UserManager />} />
+          <Route path='coupons' element={<CouponManager />} />
+          <Route path='inventory' element={<InventoryManager />} />
+        </Route>
+      </Routes>
+    </AnimatePresence>
   );
 }
 

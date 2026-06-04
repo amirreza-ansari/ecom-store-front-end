@@ -9,6 +9,8 @@ import Button from "../components/ui/Button";
 import Spinner from "../components/ui/Spinner";
 import ProductCardSkeleton from "../features/products/ProductCardSkeleton";
 import CategoryCardSkeleton from "../features/products/CategoryCardSkeleton";
+import FadeIn from "../components/ui/FadeIn";
+import { StaggerContainer, StaggerItem } from "../components/ui/StaggerList";
 
 const banners = [
   {
@@ -91,66 +93,70 @@ export default function HomePage() {
 
       <div className='max-w-7xl mx-auto px-4 py-8'>
         {/* Categories */}
-        <section className='mb-12'>
-          <div className='flex items-center justify-between mb-6'>
-            <h2 className='text-2xl font-bold text-[#0F1111]'>
-              Shop by Category
-            </h2>
-            <Link
-              to='/shop'
-              className='text-[#FF9900] hover:underline text-sm font-medium'
-            >
-              View All
-            </Link>
-          </div>
+        <FadeIn>
+          <section className='mb-12'>
+            <div className='flex items-center justify-between mb-6'>
+              <h2 className='text-2xl font-bold text-[#0F1111]'>
+                Shop by Category
+              </h2>
+              <Link
+                to='/shop'
+                className='text-[#FF9900] hover:underline text-sm font-medium'
+              >
+                View All
+              </Link>
+            </div>
 
-          {categories.length > 0 ? (
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
-              {categories.map((cat, index) => (
-                <CategoryCard key={cat._id} category={cat} index={index} />
-              ))}
-            </div>
-          ) : (
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
-              {[...Array(6)].map((_, i) => (
-                <CategoryCardSkeleton key={i} />
-              ))}
-            </div>
-          )}
-        </section>
+            {categories.length > 0 ? (
+              <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
+                {categories.map((cat, index) => (
+                  <CategoryCard key={cat._id} category={cat} index={index} />
+                ))}
+              </div>
+            ) : (
+              <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
+                {[...Array(6)].map((_, i) => (
+                  <CategoryCardSkeleton key={i} />
+                ))}
+              </div>
+            )}
+          </section>
+        </FadeIn>
 
         {/* Featured Products */}
-        <section>
-          <div className='flex items-center justify-between mb-6'>
-            <h2 className='text-2xl font-bold text-[#0F1111]'>
-              Featured Products
-            </h2>
-            <Link
-              to='/shop?isFeatured=true'
-              className='text-[#FF9900] hover:underline text-sm font-medium'
-            >
-              View All
-            </Link>
-          </div>
+        <FadeIn>
+          <section>
+            <div className='flex items-center justify-between mb-6'>
+              <h2 className='text-2xl font-bold text-[#0F1111]'>
+                Featured Products
+              </h2>
+              <Link
+                to='/shop?isFeatured=true'
+                className='text-[#FF9900] hover:underline text-sm font-medium'
+              >
+                View All
+              </Link>
+            </div>
 
-          {isLoading ? (
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-              {[...Array(8)].map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : featuredProducts.length > 0 ? (
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-              {featuredProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className='text-center py-12'>
-              <p className='text-[#565959]'>No featured products found.</p>
-            </div>
-          )}
-        </section>
+            {isLoading ? (
+              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+                {[...Array(8)].map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : featuredProducts.length > 0 ? (
+              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className='text-center py-12'>
+                <p className='text-[#565959]'>No featured products found.</p>
+              </div>
+            )}
+          </section>
+        </FadeIn>
       </div>
     </div>
   );
