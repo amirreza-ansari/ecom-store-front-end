@@ -23,6 +23,10 @@ import mainHero from "../assets/hero-main.png";
 import secondHero from "../assets/second-hero.png";
 import firstPromo from "../assets/promot-1.png";
 import secondPromo from "../assets/promo-2.png";
+import workFromHome from "../assets/work-from-home.jpg";
+import gamingSetup from "../assets/gaming-setup.jpg";
+import fitnessEssentials from "../assets/fitness-essentials.jpg";
+import smartHome from "../assets/smart-home.jpg";
 
 // Hero slides with image placeholders for the carousel
 const heroSlides = [
@@ -52,6 +56,13 @@ const heroSlides = [
     // Replace this URL with your actual hero image
     image: secondHero,
   },
+];
+
+const lifeStyleImages = [
+  workFromHome,
+  gamingSetup,
+  fitnessEssentials,
+  smartHome,
 ];
 
 const testimonials = [
@@ -484,7 +495,7 @@ export default function HomePage() {
                   className='relative aspect-[4/3] rounded-2xl overflow-hidden group cursor-pointer bg-gray-100'
                 >
                   <img
-                    src={`https://placehold.co/400x300/e2e8f0/64748b?text=${lifestyle.replace(/ /g, "+")}`}
+                    src={lifeStyleImages[i]}
                     alt={lifestyle}
                     className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
                   />
@@ -604,8 +615,11 @@ export default function HomePage() {
                     </p>
                   </div>
                   <div className='flex items-center gap-3 mt-4'>
-                    <div className='w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold text-xs'>
-                      {t.name.charAt(0)}
+                    <div className='w-8 overflow-hidden h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold text-xs'>
+                      <img
+                        src={`/src/assets/testimonial/${i + 1}.jpg`}
+                        alt=''
+                      />
                     </div>
                     <div>
                       <p className='text-xs font-bold text-[#0F1111]'>
