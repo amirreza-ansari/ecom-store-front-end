@@ -5,88 +5,77 @@ import { fetchProducts } from "../features/products/productSlice";
 import { categoryApi } from "../features/products/categoryApi";
 import ProductCard from "../features/products/ProductCard";
 import ProductCardSkeleton from "../features/products/ProductCardSkeleton";
-import Illustration from "../components/ui/Illustration";
 import Button from "../components/ui/Button";
 import StarRating from "../components/ui/StarRating";
-import PriceDisplay from "../components/ui/PriceDisplay";
 import FadeIn from "../components/ui/FadeIn";
 import { StaggerContainer, StaggerItem } from "../components/ui/StaggerList";
 import {
   HiArrowRight,
   HiArrowLeft,
-  HiFire,
-  HiSparkles,
   HiStar,
-  HiOutlineShoppingBag,
-  HiOutlineHeart,
-  HiOutlineUser,
-  HiMagnifyingGlass,
-  HiBars3,
-  HiXMark,
   HiTruck,
   HiShieldCheck,
   HiArrowPath,
   HiPhone,
+  HiOutlineCheckCircle,
 } from "react-icons/hi2";
 
-// Hero slides
+// Hero slides with image placeholders for the carousel
 const heroSlides = [
   {
-    tag: "New Collection",
-    title: "Elevate Your Tech Game",
+    tag: "NEW COLLECTION",
+    title: "Everything You Need.\nDelivered Fast.",
     subtitle:
-      "Discover cutting-edge gadgets designed to make life smarter, faster, and more connected.",
-    cta: "Explore Now",
-    link: "/shop?sort=-createdAt",
-    gradient: "from-[#0B0F19] via-[#111827] to-[#1F2937]",
-    accent: "#FF9900",
-    illustration: "onlineShopping",
-    stats: "500+ Products",
+      "Shop electronics, fashion, home, beauty and more from top brands at the best prices.",
+    ctaPrimary: "Shop Now",
+    ctaSecondary: "Browse Categories",
+    linkPrimary: "/shop?sort=-createdAt",
+    linkSecondary: "/categories",
+    bgClass: "bg-[#0A0D14]",
+    // Replace this URL with your actual hero image
+    image:
+      "https://placehold.co/800x600/1f2937/ffffff?text=Main+Hero+Image+(Replace+Me)",
   },
   {
-    tag: "Flash Sale",
-    title: "Up to 50% Off Top Brands",
+    tag: "FLASH SALE",
+    title: "Unbeatable Deals.\nPremium Tech.",
     subtitle:
-      "Don't miss out on incredible deals. Premium quality at completely unbeatable prices.",
-    cta: "Grab Deals",
-    link: "/shop?isFeatured=true",
-    gradient: "from-[#0F0C20] via-[#15102A] to-[#2D1B4E]",
-    accent: "#FF6B6B",
-    illustration: "shopping",
-    stats: "Limited Time Offer",
-  },
-  {
-    tag: "Premium Audio",
-    title: "Sound That Moves You",
-    subtitle:
-      "Experience studio-quality audio with our handpicked collection of headphones and speakers.",
-    cta: "Shop Audio",
-    link: "/shop?category=electronics",
-    gradient: "from-[#071624] via-[#0B223A] to-[#113654]",
-    accent: "#00D2FF",
-    illustration: "mobileApp",
-    stats: "Free Delivery Included",
+      "Upgrade your setup with up to 50% off select high-performance devices.",
+    ctaPrimary: "Grab Deals",
+    ctaSecondary: "View Featured",
+    linkPrimary: "/shop?isFeatured=true",
+    linkSecondary: "/shop",
+    bgClass: "bg-[#111827]",
+    // Replace this URL with your actual hero image
+    image:
+      "https://placehold.co/800x600/374151/ffffff?text=Tech+Hero+Image+(Replace+Me)",
   },
 ];
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
+    name: "Sarah J.",
     role: "Verified Buyer",
     rating: 5,
-    text: "Exceptional build quality and lightning-fast delivery. The item exceeded all expectations!",
+    text: "Amazing variety, great prices and super fast delivery. Highly recommended!",
   },
   {
-    name: "Mike Chen",
-    role: "Tech Enthusiast",
+    name: "Michael T.",
+    role: "Verified Buyer",
     rating: 5,
-    text: "Best digital shopping experience I've had. Great prices paired with an amazing support team.",
+    text: "Love shopping here! The quality is always top-notch.",
   },
   {
-    name: "Emily Davis",
-    role: "Regular Customer",
-    rating: 4,
-    text: "Huge selection of products. The dashboard wishlist helps me track price drops perfectly.",
+    name: "Emily R.",
+    role: "Verified Buyer",
+    rating: 5,
+    text: "Best customer service I've experienced in a long time.",
+  },
+  {
+    name: "David L.",
+    role: "Verified Buyer",
+    rating: 5,
+    text: "My go-to store for everything. Always reliable!",
   },
 ];
 
@@ -123,15 +112,19 @@ function StatCounter({ value, label, suffix = "", prefix = "" }) {
     return () => obs.disconnect();
   }, []);
   return (
-    <div ref={ref} className='text-center p-4'>
-      <p className='text-3xl md:text-4xl font-black text-[#0F1111] tracking-tight'>
+    <div
+      ref={ref}
+      className='text-center p-4 flex flex-col items-center justify-center'
+    >
+      <div className='flex items-center justify-center w-12 h-12 rounded-full bg-white/10 mb-3 text-[#FF5A00]'>
+        <HiOutlineCheckCircle className='w-6 h-6' />
+      </div>
+      <p className='text-2xl md:text-3xl font-bold text-white tracking-tight'>
         {prefix}
         {count.toLocaleString()}
         {suffix}
       </p>
-      <p className='text-xs font-medium text-[#565959] mt-1 uppercase tracking-wider'>
-        {label}
-      </p>
+      <p className='text-sm font-medium text-white/70 mt-1'>{label}</p>
     </div>
   );
 }
@@ -141,11 +134,10 @@ export default function HomePage() {
   const { products, isLoading } = useAppSelector((state) => state.products);
   const [categories, setCategories] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [bestSellerPage, setBestSellerPage] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("TRENDING NOW");
 
   useEffect(() => {
-    dispatch(fetchProducts({ limit: 12 }));
+    dispatch(fetchProducts({ limit: 16 }));
     categoryApi
       .getAll()
       .then((res) => setCategories(res.data.data.categories || []));
@@ -160,100 +152,81 @@ export default function HomePage() {
   }, []);
 
   const slide = heroSlides[currentSlide];
-  const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 8);
+  const featuredProducts = products.filter((p) => p.isFeatured).slice(0, 5);
   const newArrivals = [...products]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 6);
+    .slice(0, 5);
   const bestSellers = [...products]
     .sort((a, b) => (b.ratingsQuantity || 0) - (a.ratingsQuantity || 0))
-    .slice(0, 6);
+    .slice(0, 5);
+
+  const getTabProducts = () => {
+    if (activeTab === "TRENDING NOW") return featuredProducts;
+    if (activeTab === "BEST SELLERS") return bestSellers;
+    return newArrivals;
+  };
 
   return (
-    <div className='overflow-hidden bg-[#F7FAFA] min-h-screen font-sans antialiased text-[#0F1111]'>
+    <div className='overflow-hidden bg-white min-h-screen font-sans antialiased text-[#0F1111]'>
       {/* ========== HERO SECTION ========== */}
       <section
-        className={`relative bg-gradient-to-br ${slide.gradient} min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden transition-all duration-1000`}
+        className={`relative ${slide.bgClass} min-h-[500px] md:min-h-[560px] flex items-center transition-colors duration-700 m-4 rounded-3xl overflow-hidden`}
       >
-        <div className='absolute inset-0 opacity-[0.03] pointer-events-none'>
-          <div className='absolute top-20 left-10 w-72 h-72 rounded-full bg-white blur-3xl animate-pulse' />
-          <div className='absolute bottom-10 right-10 w-96 h-96 rounded-full bg-white blur-3xl' />
-        </div>
-
-        <div className='max-w-7xl mx-auto px-4 py-12 w-full relative z-10'>
+        <div className='max-w-7xl mx-auto px-6 md:px-12 py-12 w-full relative z-10'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-12 items-center'>
-            {/* Left Column Text details */}
-            <div className='text-white space-y-6 text-center md:text-left order-2 md:order-1'>
-              <span
-                className='inline-block px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase transition-all'
-                style={{
-                  backgroundColor: slide.accent + "15",
-                  color: slide.accent,
-                  border: `1px solid ${slide.accent}30`,
-                }}
-              >
+            {/* Text Content */}
+            <div className='text-white space-y-6 text-center md:text-left'>
+              <span className='inline-block text-[#FF5A00] text-xs font-bold tracking-widest uppercase'>
                 {slide.tag}
               </span>
-              <h1 className='text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-sm'>
+              <h1 className='text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight whitespace-pre-line'>
                 {slide.title}
               </h1>
-              <p className='text-base sm:text-lg text-white/70 max-w-lg mx-auto md:mx-0 leading-relaxed font-light'>
+              <p className='text-sm sm:text-base text-white/70 max-w-md mx-auto md:mx-0 leading-relaxed'>
                 {slide.subtitle}
               </p>
 
-              <div className='flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-2'>
-                <Link to={slide.link} className='w-full sm:w-auto'>
+              <div className='flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4'>
+                <Link to={slide.linkPrimary} className='w-full sm:w-auto'>
                   <Button
                     size='lg'
-                    className='w-full sm:w-auto !bg-white !text-[#0F1111] hover:!bg-white/90 font-bold shadow-xl transition-all hover:-translate-y-0.5 rounded-xl flex items-center justify-center'
+                    className='w-full sm:w-auto !bg-[#FF5A00] !text-white hover:!bg-[#E04F00] font-semibold rounded-full px-8 transition-all'
                   >
-                    {slide.cta} <HiArrowRight className='w-4 h-4 ml-2' />
+                    {slide.ctaPrimary}
                   </Button>
                 </Link>
-                <Link
-                  to='/shop'
-                  className='text-white/80 hover:text-white font-semibold text-sm transition-colors py-2 flex items-center gap-1 group'
-                >
-                  Browse Catalog{" "}
-                  <span className='group-hover:translate-x-1 transition-transform'>
-                    →
-                  </span>
+                <Link to={slide.linkSecondary} className='w-full sm:w-auto'>
+                  <Button
+                    size='lg'
+                    variant='outline'
+                    className='w-full sm:w-auto !border-white/30 !text-white hover:!bg-white/10 font-semibold rounded-full px-8 transition-all'
+                  >
+                    {slide.ctaSecondary}
+                  </Button>
                 </Link>
-              </div>
-
-              <div className='flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 pt-6 text-white/60 text-[11px] font-medium border-t border-white/10'>
-                <span className='flex items-center gap-1.5'>
-                  <HiSparkles className='w-4 h-4 text-[#FF9900]' />{" "}
-                  {slide.stats}
-                </span>
-                <span>• ⭐ 4.9+ User Ratings</span>
-                <span>• 🔒 Fully Encrypted Checkout</span>
               </div>
             </div>
 
-            {/* Right Column Illustration wrapper */}
-            <div className='flex justify-center items-center order-1 md:order-2'>
-              <div
-                className='w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-3xl flex items-center justify-center transition-transform duration-700 hover:scale-105'
-                style={{ backgroundColor: slide.accent + "0A" }}
-              >
-                <Illustration
-                  name={slide.illustration}
-                  className='w-48 h-48 sm:w-60 sm:h-60 md:w-80 md:h-80 object-contain drop-shadow-2xl'
-                />
-              </div>
+            {/* Image Content (Placeholder) */}
+            <div className='flex justify-center items-center relative'>
+              <img
+                src={slide.image}
+                alt='Hero Collection'
+                className='w-full max-w-lg h-auto object-contain drop-shadow-2xl animate-fade-in-up'
+              />
             </div>
           </div>
         </div>
 
-        {/* Carousel indicators */}
-        <div className='absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5'>
+        {/* Carousel Indicators */}
+        <div className='absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2'>
           {heroSlides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
               className={`transition-all duration-300 rounded-full h-2 ${
                 i === currentSlide
-                  ? "w-8 bg-white"
+                  ? "w-8 bg-[#FF5A00]"
                   : "w-2 bg-white/30 hover:bg-white/50"
               }`}
             />
@@ -261,50 +234,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ========== TRUST / FEATURES BAR ========== */}
-      <section className='bg-white border-b border-[#E7E7E7]'>
-        <div className='max-w-7xl mx-auto px-4 py-8'>
-          <div className='grid grid-cols-2 lg:grid-cols-4 gap-6'>
+      {/* ========== TRUST BAR ========== */}
+      <section className='border-b border-gray-100 py-6'>
+        <div className='max-w-7xl mx-auto px-4'>
+          <div className='flex flex-wrap justify-between items-center gap-6 text-sm'>
             {[
+              { icon: HiShieldCheck, title: "50K+", desc: "Products" },
               {
                 icon: HiTruck,
                 title: "Free Shipping",
-                desc: "On absolute orders over $100",
-                color: "text-blue-600 bg-blue-50",
-              },
-              {
-                icon: HiShieldCheck,
-                title: "Secure Payments",
-                desc: "100% protected checkout",
-                color: "text-green-600 bg-green-50",
+                desc: "On orders over $50",
               },
               {
                 icon: HiArrowPath,
-                title: "Easy Returns",
-                desc: "30-day structural guarantee",
-                color: "text-purple-600 bg-purple-50",
+                title: "Secure Payment",
+                desc: "100% secure checkout",
               },
               {
                 icon: HiPhone,
-                title: "Expert Support 24/7",
-                desc: "Dedicated live tech assistance",
-                color: "text-orange-600 bg-orange-50",
+                title: "24/7 Support",
+                desc: "We're here to help",
               },
             ].map((item, idx) => (
-              <div
-                key={idx}
-                className='flex gap-4 items-center p-3 rounded-xl hover:bg-[#F7FAFA] transition-colors duration-200'
-              >
-                <div
-                  className={`w-12 h-12 shrink-0 ${item.color} rounded-xl flex items-center justify-center text-xl`}
-                >
-                  <item.icon className='w-6 h-6' />
-                </div>
+              <div key={idx} className='flex items-center gap-3'>
+                <item.icon className='w-6 h-6 text-gray-400' />
                 <div>
-                  <h3 className='font-bold text-[#0F1111] text-sm leading-tight'>
+                  <h3 className='font-bold text-[#0F1111] leading-tight'>
                     {item.title}
                   </h3>
-                  <p className='text-xs text-[#565959] mt-0.5'>{item.desc}</p>
+                  <p className='text-xs text-gray-500'>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -312,68 +270,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className='max-w-7xl mx-auto px-4 py-16 space-y-24'>
-        {/* ========== CATEGORIES SECTION ========== */}
+      <div className='max-w-7xl mx-auto px-4 py-12 space-y-20'>
+        {/* ========== SHOP BY CATEGORY ========== */}
         <FadeIn>
           <section>
-            <div className='flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4'>
-              <div>
-                <h2 className='text-2xl md:text-3xl font-black tracking-tight text-[#0F1111]'>
-                  Shop by Category
-                </h2>
-                <p className='text-sm text-[#565959] mt-1'>
-                  Browse our handpicked tech ecosystems curated cleanly for you
-                </p>
-              </div>
+            <div className='flex items-center justify-between mb-8'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+                Shop By Category
+              </h2>
+              <Link
+                to='/categories'
+                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+              >
+                View all categories <HiArrowRight className='w-4 h-4' />
+              </Link>
             </div>
 
             <StaggerContainer>
-              {/* Uses mobile horizontal scrolling, grid rules apply above standard breakpoint sizing */}
-              <div className='flex overflow-x-auto pb-4 gap-4 scrollbar-none snap-x md:grid md:grid-cols-3 lg:grid-cols-6 md:overflow-visible md:pb-0'>
-                {categories.slice(0, 6).map((cat, index) => {
-                  const catProduct = products.find(
-                    (p) =>
-                      p.category?._id === cat._id || p.category === cat._id,
-                  );
+              <div className='flex overflow-x-auto gap-4 md:gap-6 pb-4 scrollbar-none snap-x md:grid md:grid-cols-4 lg:grid-cols-8 md:overflow-visible md:pb-0'>
+                {categories.slice(0, 8).map((cat, index) => {
                   return (
                     <StaggerItem
                       key={cat._id}
-                      className='w-40 shrink-0 snap-start md:w-auto'
+                      className='w-24 shrink-0 snap-start md:w-auto group cursor-pointer'
                     >
                       <Link
                         to={`/shop?category=${cat._id}`}
-                        className='group flex flex-col h-full bg-white rounded-2xl border border-[#E7E7E7] hover:border-[#FF9900] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden'
+                        className='flex flex-col items-center gap-3'
                       >
-                        <div className='aspect-square bg-[#F7FAFA] overflow-hidden relative'>
-                          {catProduct?.images?.[0]?.url ? (
-                            <img
-                              src={catProduct.images[0].url}
-                              alt={cat.name}
-                              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
-                            />
-                          ) : (
-                            <div className='w-full h-full flex items-center justify-center'>
-                              <Illustration
-                                name={
-                                  [
-                                    "shopping",
-                                    "mobileApp",
-                                    "delivery",
-                                    "celebration",
-                                    "team",
-                                    "success",
-                                  ][index % 6]
-                                }
-                                className='w-14 h-14 opacity-40'
-                              />
-                            </div>
-                          )}
+                        <div className='w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-[#F5F5F7] group-hover:bg-[#EAEAEA] flex items-center justify-center transition-colors p-4'>
+                          {/* Replace with category icons/images */}
+                          <img
+                            src={`https://placehold.co/100x100/e2e8f0/64748b?text=${cat.name.charAt(0)}`}
+                            alt={cat.name}
+                            className='w-full h-full object-contain group-hover:scale-110 transition-transform duration-300'
+                          />
                         </div>
-                        <div className='p-3 text-center border-t border-[#E7E7E7] bg-white flex-1 flex flex-col justify-center'>
-                          <h3 className='font-bold text-[#0F1111] text-xs sm:text-sm tracking-tight truncate'>
-                            {cat.name}
-                          </h3>
-                        </div>
+                        <span className='text-xs md:text-sm font-semibold text-center group-hover:text-[#FF5A00] transition-colors'>
+                          {cat.name}
+                        </span>
                       </Link>
                     </StaggerItem>
                   );
@@ -383,36 +318,55 @@ export default function HomePage() {
           </section>
         </FadeIn>
 
-        {/* ========== FEATURED PRODUCTS ========== */}
+        {/* ========== FLASH DEALS ========== */}
         <FadeIn>
           <section>
-            <div className='flex items-end justify-between mb-8'>
-              <div>
-                <h2 className='text-2xl md:text-3xl font-black tracking-tight text-[#0F1111]'>
-                  Featured Innovations
+            <div className='flex flex-col sm:flex-row items-center justify-between mb-8 gap-4'>
+              <div className='flex items-center gap-4'>
+                <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase flex items-center gap-2'>
+                  <span className='text-[#FF5A00]'>🔥</span> Flash Deals
                 </h2>
-                <p className='text-sm text-[#565959] mt-1'>
-                  Our absolute premium product picks
-                </p>
+                <div className='flex gap-2 items-center text-sm font-bold'>
+                  <span className='text-gray-500 font-normal'>Ends in:</span>
+                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                    02
+                    <span className='text-[10px] text-gray-500 block font-normal'>
+                      DAYS
+                    </span>
+                  </div>{" "}
+                  :
+                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                    15
+                    <span className='text-[10px] text-gray-500 block font-normal'>
+                      HRS
+                    </span>
+                  </div>{" "}
+                  :
+                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                    45
+                    <span className='text-[10px] text-gray-500 block font-normal'>
+                      MINS
+                    </span>
+                  </div>
+                </div>
               </div>
               <Link
                 to='/shop?isFeatured=true'
-                className='flex items-center gap-1 text-[#FF9900] hover:text-[#E88B00] font-bold text-sm group'
+                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
               >
-                View All{" "}
-                <HiArrowRight className='w-4 h-4 group-hover:translate-x-0.5 transition-transform' />
+                View all deals <HiArrowRight className='w-4 h-4' />
               </Link>
             </div>
 
             {isLoading ? (
-              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'>
-                {[...Array(6)].map((_, i) => (
+              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4'>
+                {[...Array(5)].map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
               </div>
             ) : (
               <StaggerContainer>
-                <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'>
+                <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4'>
                   {featuredProducts.map((p) => (
                     <StaggerItem key={p._id}>
                       <ProductCard product={p} />
@@ -424,120 +378,121 @@ export default function HomePage() {
           </section>
         </FadeIn>
 
-        {/* ========== DEAL OF THE DAY HERO BANNER ========== */}
-        {featuredProducts[0] && (
-          <FadeIn>
-            <section className='relative bg-gradient-to-br from-[#1A1A2E] via-[#16213E] to-[#0F3460] rounded-3xl overflow-hidden shadow-xl'>
-              <div className='absolute right-0 top-0 w-1/2 h-full opacity-10 bg-radial-gradient from-white/20 to-transparent pointer-events-none' />
-              <div className='relative z-10 p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-8'>
-                <div className='text-white space-y-4 text-center md:text-left max-w-xl'>
-                  <div className='inline-flex items-center gap-2 bg-[#FF9900]/20 text-[#FF9900] border border-[#FF9900]/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider'>
-                    <HiFire className='w-4 h-4' /> Deal of the Day
-                  </div>
-                  <h2 className='text-2xl sm:text-4xl font-black tracking-tight leading-tight'>
-                    {featuredProducts[0].name}
-                  </h2>
-                  <div className='flex justify-center md:justify-start items-center pt-1'>
-                    <PriceDisplay
-                      price={featuredProducts[0].price}
-                      comparePrice={featuredProducts[0].comparePrice}
-                      size='lg'
-                    />
-                  </div>
-                  <div className='pt-2'>
-                    <Link to={`/product/${featuredProducts[0].slug}`}>
-                      <Button
-                        variant='secondary'
-                        size='lg'
-                        className='w-full sm:w-auto !bg-[#FF9900] !text-white hover:!bg-[#E88B00] font-bold shadow-lg rounded-xl transition-transform hover:-translate-y-0.5'
-                      >
-                        Grab the Offer <HiArrowRight className='w-4 h-4 ml-2' />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-
-                <div className='w-48 h-48 sm:w-64 sm:h-64 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-2xl p-6 group'>
-                  {featuredProducts[0].images?.[0]?.url ? (
-                    <img
-                      src={featuredProducts[0].images[0].url}
-                      alt={featuredProducts[0].name}
-                      className='w-full h-full object-contain group-hover:scale-105 transition-transform duration-500'
-                    />
-                  ) : (
-                    <Illustration name='celebration' className='w-24 h-24' />
-                  )}
-                </div>
-              </div>
-            </section>
-          </FadeIn>
-        )}
-
-        {/* ========== BEST SELLERS ========== */}
+        {/* ========== PROMO BANNERS ========== */}
         <FadeIn>
-          <section>
-            <div className='flex items-center justify-between mb-8'>
-              <div>
-                <h2 className='text-2xl md:text-3xl font-black tracking-tight text-[#0F1111]'>
-                  Best Sellers
-                </h2>
-                <p className='text-sm text-[#565959] mt-1'>
-                  Verified crowd favorites backed by top performance feedback
+          <section className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='bg-[#0A0D14] rounded-2xl p-8 flex items-center justify-between relative overflow-hidden group'>
+              <div className='relative z-10 text-white space-y-3'>
+                <span className='text-xs font-bold tracking-wider opacity-80'>
+                  UP TO 50% OFF
+                </span>
+                <h3 className='text-2xl font-bold'>Electronics</h3>
+                <p className='text-sm text-gray-400 max-w-[200px]'>
+                  Shop the latest gadgets at unbeatable prices
                 </p>
-              </div>
-
-              {/* Pagination controls */}
-              <div className='flex gap-2'>
-                <button
-                  disabled={bestSellerPage === 0}
-                  onClick={() =>
-                    setBestSellerPage(Math.max(0, bestSellerPage - 1))
-                  }
-                  className='p-2 rounded-xl border border-[#D5D9D9] bg-white hover:bg-[#F7FAFA] disabled:opacity-40 transition-colors shadow-sm'
+                <Link
+                  to='/shop?category=electronics'
+                  className='inline-block mt-2 bg-white text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-200 transition-colors'
                 >
-                  <HiArrowLeft className='w-4 h-4' />
-                </button>
-                <button
-                  disabled={(bestSellerPage + 1) * 3 >= bestSellers.length}
-                  onClick={() => setBestSellerPage((p) => p + 1)}
-                  className='p-2 rounded-xl border border-[#D5D9D9] bg-white hover:bg-[#F7FAFA] disabled:opacity-40 transition-colors shadow-sm'
-                >
-                  <HiArrowRight className='w-4 h-4' />
-                </button>
+                  Shop Electronics →
+                </Link>
               </div>
+              <img
+                src='https://placehold.co/250x250/0A0D14/ffffff?text=Promo+1'
+                alt='Electronics Promo'
+                className='absolute right-0 top-1/2 -translate-y-1/2 w-48 object-contain group-hover:scale-105 transition-transform duration-500'
+              />
             </div>
-
-            <StaggerContainer>
-              {/* Displays elegantly inside standard flex layouts or grid layouts without rendering breaking white spaces */}
-              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4'>
-                {bestSellers
-                  .slice(bestSellerPage * 3, bestSellerPage * 3 + 3)
-                  .map((p) => (
-                    <StaggerItem key={p._id}>
-                      <ProductCard product={p} />
-                    </StaggerItem>
-                  ))}
+            <div className='bg-[#FFEFE5] rounded-2xl p-8 flex items-center justify-between relative overflow-hidden group'>
+              <div className='relative z-10 text-[#0F1111] space-y-3'>
+                <h3 className='text-2xl font-bold'>
+                  New Fashion
+                  <br />
+                  Collection
+                </h3>
+                <p className='text-sm text-gray-600 max-w-[200px]'>
+                  Trendy styles for every occasion and season
+                </p>
+                <Link
+                  to='/shop?category=fashion'
+                  className='inline-block mt-2 bg-white border border-gray-200 text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-50 transition-colors'
+                >
+                  Shop Now →
+                </Link>
               </div>
-            </StaggerContainer>
+              <img
+                src='https://placehold.co/250x250/FFEFE5/0F1111?text=Promo+2'
+                alt='Fashion Promo'
+                className='absolute right-0 bottom-0 w-48 object-contain group-hover:scale-105 transition-transform duration-500'
+              />
+            </div>
           </section>
         </FadeIn>
 
-        {/* ========== NEW ARRIVALS ========== */}
+        {/* ========== SHOP BY LIFESTYLE (Bento Grid) ========== */}
         <FadeIn>
           <section>
-            <div className='text-center max-w-xl mx-auto mb-10'>
-              <h2 className='text-2xl md:text-3xl font-black tracking-tight text-[#0F1111]'>
-                Fresh Product Drops
+            <div className='flex items-center justify-between mb-6'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+                Shop By Lifestyle
               </h2>
-              <p className='text-sm text-[#565959] mt-1'>
-                Keep track of brand new premium arrivals updated live on our
-                inventory maps daily
-              </p>
+              <Link
+                to='/collections'
+                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+              >
+                Explore all <HiArrowRight className='w-4 h-4' />
+              </Link>
             </div>
 
-            <StaggerContainer>
-              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4'>
-                {newArrivals.map((p) => (
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+              {[
+                "Work From Home",
+                "Gaming Setup",
+                "Fitness Essentials",
+                "Smart Home",
+              ].map((lifestyle, i) => (
+                <div
+                  key={i}
+                  className='relative aspect-[4/3] rounded-2xl overflow-hidden group cursor-pointer bg-gray-100'
+                >
+                  <img
+                    src={`https://placehold.co/400x300/e2e8f0/64748b?text=${lifestyle.replace(/ /g, "+")}`}
+                    alt={lifestyle}
+                    className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-4'>
+                    <h3 className='text-white font-bold text-sm md:text-base'>
+                      {lifestyle}
+                    </h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </FadeIn>
+
+        {/* ========== TABBED PRODUCTS ========== */}
+        <FadeIn>
+          <section>
+            <div className='flex justify-center border-b border-gray-200 mb-8'>
+              {["TRENDING NOW", "BEST SELLERS", "NEW ARRIVALS"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-4 text-sm font-bold transition-colors border-b-2 ${
+                    activeTab === tab
+                      ? "border-[#FF5A00] text-[#FF5A00]"
+                      : "border-transparent text-gray-400 hover:text-gray-800"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <StaggerContainer key={activeTab}>
+              <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4'>
+                {getTabProducts().map((p) => (
                   <StaggerItem key={p._id}>
                     <ProductCard product={p} />
                   </StaggerItem>
@@ -547,14 +502,52 @@ export default function HomePage() {
           </section>
         </FadeIn>
 
-        {/* ========== METRIC STATS COUNTERS ========== */}
+        {/* ========== TOP BRANDS ========== */}
         <FadeIn>
-          <section className='bg-white rounded-3xl p-8 border border-[#E7E7E7] shadow-sm'>
-            <div className='grid grid-cols-2 lg:grid-cols-4 gap-8 divide-x-0 lg:divide-x lg:divide-[#E7E7E7]'>
-              <StatCounter value={15000} label='Active Users' suffix='+' />
-              <StatCounter value={500} label='Curated Gadgets' suffix='+' />
-              <StatCounter value={50} label='Official Partners' suffix='+' />
-              <StatCounter value={99} label='Satisfaction Rate' suffix='%' />
+          <section className='border-t border-gray-100 pt-10'>
+            <div className='flex items-center justify-between mb-6'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+                Top Brands
+              </h2>
+              <Link
+                to='/brands'
+                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+              >
+                View all brands <HiArrowRight className='w-4 h-4' />
+              </Link>
+            </div>
+            <div className='flex flex-wrap justify-center md:justify-between items-center gap-8 opacity-60 grayscale'>
+              {/* Placeholders for Brand Logos */}
+              {["Apple", "Samsung", "Sony", "Nike", "Adidas", "Logitech"].map(
+                (brand) => (
+                  <div
+                    key={brand}
+                    className='text-xl font-black tracking-tighter uppercase'
+                  >
+                    {brand}
+                  </div>
+                ),
+              )}
+            </div>
+          </section>
+        </FadeIn>
+
+        {/* ========== STATS BANNER ========== */}
+        <FadeIn>
+          <section className='bg-[#0A0D14] rounded-3xl p-8 my-8 shadow-xl'>
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-8 divide-x-0 lg:divide-x lg:divide-white/10'>
+              <StatCounter
+                value={50000}
+                label='Products Available'
+                suffix='+'
+              />
+              <StatCounter value={30000} label='Happy Customers' suffix='+' />
+              <StatCounter value={500} label='Top Brands' suffix='+' />
+              <StatCounter
+                value={99.9}
+                label='Customer Satisfaction'
+                suffix='%'
+              />
             </div>
           </section>
         </FadeIn>
@@ -562,37 +555,36 @@ export default function HomePage() {
         {/* ========== CUSTOMER REVIEWS ========== */}
         <FadeIn>
           <section>
-            <div className='text-center max-w-xl mx-auto mb-12'>
-              <h2 className='text-2xl md:text-3xl font-black tracking-tight text-[#0F1111]'>
-                Verified Experiences
+            <div className='flex items-center justify-between mb-8'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+                Our Happy Customers
               </h2>
-              <p className='text-sm text-[#565959] mt-1'>
-                Read accurate global reviews submitted straight from our user
-                base
-              </p>
+              <span className='text-sm font-semibold text-gray-500'>
+                4.8/5 from 30,000+ reviews
+              </span>
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
               {testimonials.map((t, i) => (
                 <div
                   key={i}
-                  className='bg-white rounded-2xl p-6 border border-[#E7E7E7] shadow-sm hover:shadow-md transition-all flex flex-col justify-between'
+                  className='bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between'
                 >
                   <div>
                     <StarRating rating={t.rating} size='sm' />
-                    <p className='text-sm text-[#0F1111] mt-4 leading-relaxed font-light text-neutral-600'>
+                    <p className='text-sm text-[#0F1111] mt-3 leading-relaxed font-medium'>
                       "{t.text}"
                     </p>
                   </div>
-                  <div className='flex items-center gap-3 mt-6 pt-4 border-t border-[#E7E7E7]'>
-                    <div className='w-9 h-9 bg-gradient-to-br from-[#FF9900] to-[#FF6B6B] rounded-full flex items-center justify-center text-white font-black text-xs shadow-inner'>
+                  <div className='flex items-center gap-3 mt-4'>
+                    <div className='w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold text-xs'>
                       {t.name.charAt(0)}
                     </div>
                     <div>
                       <p className='text-xs font-bold text-[#0F1111]'>
                         {t.name}
                       </p>
-                      <p className='text-[10px] text-[#565959] flex items-center gap-0.5 mt-0.5 uppercase tracking-wider font-semibold'>
-                        <HiStar className='w-3 h-3 text-[#FFA41C]' /> {t.role}
+                      <p className='text-[10px] text-green-600 flex items-center gap-1 font-semibold'>
+                        <HiShieldCheck className='w-3 h-3' /> {t.role}
                       </p>
                     </div>
                   </div>
@@ -602,51 +594,47 @@ export default function HomePage() {
           </section>
         </FadeIn>
 
-        {/* ========== MARKETING NEWSLETTER ========== */}
+        {/* ========== NEWSLETTER ========== */}
         <FadeIn>
-          <section className='bg-gradient-to-br from-[#0F1111] to-[#1F2937] rounded-3xl p-8 md:p-12 lg:p-16 text-center text-white relative overflow-hidden shadow-2xl'>
-            <div className='absolute inset-0 opacity-[0.02] pointer-events-none'>
-              <div className='absolute top-0 left-10 w-72 h-72 rounded-full bg-white blur-3xl animate-pulse' />
-              <div className='absolute bottom-0 right-10 w-72 h-72 rounded-full bg-[#FF9900] blur-3xl' />
-            </div>
-
-            <div className='relative z-10 max-w-xl mx-auto space-y-6'>
-              <Illustration
-                name='newsletter'
-                className='w-20 h-20 mx-auto opacity-90 filter drop-shadow-lg'
-              />
-              <div className='space-y-2'>
-                <h2 className='text-2xl md:text-3xl font-black tracking-tight'>
-                  Stay inside the Loop
+          <section className='bg-[#0A0D14] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-white relative overflow-hidden'>
+            <div className='flex items-center gap-4 relative z-10'>
+              <div className='p-4 bg-white/10 rounded-xl'>
+                <HiOutlineCheckCircle className='w-8 h-8' />
+              </div>
+              <div>
+                <h2 className='text-xl md:text-2xl font-bold tracking-tight'>
+                  Get Exclusive Deals & Offers
                 </h2>
-                <p className='text-sm text-white/60 font-light'>
-                  Subscribe to receive immediate markdown deal notifications,
-                  flash drops, and premium inventory updates.
+                <p className='text-sm text-white/60 mt-1'>
+                  Subscribe to get special offers, free giveaways and
+                  once-in-a-lifetime deals.
                 </p>
               </div>
+            </div>
 
+            <div className='w-full md:w-auto relative z-10'>
               <form
                 onSubmit={(e) => e.preventDefault()}
-                className='flex flex-col sm:flex-row gap-2 max-w-md mx-auto pt-2'
+                className='flex bg-white rounded-full p-1 max-w-md w-full'
               >
                 <input
                   type='email'
                   required
-                  placeholder='Enter your personal email address'
-                  className='flex-1 placeholder-white/40 text-white bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl text-sm border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-transparent transition-all'
+                  placeholder='Enter your email address'
+                  className='flex-1 px-4 text-sm text-black bg-transparent focus:outline-none'
                 />
                 <Button
                   type='submit'
-                  size='lg'
-                  className='!bg-[#FF9900] hover:!bg-[#E88B00] !text-white font-bold px-6 shadow-md rounded-xl transition-all'
+                  className='!bg-[#FF5A00] hover:!bg-[#E04F00] !text-white font-bold px-6 rounded-full'
                 >
                   Subscribe
                 </Button>
               </form>
-              <p className='text-[10px] text-white/30 font-medium'>
-                Zero spam policy. Unsubscribe anytime with a single click
-                tracking link.
-              </p>
+              <div className='flex gap-4 mt-3 text-[10px] text-white/40 justify-center md:justify-start'>
+                <span>✓ Exclusive Offers</span>
+                <span>✓ Early Access</span>
+                <span>✓ Weekly Deals</span>
+              </div>
             </div>
           </section>
         </FadeIn>
