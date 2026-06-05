@@ -19,6 +19,10 @@ import {
   HiPhone,
   HiOutlineCheckCircle,
 } from "react-icons/hi2";
+import mainHero from "../assets/hero-main.png";
+import secondHero from "../assets/second-hero.png";
+import firstPromo from "../assets/promot-1.png";
+import secondPromo from "../assets/promo-2.png";
 
 // Hero slides with image placeholders for the carousel
 const heroSlides = [
@@ -33,8 +37,7 @@ const heroSlides = [
     linkSecondary: "/categories",
     bgClass: "bg-[#0A0D14]",
     // Replace this URL with your actual hero image
-    image:
-      "https://placehold.co/800x600/1f2937/ffffff?text=Main+Hero+Image+(Replace+Me)",
+    image: mainHero,
   },
   {
     tag: "FLASH SALE",
@@ -47,8 +50,7 @@ const heroSlides = [
     linkSecondary: "/shop",
     bgClass: "bg-[#111827]",
     // Replace this URL with your actual hero image
-    image:
-      "https://placehold.co/800x600/374151/ffffff?text=Tech+Hero+Image+(Replace+Me)",
+    image: secondHero,
   },
 ];
 
@@ -381,50 +383,76 @@ export default function HomePage() {
         {/* ========== PROMO BANNERS ========== */}
         <FadeIn>
           <section className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <div className='bg-[#0A0D14] rounded-2xl p-8 flex items-center justify-between relative overflow-hidden group'>
-              <div className='relative z-10 text-white space-y-3'>
-                <span className='text-xs font-bold tracking-wider opacity-80'>
+            <div
+              className='relative rounded-2xl overflow-hidden min-h-[320px] group bg-cover bg-center'
+              style={{
+                backgroundImage: `url(${firstPromo})`,
+              }}
+            >
+              {/* Dark overlay for readability */}
+              <div className='absolute inset-0 bg-gradient-to-r from-[#0A0D14]/95 via-[#0A0D14]/70 to-transparent'></div>
+
+              {/* Optional subtle hover effect */}
+              <div className='absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-500'></div>
+
+              {/* Content */}
+              <div className='relative z-10 p-8 text-white flex flex-col justify-center h-full max-w-[300px] space-y-4'>
+                <span className='text-xs font-bold tracking-[0.2em] text-orange-400'>
                   UP TO 50% OFF
                 </span>
-                <h3 className='text-2xl font-bold'>Electronics</h3>
-                <p className='text-sm text-gray-400 max-w-[200px]'>
+
+                <h3 className='text-3xl font-bold leading-tight'>
+                  Electronics
+                </h3>
+
+                <p className='text-sm text-gray-300 leading-relaxed'>
                   Shop the latest gadgets at unbeatable prices
                 </p>
+
                 <Link
                   to='/shop?category=electronics'
-                  className='inline-block mt-2 bg-white text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-200 transition-colors'
+                  className='w-fit bg-white text-black text-sm font-semibold px-5 py-3 rounded-full hover:bg-gray-200 transition-all hover:scale-105'
                 >
                   Shop Electronics →
                 </Link>
               </div>
-              <img
-                src='https://placehold.co/250x250/0A0D14/ffffff?text=Promo+1'
-                alt='Electronics Promo'
-                className='absolute right-0 top-1/2 -translate-y-1/2 w-48 object-contain group-hover:scale-105 transition-transform duration-500'
-              />
             </div>
-            <div className='bg-[#FFEFE5] rounded-2xl p-8 flex items-center justify-between relative overflow-hidden group'>
-              <div className='relative z-10 text-[#0F1111] space-y-3'>
-                <h3 className='text-2xl font-bold'>
+
+            <div
+              className='relative rounded-2xl overflow-hidden min-h-[320px] group bg-cover bg-center'
+              style={{
+                backgroundImage: `url(${secondPromo})`,
+              }}
+            >
+              {/* Soft overlay for readability */}
+              <div className='absolute inset-0 bg-gradient-to-r from-[#FFEFE5]/95 via-[#FFEFE5]/80 to-transparent'></div>
+
+              {/* Hover effect */}
+              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-500'></div>
+
+              {/* Content */}
+              <div className='relative z-10 p-8 flex flex-col justify-center h-full max-w-[300px] space-y-4'>
+                <span className='text-xs font-bold tracking-[0.2em] text-[#B67B5D]'>
+                  NEW COLLECTION
+                </span>
+
+                <h3 className='text-3xl font-bold text-[#0F1111] leading-tight'>
                   New Fashion
                   <br />
                   Collection
                 </h3>
-                <p className='text-sm text-gray-600 max-w-[200px]'>
+
+                <p className='text-sm text-gray-600 leading-relaxed'>
                   Trendy styles for every occasion and season
                 </p>
+
                 <Link
                   to='/shop?category=fashion'
-                  className='inline-block mt-2 bg-white border border-gray-200 text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-50 transition-colors'
+                  className='w-fit bg-white border border-gray-200 text-black text-sm font-semibold px-5 py-3 rounded-full hover:bg-gray-50 hover:scale-105 transition-all'
                 >
                   Shop Now →
                 </Link>
               </div>
-              <img
-                src='https://placehold.co/250x250/FFEFE5/0F1111?text=Promo+2'
-                alt='Fashion Promo'
-                className='absolute right-0 bottom-0 w-48 object-contain group-hover:scale-105 transition-transform duration-500'
-              />
             </div>
           </section>
         </FadeIn>
