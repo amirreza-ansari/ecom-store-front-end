@@ -31,6 +31,7 @@ import { useLocation } from "react-router-dom";
 import ChatWidget from "./features/chat/ChatWidget";
 import ChatManager from "./features/admin/ChatManager";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -142,6 +143,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path='*' element={<NotFoundPage />} />
           </Route>
           {/* Admin Routes */}
           <Route path='/admin' element={<AdminLayout />}>
