@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -8,18 +8,31 @@ import {
   HiBars3,
   HiXMark,
   HiChevronDown,
+  HiChevronRight,
 } from "react-icons/hi2";
 import SearchBar from "../ui/SearchBar";
 import { logoutUser } from "../../features/auth/authSlice";
 import LoginModal from "../../features/auth/LoginModal";
 import RegisterModal from "../../features/auth/RegisterModal";
 import ForgotPasswordModal from "../../features/auth/ForgotPasswordModal";
+import { categoryApi } from "../../features/products/categoryApi";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
+
+  // Mega Menu & Category State
+  const [categories, setCategories] = useState([]);
+  const [activeCategoryId, setActiveCategoryId] = useState(null);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+
+  // Mobile Category Accordion State
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState(null);
+
+  const megaMenuRef = useRef(null);
+  const closeTimerRef = useRef(null);
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { totalItems } = useSelector((state) => state.cart);
@@ -29,16 +42,65 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Fetch Categories
+  useEffect(() => {
+    categoryApi
+      .getAll()
+      .then((res) => {
+        const fetchedCategories = res.data.data.categories;
+        setCategories(fetchedCategories);
+        if (fetchedCategories.length > 0) {
+          setActiveCategoryId(fetchedCategories[0]._id);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch categories:", err));
+  }, []);
+
   // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
+    setMegaMenuOpen(false);
+    setExpandedMobileCategory(null); // Reset mobile accordion
   }, [location.pathname, location.search]);
+
+  // Close mega menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target)) {
+        setMegaMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     dispatch(logoutUser());
     localStorage.removeItem("accessToken");
     navigate("/");
   };
+
+  const activeCategory =
+    categories.find((c) => c._id === activeCategoryId) || categories[0];
+
+  // Delay closing mega menu for better UX
+  const handleMouseEnter = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    setMegaMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    closeTimerRef.current = setTimeout(() => setMegaMenuOpen(false), 200);
+  };
+
+  // Popular brands (can be replaced with API data)
+  const popularBrands = [
+    { name: "Apple", slug: "apple" },
+    { name: "Samsung", slug: "samsung" },
+    { name: "Sony", slug: "sony" },
+    { name: "OnePlus", slug: "oneplus" },
+    { name: "Google", slug: "google" },
+  ];
 
   return (
     <>
@@ -72,59 +134,195 @@ export default function Header() {
 
             <Link
               to='/'
-              className=' text-2xl md:text-3xl font-extrabold tracking-tighter text-black'
+              className='text-3xl font-extrabold tracking-tighter text-black'
             >
-              <span
-                className={`font-bold text-black tracking-tight transition-all duration-300 text-3xl`}
-              >
-                ecom
-              </span>
-              <span
-                className={`font-bold text-[#FF9900] tracking-tight transition-all duration-300 text-3xl`}
-              >
-                store
-              </span>
+              <span className='font-bold text-black'>ecom</span>
+              <span className='font-bold text-[#FF9900]'>store</span>
             </Link>
 
-            {/* Desktop Categories Dropdown */}
-            <div className='hidden lg:flex items-center gap-2 cursor-pointer text-gray-700 hover:text-black transition-colors group relative'>
+            {/* Desktop Mega Menu */}
+            <div
+              ref={megaMenuRef}
+              className='hidden lg:flex items-center gap-2 cursor-pointer text-gray-700 hover:text-black transition-colors relative py-4'
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <HiBars3 className='w-5 h-5' />
               <span className='font-medium text-sm'>All Categories</span>
-              <HiChevronDown className='w-4 h-4' />
+              <HiChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${megaMenuOpen ? "rotate-180" : ""}`}
+              />
 
-              {/* Dropdown Menu (Hover) */}
-              <div className='absolute top-full left-0 mt-4 w-48 bg-white border border-gray-100 shadow-xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden'>
-                <Link
-                  to='/shop'
-                  className='block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50'
-                >
-                  Shop All
-                </Link>
-                <Link
-                  to='/shop?isFeatured=true'
-                  className='block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50'
-                >
-                  Featured
-                </Link>
-                <Link
-                  to='/shop?sort=-createdAt'
-                  className='block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50'
-                >
-                  New Arrivals
-                </Link>
+              {/* Mega Menu Overlay */}
+              <div
+                className={`absolute top-full -left-20 w-[950px] bg-white border border-gray-100 shadow-2xl rounded-xl transition-all duration-200 z-50 flex overflow-hidden ${
+                  megaMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+                }`}
+              >
+                {/* Left Sidebar - Main Categories */}
+                <div className='w-[260px] bg-white py-4 border-r border-gray-100 flex flex-col shrink-0'>
+                  {categories.map((cat) => (
+                    <div
+                      key={cat._id}
+                      onMouseEnter={() => setActiveCategoryId(cat._id)}
+                      onClick={() => {
+                        navigate(`/shop?category=${cat._id}`);
+                        setMegaMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-between px-6 py-3 cursor-pointer transition-colors ${
+                        activeCategoryId === cat._id
+                          ? "text-[#FF4500] bg-orange-50/50 border-r-2 border-[#FF4500]"
+                          : "text-gray-700 hover:text-[#FF4500] hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className='text-sm font-semibold'>{cat.name}</span>
+                      <HiChevronRight
+                        className={`w-4 h-4 ${activeCategoryId === cat._id ? "text-[#FF4500]" : "text-gray-400"}`}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Quick Links */}
+                  <div className='mt-auto pt-4 border-t border-gray-100 px-6 space-y-3'>
+                    <Link
+                      to='/shop?isFeatured=true'
+                      onClick={() => setMegaMenuOpen(false)}
+                      className='block text-sm font-medium text-gray-600 hover:text-[#FF4500]'
+                    >
+                      🔥 Featured Deals
+                    </Link>
+                    <Link
+                      to='/shop?sort=-createdAt'
+                      onClick={() => setMegaMenuOpen(false)}
+                      className='block text-sm font-medium text-gray-600 hover:text-[#FF4500]'
+                    >
+                      🆕 New Arrivals
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Right Content - Subcategories & Brands */}
+                <div className='flex-1 p-8 bg-[#FAFAFA] flex flex-col'>
+                  <div className='flex gap-8 flex-1'>
+                    {/* Subcategory Columns */}
+                    <div className='grid grid-cols-3 gap-6 flex-1'>
+                      {activeCategory?.subcategories?.length > 0 ? (
+                        activeCategory.subcategories.map((sub) => (
+                          <div key={sub._id}>
+                            <Link
+                              to={`/shop?category=${sub._id}`}
+                              onClick={() => setMegaMenuOpen(false)}
+                              className='block'
+                            >
+                              <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200 hover:opacity-80 transition-opacity'>
+                                {sub.name}
+                              </h4>
+                            </Link>
+                            <ul className='space-y-3'>
+                              {sub.subcategories?.length > 0 ? (
+                                sub.subcategories.map((item) => (
+                                  <li key={item._id}>
+                                    <Link
+                                      to={`/shop?category=${item._id}`}
+                                      onClick={() => setMegaMenuOpen(false)}
+                                      className='text-sm font-medium text-gray-600 hover:text-[#FF4500] transition-colors'
+                                    >
+                                      {item.name}
+                                    </Link>
+                                  </li>
+                                ))
+                              ) : (
+                                <li>
+                                  <Link
+                                    to={`/shop?category=${sub._id}`}
+                                    onClick={() => setMegaMenuOpen(false)}
+                                    className='text-sm font-medium text-gray-600 hover:text-[#FF4500] transition-colors'
+                                  >
+                                    View all {sub.name}
+                                  </Link>
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        ))
+                      ) : (
+                        <div className='col-span-3 text-center py-8'>
+                          <Link
+                            to={`/shop?category=${activeCategory?._id}`}
+                            onClick={() => setMegaMenuOpen(false)}
+                            className='text-sm font-medium text-[#FF4500] hover:underline'
+                          >
+                            Browse all {activeCategory?.name || "products"} →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Brands Sidebar */}
+                    <div className='w-[140px] border-l border-gray-200 pl-6 shrink-0'>
+                      <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200'>
+                        Top Brands
+                      </h4>
+                      <ul className='space-y-4'>
+                        {popularBrands.map((brand) => (
+                          <li key={brand.name}>
+                            <Link
+                              to={`/shop?brand=${brand.slug}`}
+                              onClick={() => setMegaMenuOpen(false)}
+                              className='flex items-center gap-2 group'
+                            >
+                              <div className='w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-800 group-hover:bg-[#FF4500] group-hover:text-white group-hover:border-[#FF4500] transition-colors'>
+                                {brand.name[0]}
+                              </div>
+                              <span className='text-sm font-medium text-gray-600 group-hover:text-[#FF4500] transition-colors'>
+                                {brand.name}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Promotional Banner */}
+                  <Link
+                    to={`/shop?category=${activeCategory?._id}`}
+                    onClick={() => setMegaMenuOpen(false)}
+                    className='mt-8 bg-gradient-to-r from-[#FFF4ED] to-[#FFE8D6] rounded-xl p-6 flex items-center justify-between border border-orange-100 shadow-sm hover:shadow-md transition-shadow group'
+                  >
+                    <div>
+                      <h3 className='text-xl font-bold text-gray-900'>
+                        Latest {activeCategory?.name || "Arrivals"}
+                      </h3>
+                      <p className='text-sm text-gray-600 mt-1 mb-4 font-medium'>
+                        Up to 40% off on top products
+                      </p>
+                      <span className='inline-block bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold group-hover:bg-[#FF4500] transition-colors'>
+                        Shop Now →
+                      </span>
+                    </div>
+                    <div className='flex gap-3'>
+                      <div className='w-20 h-24 bg-white/80 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
+                        🛍️
+                      </div>
+                      <div className='w-20 h-24 bg-white/80 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
+                        🎁
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Center: Search Bar */}
           <div className='hidden md:block flex-1 max-w-2xl bg-[#F0F0F0] rounded-full'>
-            {/* Assuming SearchBar has a transparent background to blend with this wrapper */}
             <SearchBar />
           </div>
 
           {/* Right: Actions */}
           <div className='flex items-center gap-4 lg:gap-6 shrink-0 text-black'>
-            {/* Account / User Menu */}
+            {/* Account */}
             <div className='relative group flex items-center gap-2 cursor-pointer hover:text-[#FF4500] transition-colors'>
               <HiOutlineUser className='w-6 h-6' />
               <span className='hidden lg:block text-sm font-medium'>
@@ -228,43 +426,114 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* --- MOBILE MENU --- */}
         <div
-          className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 origin-top ${
+          className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 origin-top overflow-y-auto max-h-[calc(100vh-120px)] ${
             mobileMenuOpen
               ? "opacity-100 scale-y-100 visible"
               : "opacity-0 scale-y-95 invisible"
           }`}
         >
-          <div className='px-4 py-6 flex flex-col gap-4'>
+          <div className='px-4 py-5 flex flex-col gap-6'>
+            {/* Mobile Search */}
             <div className='md:hidden bg-[#F0F0F0] rounded-full'>
               <SearchBar />
             </div>
-            <nav className='flex flex-col gap-2'>
+
+            <nav className='flex flex-col'>
               <Link
                 to='/'
-                className='px-2 py-2 text-base font-medium text-gray-800'
+                className='py-3 text-base font-bold text-gray-900 border-b border-gray-100'
               >
                 Home
               </Link>
-              <Link
-                to='/shop'
-                className='px-2 py-2 text-base font-medium text-gray-800'
-              >
-                All Categories
-              </Link>
-              <Link
-                to='/shop?isFeatured=true'
-                className='px-2 py-2 text-base font-medium text-gray-800'
-              >
-                Featured
-              </Link>
-              <Link
-                to='/orders'
-                className='px-2 py-2 text-base font-medium text-gray-800'
-              >
-                My Orders
-              </Link>
+
+              {/* Dynamic Categories Accordion */}
+              <div className='py-4 border-b border-gray-100'>
+                <p className='text-xs font-bold text-gray-400 uppercase tracking-wider mb-3'>
+                  Shop by Category
+                </p>
+                <div className='flex flex-col space-y-1'>
+                  {categories.map((cat) => (
+                    <div key={cat._id} className='flex flex-col'>
+                      <div className='flex items-center justify-between'>
+                        <Link
+                          to={`/shop?category=${cat._id}`}
+                          className='flex-1 py-3 text-base font-semibold text-gray-800 hover:text-[#FF4500]'
+                        >
+                          {cat.name}
+                        </Link>
+                        {cat.subcategories?.length > 0 && (
+                          <button
+                            onClick={() =>
+                              setExpandedMobileCategory(
+                                expandedMobileCategory === cat._id
+                                  ? null
+                                  : cat._id,
+                              )
+                            }
+                            className='p-3 -mr-3 flex items-center justify-center'
+                          >
+                            <HiChevronDown
+                              className={`w-5 h-5 transition-transform duration-200 ${
+                                expandedMobileCategory === cat._id
+                                  ? "rotate-180 text-[#FF4500]"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Subcategories Dropdown */}
+                      {cat.subcategories?.length > 0 &&
+                        expandedMobileCategory === cat._id && (
+                          <div className='bg-gray-50 rounded-lg p-4 mt-1 mb-2 space-y-4 shadow-inner'>
+                            {cat.subcategories.map((sub) => (
+                              <div key={sub._id} className='flex flex-col'>
+                                <Link
+                                  to={`/shop?category=${sub._id}`}
+                                  className='text-sm font-bold text-[#FF4500] mb-2'
+                                >
+                                  {sub.name}
+                                </Link>
+                                {sub.subcategories?.length > 0 && (
+                                  <div className='flex flex-col pl-3 border-l-2 border-orange-100 space-y-2.5'>
+                                    {sub.subcategories.map((item) => (
+                                      <Link
+                                        key={item._id}
+                                        to={`/shop?category=${item._id}`}
+                                        className='text-sm font-medium text-gray-600 hover:text-black'
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Links Footer */}
+              <div className='pt-4 space-y-1'>
+                <Link
+                  to='/shop?isFeatured=true'
+                  className='block py-3 text-base font-semibold text-gray-800'
+                >
+                  🔥 Featured Deals
+                </Link>
+                <Link
+                  to='/orders'
+                  className='block py-3 text-base font-semibold text-gray-800'
+                >
+                  📦 My Orders
+                </Link>
+              </div>
             </nav>
           </div>
         </div>
