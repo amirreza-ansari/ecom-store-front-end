@@ -32,6 +32,7 @@ import ChatWidget from "./features/chat/ChatWidget";
 import ChatManager from "./features/admin/ChatManager";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -87,6 +88,7 @@ function App() {
               path='/reset-password/:token'
               element={<ResetPasswordPage />}
             />
+            <Route path='/verify-email/:token' element={<VerifyEmailPage />} />
             <Route
               path='/cart'
               element={
