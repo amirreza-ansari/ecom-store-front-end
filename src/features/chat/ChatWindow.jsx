@@ -13,6 +13,134 @@ import {
 } from "react-icons/hi2";
 import toast from "react-hot-toast";
 
+// Sticker categories
+const stickers = {
+  "😊 Smileys": [
+    "😀",
+    "😃",
+    "😄",
+    "😁",
+    "😅",
+    "😂",
+    "🤣",
+    "😊",
+    "😇",
+    "🙂",
+    "😉",
+    "😌",
+    "😍",
+    "🥰",
+    "😘",
+    "😗",
+    "😋",
+    "😛",
+    "😜",
+    "🤪",
+  ],
+  "👋 Gestures": [
+    "👋",
+    "🤚",
+    "✋",
+    "🖐️",
+    "👌",
+    "🤌",
+    "🤏",
+    "✌️",
+    "🤞",
+    "🤟",
+    "🤘",
+    "🤙",
+    "👍",
+    "👎",
+    "👏",
+    "🙌",
+    "🤝",
+    "🙏",
+  ],
+  "❤️ Emotions": [
+    "❤️",
+    "🧡",
+    "💛",
+    "💚",
+    "💙",
+    "💜",
+    "🖤",
+    "🤍",
+    "🤎",
+    "💔",
+    "💕",
+    "💖",
+    "💗",
+    "💘",
+    "💝",
+    "💯",
+    "🔥",
+    "⭐",
+    "✨",
+    "💫",
+  ],
+  "🎉 Party": [
+    "🎉",
+    "🎊",
+    "🎈",
+    "🎂",
+    "🎁",
+    "🎀",
+    "🏆",
+    "🥇",
+    "🥈",
+    "🥉",
+    "🌟",
+    "💥",
+    "🎯",
+    "🎪",
+    "🎭",
+    "🎨",
+    "🎵",
+    "🎶",
+  ],
+  "📦 Objects": [
+    "📦",
+    "📱",
+    "💻",
+    "🖥️",
+    "⌚",
+    "📷",
+    "🔋",
+    "💡",
+    "🔑",
+    "💰",
+    "💳",
+    "🛒",
+    "📧",
+    "📝",
+    "✅",
+    "❌",
+    "⚠️",
+    "ℹ️",
+  ],
+  "🚀 Travel": [
+    "🚀",
+    "✈️",
+    "🚗",
+    "🚕",
+    "🚌",
+    "🚲",
+    "🏠",
+    "🏢",
+    "🏖️",
+    "🌍",
+    "🌴",
+    "🌸",
+    "🌺",
+    "☀️",
+    "🌙",
+    "⭐",
+    "☁️",
+    "🌈",
+  ],
+};
+
 export default function ChatWindow({ onClose }) {
   const { user } = useAppSelector((state) => state.auth);
   const [conversation, setConversation] = useState(null);
@@ -22,7 +150,12 @@ export default function ChatWindow({ onClose }) {
   const [sending, setSending] = useState(false);
   const [subject, setSubject] = useState("");
   const [showStartForm, setShowStartForm] = useState(true);
+  const [showStickers, setShowStickers] = useState(false);
+  const [activeStickerTab, setActiveStickerTab] = useState(
+    Object.keys(stickers)[0],
+  );
   const messagesEndRef = useRef(null);
+  const stickerRef = useRef(null);
 
   useEffect(() => {
     fetchConversation();
@@ -30,7 +163,22 @@ export default function ChatWindow({ onClose }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, showStickers]);
+
+  // Close stickers on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        stickerRef.current &&
+        !stickerRef.current.contains(e.target) &&
+        !e.target.closest(".emoji-toggle-btn")
+      ) {
+        setShowStickers(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -93,12 +241,18 @@ export default function ChatWindow({ onClose }) {
     try {
       await chatApi.sendMessage(conversation._id, newMessage.trim());
       setNewMessage("");
+      setShowStickers(false);
       fetchMessages(conversation._id);
     } catch (error) {
       toast.error("Failed to send message");
     } finally {
       setSending(false);
     }
+  };
+
+  // Add the sticker to the input string instead of sending it directly
+  const handleSelectSticker = (sticker) => {
+    setNewMessage((prev) => prev + sticker);
   };
 
   const handleQuickReply = (text) => {
@@ -151,7 +305,7 @@ export default function ChatWindow({ onClose }) {
       </div>
 
       {/* Messages Area */}
-      <div className='flex-1 overflow-y-auto p-4 space-y-5 bg-white [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full pr-2'>
+      <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-white [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full pr-2'>
         {loading ? (
           <div className='flex justify-center items-center h-full'>
             <div className='w-8 h-8 border-3 border-gray-200 border-t-[#FF7F11] rounded-full animate-spin' />
@@ -178,6 +332,11 @@ export default function ChatWindow({ onClose }) {
         ) : (
           messages.map((msg, i) => {
             const isCustomer = msg.senderModel === "User";
+            const emojiRegex = /^[\p{Emoji}\s]+$/u;
+            const isSticker =
+              emojiRegex.test(msg.message) &&
+              msg.message.replace(/\s/g, "").length <= 6;
+
             return (
               <div
                 key={msg._id || i}
@@ -190,15 +349,27 @@ export default function ChatWindow({ onClose }) {
                 )}
 
                 <div
-                  className={`max-w-[75%] px-4 py-2.5 flex flex-col relative ${
+                  className={`max-w-[75%] flex flex-col relative ${
+                    isSticker ? "" : "px-4 py-2.5"
+                  } ${
                     isCustomer
-                      ? "bg-[#FF7F11] text-white rounded-[20px] rounded-br-sm"
-                      : "bg-[#F3F4F6] text-[#1F2937] rounded-[20px] rounded-bl-sm"
+                      ? isSticker
+                        ? ""
+                        : "bg-[#FF7F11] text-white rounded-[20px] rounded-br-sm"
+                      : isSticker
+                        ? ""
+                        : "bg-[#F3F4F6] text-[#1F2937] rounded-[20px] rounded-bl-sm"
                   }`}
                 >
-                  <p className='text-[14px] leading-[1.4] break-words'>
-                    {msg.message}
-                  </p>
+                  {isSticker ? (
+                    <span className='text-5xl leading-none select-none'>
+                      {msg.message}
+                    </span>
+                  ) : (
+                    <p className='text-[14px] leading-[1.4] break-words'>
+                      {msg.message}
+                    </p>
+                  )}
                   <div
                     className={`flex items-center justify-end gap-1 mt-1 ${
                       isCustomer ? "text-white/80" : "text-gray-400"
@@ -226,7 +397,7 @@ export default function ChatWindow({ onClose }) {
       </div>
 
       {/* Quick Replies */}
-      {!loading && !showStartForm && (
+      {!loading && !showStartForm && !showStickers && (
         <div className='px-4 pb-3 bg-white flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden shrink-0'>
           <button
             onClick={() => handleQuickReply("👋 Hello")}
@@ -246,14 +417,52 @@ export default function ChatWindow({ onClose }) {
           >
             📦 Return & Refund
           </button>
-          <button className='px-3 py-1.5 border border-gray-200 text-gray-500 bg-white rounded-full text-[13px] font-medium hover:bg-gray-50 whitespace-nowrap shadow-sm'>
-            •••
-          </button>
+        </div>
+      )}
+
+      {/* Sticker Picker */}
+      {showStickers && (
+        <div
+          ref={stickerRef}
+          className='bg-white border-t border-gray-200 shadow-lg shrink-0'
+        >
+          {/* Sticker Tabs */}
+          <div className='flex overflow-x-auto border-b border-gray-100 [&::-webkit-scrollbar]:hidden px-2'>
+            {Object.keys(stickers).map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveStickerTab(category)}
+                className={`px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors ${
+                  activeStickerTab === category
+                    ? "text-[#FF7F11] border-b-2 border-[#FF7F11]"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          {/* Sticker Grid */}
+          <div className='grid grid-cols-6 gap-1 p-2 h-[180px] overflow-y-auto bg-white [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full'>
+            {stickers[activeStickerTab].map((sticker, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSelectSticker(sticker);
+                }}
+                className='w-10 h-10 flex items-center justify-center hover:bg-[#FFF5EB] rounded-xl transition-all text-2xl cursor-pointer hover:scale-125 active:scale-95 origin-center'
+                title={sticker}
+              >
+                {sticker}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
       {/* Input Area */}
-      <div className='px-4 py-3 bg-white shrink-0 z-10'>
+      <div className='px-4 py-3 bg-white shrink-0 z-20 border-t border-gray-100'>
         {showStartForm ? (
           <form onSubmit={handleStartChat} className='space-y-3'>
             <input
@@ -263,18 +472,24 @@ export default function ChatWindow({ onClose }) {
               placeholder='Subject (optional)'
               className='w-full px-4 py-3 text-[14px] bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-[#FF7F11] transition-colors placeholder:text-gray-400 shadow-sm'
             />
-            <div className='flex gap-2 items-center'>
+            <div className='flex gap-2 items-center relative'>
               <div className='relative flex-1'>
                 <input
                   type='text'
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder='Type a message...'
-                  className='w-full pl-4 pr-16 py-3 text-[14px] bg-white border border-gray-200 rounded-[18px] focus:outline-none focus:border-[#FF7F11] transition-colors placeholder:text-gray-400 shadow-sm'
+                  className='w-full pl-4 pr-16 py-3 text-[14px] bg-white border border-gray-200 rounded-[18px] focus:outline-none focus:border-[#FF7F11] focus:ring-1 focus:ring-[#FF7F11] transition-all placeholder:text-gray-400 shadow-sm'
                 />
                 <div className='absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 text-gray-400'>
-                  <HiOutlineFaceSmile className='w-5 h-5 cursor-pointer hover:text-gray-600 transition-colors' />
-                  <HiOutlinePaperClip className='w-5 h-5 cursor-pointer hover:text-gray-600 transition-colors' />
+                  <button
+                    type='button'
+                    onClick={() => setShowStickers(!showStickers)}
+                    className={`emoji-toggle-btn w-6 h-6 flex items-center justify-center rounded-full transition-colors ${showStickers ? "text-[#FF7F11] bg-[#FFF5EB]" : "hover:text-[#FF7F11]"}`}
+                  >
+                    <HiOutlineFaceSmile className='w-5 h-5 cursor-pointer' />
+                  </button>
+                  <HiOutlinePaperClip className='w-5 h-5 cursor-pointer hover:text-[#FF7F11] transition-colors' />
                 </div>
               </div>
               <button
@@ -289,7 +504,7 @@ export default function ChatWindow({ onClose }) {
         ) : (
           <form
             onSubmit={handleSendMessage}
-            className='flex gap-2 items-center'
+            className='flex gap-2 items-center relative'
           >
             <div className='relative flex-1'>
               <input
@@ -297,11 +512,17 @@ export default function ChatWindow({ onClose }) {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder='Type a message...'
-                className='w-full pl-4 pr-16 py-3.5 text-[14px] bg-white border border-gray-200 rounded-[18px] focus:outline-none focus:border-[#FF7F11] transition-colors placeholder:text-gray-400 shadow-sm'
+                className='w-full pl-4 pr-16 py-3.5 text-[14px] bg-white border border-gray-200 rounded-[18px] focus:outline-none focus:border-[#FF7F11] focus:ring-1 focus:ring-[#FF7F11] transition-all placeholder:text-gray-400 shadow-sm'
               />
               <div className='absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 text-gray-400'>
-                <HiOutlineFaceSmile className='w-5 h-5 cursor-pointer hover:text-gray-600 transition-colors' />
-                <HiOutlinePaperClip className='w-5 h-5 cursor-pointer hover:text-gray-600 transition-colors' />
+                <button
+                  type='button'
+                  onClick={() => setShowStickers(!showStickers)}
+                  className={`emoji-toggle-btn w-6 h-6 flex items-center justify-center rounded-full transition-colors ${showStickers ? "text-[#FF7F11] bg-[#FFF5EB]" : "hover:text-[#FF7F11]"}`}
+                >
+                  <HiOutlineFaceSmile className='w-5 h-5 cursor-pointer' />
+                </button>
+                <HiOutlinePaperClip className='w-5 h-5 cursor-pointer hover:text-[#FF7F11] transition-colors' />
               </div>
             </div>
             <button
@@ -316,7 +537,7 @@ export default function ChatWindow({ onClose }) {
       </div>
 
       {/* Footer Area */}
-      <div className='bg-[#F8F9FA] py-2.5 text-center shrink-0 border-t border-gray-100'>
+      <div className='bg-[#F8F9FA] py-2.5 text-center shrink-0 border-t border-gray-100 z-10'>
         <p className='text-[11px] text-gray-400 font-medium'>
           We typically reply in a few minutes ⚡
         </p>
