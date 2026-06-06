@@ -130,7 +130,7 @@ export default function InventoryManager() {
       {/* Stats Overview */}
       <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
         <div className='bg-white rounded-xl p-5 shadow-sm border border-[#D5D9D9] flex items-center gap-4'>
-          <div className='p-3 rounded-xl bg-green-50'>
+          <div className='p-3 rounded-xl bg-green-50 shrink-0'>
             <HiCheckCircle className='w-6 h-6 text-green-600' />
           </div>
           <div>
@@ -141,7 +141,7 @@ export default function InventoryManager() {
           </div>
         </div>
         <div className='bg-white rounded-xl p-5 shadow-sm border border-[#D5D9D9] flex items-center gap-4'>
-          <div className='p-3 rounded-xl bg-yellow-50'>
+          <div className='p-3 rounded-xl bg-yellow-50 shrink-0'>
             <HiExclamationTriangle className='w-6 h-6 text-yellow-600' />
           </div>
           <div>
@@ -152,7 +152,7 @@ export default function InventoryManager() {
           </div>
         </div>
         <div className='bg-white rounded-xl p-5 shadow-sm border border-[#D5D9D9] flex items-center gap-4'>
-          <div className='p-3 rounded-xl bg-red-50'>
+          <div className='p-3 rounded-xl bg-red-50 shrink-0'>
             <HiXCircle className='w-6 h-6 text-red-600' />
           </div>
           <div>
@@ -164,41 +164,43 @@ export default function InventoryManager() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className='flex gap-2 border-b border-[#D5D9D9]'>
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => {
-              setActiveTab(tab.key);
-              setPage(1);
-            }}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab.key
-                ? "border-[#FF9900] text-[#FF9900]"
-                : "border-transparent text-[#565959] hover:text-[#0F1111]"
-            }`}
-          >
-            <tab.icon className='w-4 h-4' />
-            {tab.label}
-          </button>
-        ))}
+      {/* Tabs & Search Area */}
+      <div className='flex flex-col sm:flex-row gap-4 sm:gap-2 sm:items-center justify-between border-b border-[#D5D9D9]'>
+        <div className='flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide'>
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key);
+                setPage(1);
+              }}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.key
+                  ? "border-[#FF9900] text-[#FF9900]"
+                  : "border-transparent text-[#565959] hover:text-[#0F1111]"
+              }`}
+            >
+              <tab.icon className='w-4 h-4 shrink-0' />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
         {activeTab === "all" && (
-          <div className='ml-auto flex items-center'>
+          <div className='flex items-center w-full sm:w-auto pb-2 sm:pb-0'>
             <input
               type='text'
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchProducts()}
               placeholder='Search products...'
-              className='px-3 py-2 text-sm border border-[#D5D9D9] rounded-lg w-48'
+              className='px-3 py-2 text-sm border border-[#D5D9D9] rounded-lg w-full sm:w-48 focus:outline-none focus:border-[#FF9900]'
             />
             <button
               onClick={fetchProducts}
-              className='p-2 ml-1 hover:bg-[#F7FAFA] rounded-lg'
+              className='p-2 ml-1 hover:bg-[#F7FAFA] rounded-lg shrink-0'
             >
-              <HiMagnifyingGlass className='w-4 h-4 text-[#565959]' />
+              <HiMagnifyingGlass className='w-5 h-5 text-[#565959]' />
             </button>
           </div>
         )}
@@ -217,122 +219,127 @@ export default function InventoryManager() {
             <p className='text-[#565959]'>No products match this filter.</p>
           </div>
         ) : (
-          <table className='w-full text-sm'>
-            <thead>
-              <tr className='border-b border-[#D5D9D9] bg-[#F7FAFA]'>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  Product
-                </th>
-                <th className='text-left py-3 px-4 font-medium text-[#565959]'>
-                  SKU
-                </th>
-                <th className='text-center py-3 px-4 font-medium text-[#565959]'>
-                  Stock
-                </th>
-                <th className='text-center py-3 px-4 font-medium text-[#565959]'>
-                  Status
-                </th>
-                <th className='text-center py-3 px-4 font-medium text-[#565959]'>
-                  Variants
-                </th>
-                <th className='text-right py-3 px-4 font-medium text-[#565959]'>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => {
-                const status = getStockStatus(product.stock);
-                const StatusIcon = status.icon;
-                const variantCount = product.variants?.length || 0;
+          <div className='overflow-x-auto'>
+            <table className='w-full min-w-[800px] text-sm'>
+              <thead>
+                <tr className='border-b border-[#D5D9D9] bg-[#F7FAFA]'>
+                  <th className='text-left py-3 px-4 font-medium text-[#565959]'>
+                    Product
+                  </th>
+                  <th className='text-left py-3 px-4 font-medium text-[#565959]'>
+                    SKU
+                  </th>
+                  <th className='text-center py-3 px-4 font-medium text-[#565959]'>
+                    Stock
+                  </th>
+                  <th className='text-center py-3 px-4 font-medium text-[#565959]'>
+                    Status
+                  </th>
+                  <th className='text-center py-3 px-4 font-medium text-[#565959]'>
+                    Variants
+                  </th>
+                  <th className='text-right py-3 px-4 font-medium text-[#565959]'>
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => {
+                  const status = getStockStatus(product.stock);
+                  const StatusIcon = status.icon;
+                  const variantCount = product.variants?.length || 0;
 
-                return (
-                  <tr
-                    key={product._id}
-                    className='border-b border-[#D5D9D9] hover:bg-[#F7FAFA] transition-colors'
-                  >
-                    <td className='py-3 px-4'>
-                      <div className='flex items-center gap-3'>
-                        <img
-                          src={
-                            product.images?.[0]?.url ||
-                            "https://via.placeholder.com/36x36?text=No+Image"
-                          }
-                          alt={product.name}
-                          className='w-9 h-9 object-cover rounded-lg'
-                        />
-                        <div>
-                          <p className='font-medium text-[#0F1111]'>
-                            {product.name}
-                          </p>
-                          <p className='text-xs text-[#565959]'>
-                            ${product.price?.toFixed(2)}
-                          </p>
+                  return (
+                    <tr
+                      key={product._id}
+                      className='border-b border-[#D5D9D9] hover:bg-[#F7FAFA] transition-colors'
+                    >
+                      <td className='py-3 px-4'>
+                        <div className='flex items-center gap-3'>
+                          <img
+                            src={
+                              product.images?.[0]?.url ||
+                              "https://via.placeholder.com/36x36?text=No+Image"
+                            }
+                            alt={product.name}
+                            className='w-9 h-9 object-cover rounded-lg shrink-0'
+                          />
+                          <div>
+                            <p className='font-medium text-[#0F1111] line-clamp-1'>
+                              {product.name}
+                            </p>
+                            <p className='text-xs text-[#565959]'>
+                              ${product.price?.toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className='py-3 px-4 text-xs font-mono text-[#565959]'>
-                      {product.sku || "N/A"}
-                    </td>
-                    <td className='py-3 px-4 text-center'>
-                      <span
-                        className={`text-lg font-bold ${
-                          product.stock === 0
-                            ? "text-[#B12704]"
-                            : product.stock <= 10
-                              ? "text-[#FF9900]"
-                              : "text-[#0F1111]"
-                        }`}
-                      >
-                        {product.stock}
-                      </span>
-                    </td>
-                    <td className='py-3 px-4 text-center'>
-                      <div className='flex items-center justify-center gap-1'>
-                        <StatusIcon
-                          className={`w-4 h-4 ${
+                      </td>
+                      <td className='py-3 px-4 text-xs font-mono text-[#565959]'>
+                        {product.sku || "N/A"}
+                      </td>
+                      <td className='py-3 px-4 text-center'>
+                        <span
+                          className={`text-lg font-bold ${
                             product.stock === 0
-                              ? "text-red-500"
+                              ? "text-[#B12704]"
                               : product.stock <= 10
-                                ? "text-yellow-500"
-                                : "text-green-500"
+                                ? "text-[#FF9900]"
+                                : "text-[#0F1111]"
                           }`}
-                        />
-                        <span className='text-xs'>{status.label}</span>
-                      </div>
-                    </td>
-                    <td className='py-3 px-4 text-center'>
-                      {variantCount > 0 ? (
-                        <span className='text-xs bg-[#F7FAFA] px-2 py-0.5 rounded-full'>
-                          {variantCount} variant{variantCount > 1 ? "s" : ""}
-                        </span>
-                      ) : (
-                        <span className='text-xs text-[#565959]'>None</span>
-                      )}
-                    </td>
-                    <td className='py-3 px-4 text-right'>
-                      <div className='flex items-center justify-end gap-1'>
-                        <Button
-                          size='sm'
-                          onClick={() => openStockModal(product)}
                         >
-                          <HiArrowPath className='w-3 h-3 mr-1' /> Update
-                        </Button>
-                        {variantCount > 0 && (
-                          <button
-                            onClick={() => openStockModal(product)}
-                            className='text-xs text-[#FF9900] hover:underline ml-1'
-                          >
-                            View variants
-                          </button>
+                          {product.stock}
+                        </span>
+                      </td>
+                      <td className='py-3 px-4 text-center'>
+                        <div className='flex items-center justify-center gap-1'>
+                          <StatusIcon
+                            className={`w-4 h-4 shrink-0 ${
+                              product.stock === 0
+                                ? "text-red-500"
+                                : product.stock <= 10
+                                  ? "text-yellow-500"
+                                  : "text-green-500"
+                            }`}
+                          />
+                          <span className='text-xs whitespace-nowrap'>
+                            {status.label}
+                          </span>
+                        </div>
+                      </td>
+                      <td className='py-3 px-4 text-center'>
+                        {variantCount > 0 ? (
+                          <span className='text-xs bg-[#F7FAFA] px-2 py-0.5 rounded-full whitespace-nowrap'>
+                            {variantCount} variant{variantCount > 1 ? "s" : ""}
+                          </span>
+                        ) : (
+                          <span className='text-xs text-[#565959]'>None</span>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className='py-3 px-4 text-right'>
+                        <div className='flex items-center justify-end gap-2'>
+                          <Button
+                            size='sm'
+                            onClick={() => openStockModal(product)}
+                            className='shrink-0'
+                          >
+                            <HiArrowPath className='w-3 h-3 mr-1' /> Update
+                          </Button>
+                          {variantCount > 0 && (
+                            <button
+                              onClick={() => openStockModal(product)}
+                              className='text-xs text-[#FF9900] hover:underline shrink-0 whitespace-nowrap'
+                            >
+                              View variants
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
@@ -346,14 +353,14 @@ export default function InventoryManager() {
 
       {/* Stock Update Modal */}
       {selectedProduct && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6'>
           <div
             className='fixed inset-0 bg-black/50'
             onClick={() => setSelectedProduct(null)}
           />
           <div className='relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-auto'>
             {/* Header */}
-            <div className='p-6 border-b border-[#D5D9D9]'>
+            <div className='p-4 sm:p-6 border-b border-[#D5D9D9]'>
               <div className='flex items-center gap-3'>
                 <img
                   src={
@@ -361,17 +368,17 @@ export default function InventoryManager() {
                     "https://via.placeholder.com/40x40?text=No+Image"
                   }
                   alt={selectedProduct.product.name}
-                  className='w-10 h-10 object-cover rounded-lg'
+                  className='w-10 h-10 object-cover rounded-lg shrink-0'
                 />
-                <div>
-                  <h2 className='font-bold text-[#0F1111]'>
+                <div className='min-w-0 flex-1'>
+                  <h2 className='font-bold text-[#0F1111] truncate'>
                     {selectedProduct.product.name}
                   </h2>
-                  <p className='text-xs text-[#565959]'>
+                  <p className='text-xs text-[#565959] truncate'>
                     SKU: {selectedProduct.product.sku || "N/A"}
                   </p>
                 </div>
-                <div className='ml-auto text-right'>
+                <div className='text-right shrink-0'>
                   <p className='text-xs text-[#565959]'>Current Stock</p>
                   <p
                     className={`text-xl font-bold ${
@@ -389,7 +396,7 @@ export default function InventoryManager() {
             </div>
 
             {/* Body */}
-            <div className='p-6 space-y-4'>
+            <div className='p-4 sm:p-6 space-y-4'>
               {/* Variants list */}
               {!selectedProduct.variant &&
                 selectedProduct.product.variants?.length > 0 && (
@@ -408,25 +415,29 @@ export default function InventoryManager() {
                               openStockModal(selectedProduct.product, v)
                             }
                           >
-                            <div>
-                              <p className='text-sm font-medium'>{v.name}</p>
-                              {v.attributes?.map((attr) => (
-                                <span
-                                  key={attr._id}
-                                  className='text-xs text-[#565959] mr-2'
-                                >
-                                  {attr.name}: {attr.value}
-                                </span>
-                              ))}
+                            <div className='min-w-0 pr-2'>
+                              <p className='text-sm font-medium truncate'>
+                                {v.name}
+                              </p>
+                              <div className='flex flex-wrap gap-x-2 gap-y-1 mt-1'>
+                                {v.attributes?.map((attr) => (
+                                  <span
+                                    key={attr._id}
+                                    className='text-xs text-[#565959]'
+                                  >
+                                    {attr.name}: {attr.value}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                            <div className='flex items-center gap-3'>
+                            <div className='flex items-center gap-2 shrink-0'>
                               <span
                                 className={`font-bold ${v.stock === 0 ? "text-[#B12704]" : ""}`}
                               >
                                 {v.stock}
                               </span>
                               <vStatus.icon
-                                className={`w-4 h-4 ${
+                                className={`w-4 h-4 shrink-0 ${
                                   v.stock === 0
                                     ? "text-red-500"
                                     : v.stock <= 10
@@ -461,7 +472,7 @@ export default function InventoryManager() {
                 selectedProduct.product.variants?.length === 0) && (
                 <div>
                   {selectedProduct.variant && (
-                    <div className='mb-4 flex items-center gap-2'>
+                    <div className='mb-4 flex flex-wrap items-center gap-2'>
                       <span className='text-xs bg-[#FF9900] text-white px-2 py-0.5 rounded-full'>
                         Variant: {selectedProduct.variant.name}
                       </span>
@@ -503,7 +514,7 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
         <label className='block text-sm font-medium text-[#0F1111] mb-2'>
           Quantity
         </label>
-        <div className='flex gap-2'>
+        <div className='flex flex-wrap sm:flex-nowrap gap-2'>
           <button
             type='button'
             onClick={() =>
@@ -512,13 +523,13 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
                 quantity: Math.abs(Number(stockForm.quantity || 0)) * -1,
               })
             }
-            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center ${
               Number(stockForm.quantity) < 0
                 ? "bg-red-50 text-red-600 border-2 border-red-200"
                 : "bg-white text-[#565959] border-2 border-[#D5D9D9] hover:border-red-300"
             }`}
           >
-            <HiMinus className='w-4 h-4 inline mr-1' /> Remove
+            <HiMinus className='w-4 h-4 mr-1 shrink-0' /> Remove
           </button>
           <input
             type='number'
@@ -527,7 +538,7 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
               setStockForm({ ...stockForm, quantity: e.target.value })
             }
             placeholder='0'
-            className='w-24 text-center text-lg font-bold border-2 border-[#D5D9D9] rounded-xl focus:outline-none focus:border-[#FF9900]'
+            className='w-full sm:w-24 text-center text-lg font-bold border-2 border-[#D5D9D9] rounded-xl focus:outline-none focus:border-[#FF9900] py-2'
           />
           <button
             type='button'
@@ -537,13 +548,13 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
                 quantity: Math.abs(Number(stockForm.quantity || 0)),
               })
             }
-            className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center ${
               Number(stockForm.quantity) > 0
                 ? "bg-green-50 text-green-600 border-2 border-green-200"
                 : "bg-white text-[#565959] border-2 border-[#D5D9D9] hover:border-green-300"
             }`}
           >
-            <HiPlus className='w-4 h-4 inline mr-1' /> Add
+            <HiPlus className='w-4 h-4 mr-1 shrink-0' /> Add
           </button>
         </div>
       </div>
@@ -557,7 +568,7 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
           onChange={(e) =>
             setStockForm({ ...stockForm, reason: e.target.value })
           }
-          className='w-full px-4 py-2.5 text-sm border-2 border-[#D5D9D9] rounded-xl focus:outline-none focus:border-[#FF9900]'
+          className='w-full px-4 py-2.5 text-sm border-2 border-[#D5D9D9] rounded-xl focus:outline-none focus:border-[#FF9900] bg-white'
         >
           <option value='restock'>Restock</option>
           <option value='adjustment'>Adjustment</option>
@@ -579,15 +590,15 @@ function StockForm({ stockForm, setStockForm, onSubmit, onCancel, updating }) {
         />
       </div>
 
-      <div className='flex gap-3'>
+      <div className='flex gap-3 pt-2'>
         <Button
           onClick={onSubmit}
           disabled={updating || !stockForm.quantity}
-          className='flex-1'
+          className='flex-1 justify-center'
         >
           {updating ? "Updating..." : "Update Stock"}
         </Button>
-        <Button variant='outline' onClick={onCancel}>
+        <Button variant='outline' onClick={onCancel} className='justify-center'>
           Cancel
         </Button>
       </div>
