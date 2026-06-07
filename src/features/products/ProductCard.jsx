@@ -86,14 +86,14 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className='group relative bg-white rounded-xl overflow-hidden border border-[#D5D9D9] hover:border-[#FF9900] hover:shadow-lg transition-all duration-200'
+      className='group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-[#D5D9D9] dark:border-gray-700 hover:border-[#FF9900] dark:hover:border-[#FF9900] hover:shadow-lg transition-all duration-200'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
       <Link
         to={`/product/${product.slug}`}
-        className='block relative overflow-hidden bg-[#F7FAFA]'
+        className='block relative overflow-hidden bg-[#F7FAFA] dark:bg-gray-700'
         style={{ paddingBottom: "100%" }}
       >
         <img
@@ -121,7 +121,7 @@ export default function ProductCard({ product }) {
           onClick={handleWishlist}
           className={`absolute top-2 right-2 p-2 rounded-full shadow-md transition-all duration-200 z-10 ${
             isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75"
-          } ${isInWishlist ? "bg-[#B12704] text-white" : "bg-white text-[#565959] hover:bg-[#FFF0F0] hover:text-[#B12704]"}`}
+          } ${isInWishlist ? "bg-[#B12704] text-white" : "bg-white dark:bg-gray-700 text-[#565959] dark:text-gray-300 hover:bg-[#FFF0F0] dark:hover:bg-gray-600 hover:text-[#B12704] dark:hover:text-[#FF4444]"}`}
         >
           {isInWishlist ? (
             <HiHeart className='w-4 h-4' />
@@ -133,7 +133,7 @@ export default function ProductCard({ product }) {
         {/* Out of Stock */}
         {product.stock === 0 && (
           <div className='absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center'>
-            <span className='bg-white/90 text-[#0F1111] text-xs font-bold px-3 py-1 rounded-full'>
+            <span className='bg-white/90 dark:bg-gray-800/90 text-[#0F1111] dark:text-white text-xs font-bold px-3 py-1 rounded-full'>
               Sold Out
             </span>
           </div>
@@ -151,14 +151,14 @@ export default function ProductCard({ product }) {
             } ${
               addedToCart
                 ? "bg-[#067D62] text-white"
-                : "bg-[#1a1a2e]/90 backdrop-blur-sm text-white hover:bg-[#FF9900]"
+                : "bg-[#1a1a2e]/90 dark:bg-white/90 dark:text-gray-900 backdrop-blur-sm text-white hover:bg-[#FF9900] dark:hover:bg-[#FF9900] dark:hover:text-white"
             }`}
           >
             {addedToCart ? (
               "✓ Added to Cart"
             ) : addingToCart ? (
               <span className='flex items-center justify-center gap-2'>
-                <span className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                <span className='w-4 h-4 border-2 border-white dark:border-gray-900 border-t-transparent rounded-full animate-spin' />
                 Adding...
               </span>
             ) : (
@@ -172,10 +172,10 @@ export default function ProductCard({ product }) {
 
       {/* Content */}
       <Link to={`/product/${product.slug}`} className='block p-3'>
-        <p className='text-[10px] text-[#565959] uppercase tracking-wider font-medium truncate'>
+        <p className='text-[10px] text-[#565959] dark:text-gray-400 uppercase tracking-wider font-medium truncate'>
           {product.brand || "Generic"}
         </p>
-        <h3 className='text-sm font-medium text-[#0F1111] line-clamp-2 mt-0.5 mb-1.5 group-hover:text-[#FF9900] transition-colors leading-snug'>
+        <h3 className='text-sm font-medium text-[#0F1111] dark:text-gray-100 line-clamp-2 mt-0.5 mb-1.5 group-hover:text-[#FF9900] dark:group-hover:text-[#FF9900] transition-colors leading-snug'>
           {product.name}
         </h3>
 
@@ -185,24 +185,24 @@ export default function ProductCard({ product }) {
             size='sm'
             showValue={false}
           />
-          <span className='text-[10px] text-[#565959]'>
+          <span className='text-[10px] text-[#565959] dark:text-gray-400'>
             ({product.ratingsQuantity || 0})
           </span>
         </div>
 
         <div className='flex items-baseline gap-2'>
-          <span className='text-base font-bold text-[#0F1111]'>
+          <span className='text-base font-bold text-[#0F1111] dark:text-white'>
             ${product.price?.toFixed(2)}
           </span>
           {product.comparePrice && product.comparePrice > product.price && (
-            <span className='text-xs text-[#565959] line-through'>
+            <span className='text-xs text-[#565959] dark:text-gray-500 line-through'>
               ${product.comparePrice?.toFixed(2)}
             </span>
           )}
         </div>
 
         {product.stock > 0 && product.stock <= 5 && (
-          <p className='text-[10px] text-[#B12704] mt-1.5 font-semibold'>
+          <p className='text-[10px] text-[#B12704] dark:text-red-400 mt-1.5 font-semibold'>
             Only {product.stock} left
           </p>
         )}
