@@ -28,7 +28,6 @@ import gamingSetup from "../assets/gaming-setup.jpg";
 import fitnessEssentials from "../assets/fitness-essentials.jpg";
 import smartHome from "../assets/smart-home.jpg";
 
-// Hero slides with image placeholders for the carousel
 const heroSlides = [
   {
     tag: "NEW COLLECTION",
@@ -40,7 +39,6 @@ const heroSlides = [
     linkPrimary: "/shop?sort=-createdAt",
     linkSecondary: "/categories",
     bgClass: "bg-[#0A0D14]",
-    // Replace this URL with your actual hero image
     image: mainHero,
   },
   {
@@ -53,7 +51,6 @@ const heroSlides = [
     linkPrimary: "/shop?isFeatured=true",
     linkSecondary: "/shop",
     bgClass: "bg-[#111827]",
-    // Replace this URL with your actual hero image
     image: secondHero,
   },
 ];
@@ -96,8 +93,7 @@ function useCountUp(end, duration = 2000, startCounting = false) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!startCounting) return;
-    let startTime;
-    let frame;
+    let startTime, frame;
     const animate = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
@@ -180,14 +176,13 @@ export default function HomePage() {
   };
 
   return (
-    <div className='overflow-hidden bg-white min-h-screen font-sans antialiased text-[#0F1111]'>
+    <div className='overflow-hidden bg-white dark:bg-gray-950 min-h-screen font-sans antialiased text-[#0F1111] dark:text-white'>
       {/* ========== HERO SECTION ========== */}
       <section
         className={`relative ${slide.bgClass} min-h-[500px] md:min-h-[560px] flex items-center transition-colors duration-700 m-4 rounded-3xl overflow-hidden`}
       >
         <div className='max-w-7xl mx-auto px-6 md:px-12 py-12 w-full relative z-10'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-12 items-center'>
-            {/* Text Content */}
             <div className='text-white space-y-6 text-center md:text-left'>
               <span className='inline-block text-[#FF5A00] text-xs font-bold tracking-widest uppercase'>
                 {slide.tag}
@@ -198,7 +193,6 @@ export default function HomePage() {
               <p className='text-sm sm:text-base text-white/70 max-w-md mx-auto md:mx-0 leading-relaxed'>
                 {slide.subtitle}
               </p>
-
               <div className='flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4'>
                 <Link to={slide.linkPrimary} className='w-full sm:w-auto'>
                   <Button
@@ -219,8 +213,6 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-
-            {/* Image Content (Placeholder) */}
             <div className='flex justify-center items-center relative'>
               <img
                 src={slide.image}
@@ -230,25 +222,19 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Carousel Indicators */}
         <div className='absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2'>
           {heroSlides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`transition-all duration-300 rounded-full h-2 ${
-                i === currentSlide
-                  ? "w-8 bg-[#FF5A00]"
-                  : "w-2 bg-white/30 hover:bg-white/50"
-              }`}
+              className={`transition-all duration-300 rounded-full h-2 ${i === currentSlide ? "w-8 bg-[#FF5A00]" : "w-2 bg-white/30 hover:bg-white/50"}`}
             />
           ))}
         </div>
       </section>
 
       {/* ========== TRUST BAR ========== */}
-      <section className='border-b border-gray-100 py-6'>
+      <section className='border-b border-gray-100 dark:border-gray-800 py-6'>
         <div className='max-w-7xl mx-auto px-4'>
           <div className='flex flex-wrap justify-between items-center gap-6 text-sm'>
             {[
@@ -270,12 +256,14 @@ export default function HomePage() {
               },
             ].map((item, idx) => (
               <div key={idx} className='flex items-center gap-3'>
-                <item.icon className='w-6 h-6 text-gray-400' />
+                <item.icon className='w-6 h-6 text-gray-400 dark:text-gray-500' />
                 <div>
-                  <h3 className='font-bold text-[#0F1111] leading-tight'>
+                  <h3 className='font-bold text-[#0F1111] dark:text-white leading-tight'>
                     {item.title}
                   </h3>
-                  <p className='text-xs text-gray-500'>{item.desc}</p>
+                  <p className='text-xs text-gray-500 dark:text-gray-400'>
+                    {item.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -288,44 +276,40 @@ export default function HomePage() {
         <FadeIn>
           <section>
             <div className='flex items-center justify-between mb-8'>
-              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase dark:text-white'>
                 Shop By Category
               </h2>
               <Link
                 to='/categories'
-                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+                className='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-[#FF5A00] flex items-center gap-1'
               >
                 View all categories <HiArrowRight className='w-4 h-4' />
               </Link>
             </div>
-
             <StaggerContainer>
               <div className='flex overflow-x-auto gap-4 md:gap-6 pb-4 scrollbar-none snap-x md:grid md:grid-cols-4 lg:grid-cols-8 md:overflow-visible md:pb-0'>
-                {categories.slice(0, 8).map((cat, index) => {
-                  return (
-                    <StaggerItem
-                      key={cat._id}
-                      className='w-24 shrink-0 snap-start md:w-auto group cursor-pointer'
+                {categories.slice(0, 8).map((cat, index) => (
+                  <StaggerItem
+                    key={cat._id}
+                    className='w-24 shrink-0 snap-start md:w-auto group cursor-pointer'
+                  >
+                    <Link
+                      to={`/shop?category=${cat._id}`}
+                      className='flex flex-col items-center gap-3'
                     >
-                      <Link
-                        to={`/shop?category=${cat._id}`}
-                        className='flex flex-col items-center gap-3'
-                      >
-                        <div className='w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-[#F5F5F7] group-hover:bg-[#EAEAEA] flex items-center justify-center transition-colors p-4'>
-                          {/* Replace with category icons/images */}
-                          <img
-                            src={`https://placehold.co/100x100/e2e8f0/64748b?text=${cat.name.charAt(0)}`}
-                            alt={cat.name}
-                            className='w-full h-full object-contain group-hover:scale-110 transition-transform duration-300'
-                          />
-                        </div>
-                        <span className='text-xs md:text-sm font-semibold text-center group-hover:text-[#FF5A00] transition-colors'>
-                          {cat.name}
-                        </span>
-                      </Link>
-                    </StaggerItem>
-                  );
-                })}
+                      <div className='w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-[#F5F5F7] dark:bg-gray-800 group-hover:bg-[#EAEAEA] dark:group-hover:bg-gray-700 flex items-center justify-center transition-colors p-4'>
+                        <img
+                          src={`https://placehold.co/100x100/e2e8f0/64748b?text=${cat.name.charAt(0)}`}
+                          alt={cat.name}
+                          className='w-full h-full object-contain group-hover:scale-110 transition-transform duration-300'
+                        />
+                      </div>
+                      <span className='text-xs md:text-sm font-semibold text-center group-hover:text-[#FF5A00] transition-colors dark:text-gray-300'>
+                        {cat.name}
+                      </span>
+                    </Link>
+                  </StaggerItem>
+                ))}
               </div>
             </StaggerContainer>
           </section>
@@ -336,28 +320,30 @@ export default function HomePage() {
           <section>
             <div className='flex flex-col sm:flex-row items-center justify-between mb-8 gap-4'>
               <div className='flex items-center gap-4'>
-                <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase flex items-center gap-2'>
+                <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase dark:text-white flex items-center gap-2'>
                   <span className='text-[#FF5A00]'>🔥</span> Flash Deals
                 </h2>
                 <div className='flex gap-2 items-center text-sm font-bold'>
-                  <span className='text-gray-500 font-normal'>Ends in:</span>
-                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                  <span className='text-gray-500 dark:text-gray-400 font-normal'>
+                    Ends in:
+                  </span>
+                  <div className='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-[#0F1111] dark:text-white'>
                     02
-                    <span className='text-[10px] text-gray-500 block font-normal'>
+                    <span className='text-[10px] text-gray-500 dark:text-gray-400 block font-normal'>
                       DAYS
                     </span>
                   </div>{" "}
                   :
-                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                  <div className='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-[#0F1111] dark:text-white'>
                     15
-                    <span className='text-[10px] text-gray-500 block font-normal'>
+                    <span className='text-[10px] text-gray-500 dark:text-gray-400 block font-normal'>
                       HRS
                     </span>
                   </div>{" "}
                   :
-                  <div className='bg-gray-100 px-2 py-1 rounded'>
+                  <div className='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-[#0F1111] dark:text-white'>
                     45
-                    <span className='text-[10px] text-gray-500 block font-normal'>
+                    <span className='text-[10px] text-gray-500 dark:text-gray-400 block font-normal'>
                       MINS
                     </span>
                   </div>
@@ -365,12 +351,11 @@ export default function HomePage() {
               </div>
               <Link
                 to='/shop?isFeatured=true'
-                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+                className='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-[#FF5A00] flex items-center gap-1'
               >
                 View all deals <HiArrowRight className='w-4 h-4' />
               </Link>
             </div>
-
             {isLoading ? (
               <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4'>
                 {[...Array(5)].map((_, i) => (
@@ -396,30 +381,20 @@ export default function HomePage() {
           <section className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             <div
               className='relative rounded-2xl overflow-hidden min-h-[320px] group bg-cover bg-center'
-              style={{
-                backgroundImage: `url(${firstPromo})`,
-              }}
+              style={{ backgroundImage: `url(${firstPromo})` }}
             >
-              {/* Dark overlay for readability */}
               <div className='absolute inset-0 bg-gradient-to-r from-[#0A0D14]/95 via-[#0A0D14]/70 to-transparent'></div>
-
-              {/* Optional subtle hover effect */}
               <div className='absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-500'></div>
-
-              {/* Content */}
               <div className='relative z-10 p-8 text-white flex flex-col justify-center h-full max-w-[300px] space-y-4'>
                 <span className='text-xs font-bold tracking-[0.2em] text-orange-400'>
                   UP TO 50% OFF
                 </span>
-
                 <h3 className='text-3xl font-bold leading-tight'>
                   Electronics
                 </h3>
-
                 <p className='text-sm text-gray-300 leading-relaxed'>
                   Shop the latest gadgets at unbeatable prices
                 </p>
-
                 <Link
                   to='/shop?category=electronics'
                   className='w-fit bg-white text-black text-sm font-semibold px-5 py-3 rounded-full hover:bg-gray-200 transition-all hover:scale-105'
@@ -428,38 +403,27 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-
             <div
               className='relative rounded-2xl overflow-hidden min-h-[320px] group bg-cover bg-center'
-              style={{
-                backgroundImage: `url(${secondPromo})`,
-              }}
+              style={{ backgroundImage: `url(${secondPromo})` }}
             >
-              {/* Soft overlay for readability */}
-              <div className='absolute inset-0 bg-gradient-to-r from-[#FFEFE5]/95 via-[#FFEFE5]/80 to-transparent'></div>
-
-              {/* Hover effect */}
+              <div className='absolute inset-0 bg-gradient-to-r from-[#FFEFE5]/95 via-[#FFEFE5]/80 to-transparent dark:from-gray-900/95 dark:via-gray-900/80'></div>
               <div className='absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-500'></div>
-
-              {/* Content */}
               <div className='relative z-10 p-8 flex flex-col justify-center h-full max-w-[300px] space-y-4'>
-                <span className='text-xs font-bold tracking-[0.2em] text-[#B67B5D]'>
+                <span className='text-xs font-bold tracking-[0.2em] text-[#B67B5D] dark:text-orange-400'>
                   NEW COLLECTION
                 </span>
-
-                <h3 className='text-3xl font-bold text-[#0F1111] leading-tight'>
+                <h3 className='text-3xl font-bold text-[#0F1111] dark:text-white leading-tight'>
                   New Fashion
                   <br />
                   Collection
                 </h3>
-
-                <p className='text-sm text-gray-600 leading-relaxed'>
+                <p className='text-sm text-gray-600 dark:text-gray-300 leading-relaxed'>
                   Trendy styles for every occasion and season
                 </p>
-
                 <Link
                   to='/shop?category=fashion'
-                  className='w-fit bg-white border border-gray-200 text-black text-sm font-semibold px-5 py-3 rounded-full hover:bg-gray-50 hover:scale-105 transition-all'
+                  className='w-fit bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-sm font-semibold px-5 py-3 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-105 transition-all'
                 >
                   Shop Now →
                 </Link>
@@ -468,21 +432,20 @@ export default function HomePage() {
           </section>
         </FadeIn>
 
-        {/* ========== SHOP BY LIFESTYLE (Bento Grid) ========== */}
+        {/* ========== SHOP BY LIFESTYLE ========== */}
         <FadeIn>
           <section>
             <div className='flex items-center justify-between mb-6'>
-              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase dark:text-white'>
                 Shop By Lifestyle
               </h2>
               <Link
                 to='/collections'
-                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+                className='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-[#FF5A00] flex items-center gap-1'
               >
                 Explore all <HiArrowRight className='w-4 h-4' />
               </Link>
             </div>
-
             <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
               {[
                 "Work From Home",
@@ -492,7 +455,7 @@ export default function HomePage() {
               ].map((lifestyle, i) => (
                 <div
                   key={i}
-                  className='relative aspect-[4/3] rounded-2xl overflow-hidden group cursor-pointer bg-gray-100'
+                  className='relative aspect-[4/3] rounded-2xl overflow-hidden group cursor-pointer bg-gray-100 dark:bg-gray-800'
                 >
                   <img
                     src={lifeStyleImages[i]}
@@ -513,22 +476,17 @@ export default function HomePage() {
         {/* ========== TABBED PRODUCTS ========== */}
         <FadeIn>
           <section>
-            <div className='flex justify-center border-b border-gray-200 mb-8'>
+            <div className='flex justify-center border-b border-gray-200 dark:border-gray-700 mb-8'>
               {["TRENDING NOW", "BEST SELLERS", "NEW ARRIVALS"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-4 text-sm font-bold transition-colors border-b-2 ${
-                    activeTab === tab
-                      ? "border-[#FF5A00] text-[#FF5A00]"
-                      : "border-transparent text-gray-400 hover:text-gray-800"
-                  }`}
+                  className={`px-6 py-4 text-sm font-bold transition-colors border-b-2 ${activeTab === tab ? "border-[#FF5A00] text-[#FF5A00]" : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:hover:text-white"}`}
                 >
                   {tab}
                 </button>
               ))}
             </div>
-
             <StaggerContainer key={activeTab}>
               <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4'>
                 {getTabProducts().map((p) => (
@@ -543,25 +501,24 @@ export default function HomePage() {
 
         {/* ========== TOP BRANDS ========== */}
         <FadeIn>
-          <section className='border-t border-gray-100 pt-10'>
+          <section className='border-t border-gray-100 dark:border-gray-800 pt-10'>
             <div className='flex items-center justify-between mb-6'>
-              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase dark:text-white'>
                 Top Brands
               </h2>
               <Link
                 to='/brands'
-                className='text-sm font-semibold text-gray-500 hover:text-[#FF5A00] flex items-center gap-1'
+                className='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-[#FF5A00] flex items-center gap-1'
               >
                 View all brands <HiArrowRight className='w-4 h-4' />
               </Link>
             </div>
             <div className='flex flex-wrap justify-center md:justify-between items-center gap-8 opacity-60 grayscale'>
-              {/* Placeholders for Brand Logos */}
               {["Apple", "Samsung", "Sony", "Nike", "Adidas", "Logitech"].map(
                 (brand) => (
                   <div
                     key={brand}
-                    className='text-xl font-black tracking-tighter uppercase'
+                    className='text-xl font-black tracking-tighter uppercase dark:text-gray-400'
                   >
                     {brand}
                   </div>
@@ -595,10 +552,10 @@ export default function HomePage() {
         <FadeIn>
           <section>
             <div className='flex items-center justify-between mb-8'>
-              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase'>
+              <h2 className='text-xl md:text-2xl font-bold tracking-tight uppercase dark:text-white'>
                 Our Happy Customers
               </h2>
-              <span className='text-sm font-semibold text-gray-500'>
+              <span className='text-sm font-semibold text-gray-500 dark:text-gray-400'>
                 4.8/5 from 30,000+ reviews
               </span>
             </div>
@@ -606,26 +563,26 @@ export default function HomePage() {
               {testimonials.map((t, i) => (
                 <div
                   key={i}
-                  className='bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between'
+                  className='bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col justify-between'
                 >
                   <div>
                     <StarRating rating={t.rating} size='sm' />
-                    <p className='text-sm text-[#0F1111] mt-3 leading-relaxed font-medium'>
+                    <p className='text-sm text-[#0F1111] dark:text-gray-200 mt-3 leading-relaxed font-medium'>
                       "{t.text}"
                     </p>
                   </div>
                   <div className='flex items-center gap-3 mt-4'>
-                    <div className='w-8 overflow-hidden h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold text-xs'>
+                    <div className='w-8 overflow-hidden h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs'>
                       <img
                         src={`/src/assets/testimonial/${i + 1}.jpg`}
                         alt=''
                       />
                     </div>
                     <div>
-                      <p className='text-xs font-bold text-[#0F1111]'>
+                      <p className='text-xs font-bold text-[#0F1111] dark:text-white'>
                         {t.name}
                       </p>
-                      <p className='text-[10px] text-green-600 flex items-center gap-1 font-semibold'>
+                      <p className='text-[10px] text-green-600 dark:text-green-400 flex items-center gap-1 font-semibold'>
                         <HiShieldCheck className='w-3 h-3' /> {t.role}
                       </p>
                     </div>
@@ -653,7 +610,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-
             <div className='w-full md:w-auto relative z-10'>
               <form
                 onSubmit={(e) => e.preventDefault()}
