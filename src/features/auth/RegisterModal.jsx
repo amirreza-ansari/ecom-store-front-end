@@ -20,7 +20,6 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
     watch,
     reset,
   } = useForm();
-
   const password = watch("password", "");
 
   const onSubmit = async (data) => {
@@ -46,14 +45,14 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
       size='sm'
     >
       <div className='mb-6'>
-        <p className='text-sm text-slate-500'>
+        <p className='text-sm text-slate-500 dark:text-gray-400'>
           Join us to streamline your shopping experience.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
         {error && (
-          <div className='p-3.5 bg-rose-50/80 border border-rose-200 rounded-xl text-sm font-medium text-rose-600 flex items-center gap-2'>
+          <div className='p-3.5 bg-rose-50/80 dark:bg-red-900/20 border border-rose-200 dark:border-red-800 rounded-xl text-sm font-medium text-rose-600 dark:text-red-400 flex items-center gap-2'>
             <div className='w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0'></div>
             {error}
           </div>
@@ -66,7 +65,6 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
           error={errors.name?.message}
           {...register("name", registerSchema.name)}
         />
-
         <Input
           label='Email Address'
           type='email'
@@ -86,7 +84,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
           <button
             type='button'
             onClick={() => setShowPassword(!showPassword)}
-            className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
+            className='absolute top-[34px] right-3 text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-gray-800 px-1'
           >
             {showPassword ? "Hide" : "Show"}
           </button>
@@ -107,30 +105,29 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
           <button
             type='button'
             onClick={() => setShowConfirm(!showConfirm)}
-            className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
+            className='absolute top-[34px] right-3 text-[11px] font-bold uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-gray-800 px-1'
           >
             {showConfirm ? "Hide" : "Show"}
           </button>
         </div>
 
-        {/* Polished Password Strength Indicator */}
         {password && (
           <div className='space-y-1.5 pt-1'>
             <div className='flex gap-1.5 h-1.5'>
               <div
-                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 1 ? "bg-rose-400" : "bg-slate-100"}`}
+                className={`flex-1 rounded-full ${password.length >= 1 ? "bg-rose-400" : "bg-slate-100 dark:bg-gray-600"}`}
               />
               <div
-                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 4 ? "bg-amber-400" : "bg-slate-100"}`}
+                className={`flex-1 rounded-full ${password.length >= 4 ? "bg-amber-400" : "bg-slate-100 dark:bg-gray-600"}`}
               />
               <div
-                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 6 ? "bg-emerald-400" : "bg-slate-100"}`}
+                className={`flex-1 rounded-full ${password.length >= 6 ? "bg-emerald-400" : "bg-slate-100 dark:bg-gray-600"}`}
               />
               <div
-                className={`flex-1 rounded-full transition-all duration-300 ${password.length >= 8 ? "bg-emerald-600" : "bg-slate-100"}`}
+                className={`flex-1 rounded-full ${password.length >= 8 ? "bg-emerald-600" : "bg-slate-100 dark:bg-gray-600"}`}
               />
             </div>
-            <p className='text-[10px] font-medium text-slate-400 text-right uppercase tracking-wider'>
+            <p className='text-[10px] font-medium text-slate-400 dark:text-gray-500 text-right uppercase'>
               {password.length < 4
                 ? "Weak"
                 : password.length < 8
@@ -145,7 +142,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
             type='submit'
             variant='primary'
             size='lg'
-            className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70'
+            className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 shadow-lg transition-all disabled:opacity-70'
             disabled={isLoading}
           >
             {isLoading ? "Setting up..." : "Create Account"}
@@ -153,19 +150,18 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
         </div>
 
         <div className='space-y-4 pt-2'>
-          <p className='text-center text-[11px] font-medium text-slate-400 leading-relaxed px-4'>
+          <p className='text-center text-[11px] font-medium text-slate-400 dark:text-gray-500 leading-relaxed px-4'>
             By continuing, you agree to our{" "}
-            <span className='text-slate-700 underline cursor-pointer'>
-              Terms of Service
+            <span className='text-slate-700 dark:text-gray-300 underline cursor-pointer'>
+              Terms
             </span>{" "}
             and{" "}
-            <span className='text-slate-700 underline cursor-pointer'>
-              Privacy Policy
+            <span className='text-slate-700 dark:text-gray-300 underline cursor-pointer'>
+              Privacy
             </span>
             .
           </p>
-
-          <p className='text-center text-sm font-medium text-slate-500 border-t border-slate-100 pt-4'>
+          <p className='text-center text-sm font-medium text-slate-500 dark:text-gray-400 border-t border-slate-100 dark:border-gray-700 pt-4'>
             Already have an account?{" "}
             <button
               type='button'
@@ -173,7 +169,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
                 handleClose();
                 onSwitchToLogin?.();
               }}
-              className='text-slate-900 font-bold hover:underline decoration-2 underline-offset-2'
+              className='text-slate-900 dark:text-white font-bold hover:underline'
             >
               Sign In
             </button>

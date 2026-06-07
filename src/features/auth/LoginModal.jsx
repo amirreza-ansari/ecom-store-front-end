@@ -41,14 +41,14 @@ export default function LoginModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title='Welcome Back' size='sm'>
       <div className='mb-6'>
-        <p className='text-sm text-slate-500'>
+        <p className='text-sm text-slate-500 dark:text-gray-400'>
           Enter your credentials to access your account.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
         {error && (
-          <div className='p-3.5 bg-rose-50/80 border border-rose-200 rounded-xl text-sm font-medium text-rose-600 flex items-center gap-2'>
+          <div className='p-3.5 bg-rose-50/80 dark:bg-red-900/20 border border-rose-200 dark:border-red-800 rounded-xl text-sm font-medium text-rose-600 dark:text-red-400 flex items-center gap-2'>
             <div className='w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0'></div>
             {error}
           </div>
@@ -62,7 +62,6 @@ export default function LoginModal({
             error={errors.email?.message}
             {...register("email", loginSchema.email)}
           />
-
           <div className='relative'>
             <Input
               label='Password'
@@ -74,7 +73,7 @@ export default function LoginModal({
             <button
               type='button'
               onClick={() => setShowPassword(!showPassword)}
-              className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 hover:text-slate-900 transition-colors bg-white px-1'
+              className='absolute top-[34px] right-3 text-[11px] font-bold tracking-wide uppercase text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors bg-white dark:bg-gray-800 px-1'
             >
               {showPassword ? "Hide" : "Show"}
             </button>
@@ -88,7 +87,7 @@ export default function LoginModal({
               handleClose();
               onSwitchToForgot?.();
             }}
-            className='text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors'
+            className='text-xs font-semibold text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors'
           >
             Forgot your password?
           </button>
@@ -98,13 +97,13 @@ export default function LoginModal({
           type='submit'
           variant='primary'
           size='lg'
-          className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70'
+          className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 shadow-lg transition-all disabled:opacity-70'
           disabled={isLoading}
         >
           {isLoading ? "Authenticating..." : "Sign In"}
         </Button>
 
-        <p className='text-center text-sm font-medium text-slate-500 pt-2'>
+        <p className='text-center text-sm font-medium text-slate-500 dark:text-gray-400 pt-2'>
           Don't have an account?{" "}
           <button
             type='button'
@@ -112,7 +111,7 @@ export default function LoginModal({
               handleClose();
               onSwitchToRegister?.();
             }}
-            className='text-slate-900 font-bold hover:underline decoration-2 underline-offset-2'
+            className='text-slate-900 dark:text-white font-bold hover:underline'
           >
             Create one
           </button>

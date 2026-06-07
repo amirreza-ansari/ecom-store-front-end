@@ -40,7 +40,6 @@ export default function AddressPage() {
       setLoading(false);
     }
   };
-
   const handleEdit = (addr) => {
     setEditingId(addr._id);
     setForm({
@@ -56,14 +55,12 @@ export default function AddressPage() {
     setShowForm(true);
     setFormError("");
   };
-
   const handleAdd = () => {
     setEditingId(null);
     setForm(emptyAddress);
     setShowForm(true);
     setFormError("");
   };
-
   const handleCancel = () => {
     setShowForm(false);
     setEditingId(null);
@@ -73,7 +70,6 @@ export default function AddressPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (
       !form.street.trim() ||
       !form.city.trim() ||
@@ -83,10 +79,8 @@ export default function AddressPage() {
       setFormError("Please fill in all required fields");
       return;
     }
-
     setSaving(true);
     setFormError("");
-
     try {
       if (editingId) {
         await addressApi.update(editingId, form);
@@ -115,18 +109,19 @@ export default function AddressPage() {
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className='flex justify-center items-center min-h-[60vh]'>
         <Spinner size='lg' />
       </div>
     );
-  }
 
   return (
-    <div className='max-w-2xl mx-auto px-4 py-6'>
+    <div className='max-w-2xl mx-auto px-4 py-6 min-h-screen'>
       <div className='flex items-center justify-between mb-6'>
-        <h1 className='text-2xl font-bold text-[#0F1111]'>My Addresses</h1>
+        <h1 className='text-2xl font-bold text-[#0F1111] dark:text-white'>
+          My Addresses
+        </h1>
         {!showForm && (
           <Button onClick={handleAdd} size='sm'>
             <HiPlus className='w-4 h-4 mr-1' /> Add Address
@@ -134,29 +129,26 @@ export default function AddressPage() {
         )}
       </div>
 
-      {/* Address Form */}
       {showForm && (
-        <div className='bg-white rounded-lg p-6 shadow-sm mb-6'>
-          <h2 className='text-lg font-semibold text-[#0F1111] mb-4'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6'>
+          <h2 className='text-lg font-semibold text-[#0F1111] dark:text-white mb-4'>
             {editingId ? "Edit Address" : "New Address"}
           </h2>
-
           {formError && (
-            <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-[#B12704] mb-4'>
+            <div className='p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-[#B12704] dark:text-red-400 mb-4'>
               {formError}
             </div>
           )}
-
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='grid grid-cols-2 gap-4'>
               <div>
-                <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+                <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                   Label
                 </label>
                 <select
                   value={form.label}
                   onChange={(e) => setForm({ ...form, label: e.target.value })}
-                  className='w-full px-3 py-2.5 text-sm border border-[#D5D9D9] rounded-lg'
+                  className='w-full px-3 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 >
                   <option>Home</option>
                   <option>Work</option>
@@ -164,7 +156,7 @@ export default function AddressPage() {
                 </select>
               </div>
               <div>
-                <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+                <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                   Phone
                 </label>
                 <input
@@ -172,13 +164,12 @@ export default function AddressPage() {
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder='Optional'
-                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900]'
+                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
             </div>
-
             <div>
-              <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+              <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                 Street *
               </label>
               <input
@@ -186,13 +177,12 @@ export default function AddressPage() {
                 value={form.street}
                 onChange={(e) => setForm({ ...form, street: e.target.value })}
                 required
-                className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900]'
+                className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
               />
             </div>
-
             <div className='grid grid-cols-3 gap-4'>
               <div>
-                <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+                <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                   City *
                 </label>
                 <input
@@ -200,11 +190,11 @@ export default function AddressPage() {
                   value={form.city}
                   onChange={(e) => setForm({ ...form, city: e.target.value })}
                   required
-                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900]'
+                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
               <div>
-                <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+                <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                   State *
                 </label>
                 <input
@@ -212,11 +202,11 @@ export default function AddressPage() {
                   value={form.state}
                   onChange={(e) => setForm({ ...form, state: e.target.value })}
                   required
-                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900]'
+                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
               <div>
-                <label className='block text-sm font-medium text-[#0F1111] mb-1'>
+                <label className='block text-sm font-medium text-[#0F1111] dark:text-gray-300 mb-1'>
                   Zip Code *
                 </label>
                 <input
@@ -226,11 +216,10 @@ export default function AddressPage() {
                     setForm({ ...form, zipCode: e.target.value })
                   }
                   required
-                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9900]'
+                  className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
             </div>
-
             <label className='flex items-center gap-2 cursor-pointer'>
               <input
                 type='checkbox'
@@ -238,20 +227,15 @@ export default function AddressPage() {
                 onChange={(e) =>
                   setForm({ ...form, isDefault: e.target.checked })
                 }
-                className='w-4 h-4 text-[#FF9900] focus:ring-[#FF9900] rounded'
+                className='w-4 h-4 text-[#FF9900] rounded'
               />
-              <span className='text-sm text-[#0F1111]'>
+              <span className='text-sm text-[#0F1111] dark:text-gray-300'>
                 Set as default address
               </span>
             </label>
-
             <div className='flex gap-3'>
               <Button type='submit' variant='primary' disabled={saving}>
-                {saving
-                  ? "Saving..."
-                  : editingId
-                    ? "Update Address"
-                    : "Save Address"}
+                {saving ? "Saving..." : editingId ? "Update" : "Save"}
               </Button>
               <Button type='button' variant='outline' onClick={handleCancel}>
                 Cancel
@@ -261,14 +245,13 @@ export default function AddressPage() {
         </div>
       )}
 
-      {/* Address List */}
       {!showForm && addresses.length === 0 ? (
-        <div className='text-center py-16 bg-white rounded-lg shadow-sm'>
-          <HiMapPin className='w-16 h-16 text-[#D5D9D9] mx-auto mb-4' />
-          <h2 className='text-lg font-semibold text-[#0F1111] mb-2'>
+        <div className='text-center py-16 bg-white dark:bg-gray-800 rounded-lg shadow-sm'>
+          <HiMapPin className='w-16 h-16 text-[#D5D9D9] dark:text-gray-600 mx-auto mb-4' />
+          <h2 className='text-lg font-semibold text-[#0F1111] dark:text-white mb-2'>
             No addresses yet
           </h2>
-          <p className='text-[#565959] mb-6'>
+          <p className='text-[#565959] dark:text-gray-400 mb-6'>
             Add a shipping address to make checkout faster.
           </p>
           <Button onClick={handleAdd}>
@@ -281,21 +264,21 @@ export default function AddressPage() {
             {addresses.map((addr) => (
               <div
                 key={addr._id}
-                className='bg-white rounded-lg p-5 shadow-sm border border-[#D5D9D9]'
+                className='bg-white dark:bg-gray-800 rounded-lg p-5 shadow-sm border border-[#D5D9D9] dark:border-gray-700'
               >
                 <div className='flex items-start justify-between'>
                   <div className='flex-1'>
                     <div className='flex items-center gap-2 mb-2'>
-                      <span className='font-medium text-[#0F1111]'>
+                      <span className='font-medium text-[#0F1111] dark:text-white'>
                         {addr.label}
                       </span>
                       {addr.isDefault && (
-                        <span className='inline-flex items-center gap-1 text-xs bg-green-50 text-[#067D62] px-2 py-0.5 rounded-full'>
+                        <span className='inline-flex items-center gap-1 text-xs bg-green-50 dark:bg-green-900/30 text-[#067D62] dark:text-green-400 px-2 py-0.5 rounded-full'>
                           <HiCheck className='w-3 h-3' /> Default
                         </span>
                       )}
                     </div>
-                    <p className='text-sm text-[#565959]'>
+                    <p className='text-sm text-[#565959] dark:text-gray-400'>
                       {addr.street}
                       <br />
                       {addr.city}, {addr.state} {addr.zipCode}
@@ -303,7 +286,7 @@ export default function AddressPage() {
                       {addr.country}
                     </p>
                     {addr.phone && (
-                      <p className='text-sm text-[#565959] mt-1'>
+                      <p className='text-sm text-[#565959] dark:text-gray-400 mt-1'>
                         📱 {addr.phone}
                       </p>
                     )}
@@ -311,15 +294,13 @@ export default function AddressPage() {
                   <div className='flex gap-2'>
                     <button
                       onClick={() => handleEdit(addr)}
-                      className='p-2 text-[#565959] hover:text-[#FF9900] hover:bg-[#F7FAFA] rounded-lg transition-colors'
-                      title='Edit'
+                      className='p-2 text-[#565959] dark:text-gray-400 hover:text-[#FF9900] hover:bg-[#F7FAFA] dark:hover:bg-gray-700 rounded-lg transition-colors'
                     >
                       <HiPencil className='w-4 h-4' />
                     </button>
                     <button
                       onClick={() => handleDelete(addr._id)}
-                      className='p-2 text-[#565959] hover:text-[#B12704] hover:bg-[#F7FAFA] rounded-lg transition-colors'
-                      title='Delete'
+                      className='p-2 text-[#565959] dark:text-gray-400 hover:text-[#B12704] dark:hover:text-red-400 hover:bg-[#F7FAFA] dark:hover:bg-gray-700 rounded-lg transition-colors'
                     >
                       <HiTrash className='w-4 h-4' />
                     </button>

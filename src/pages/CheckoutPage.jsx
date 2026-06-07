@@ -65,12 +65,10 @@ export default function CheckoutPage() {
       ]);
       dispatch(setCart(cartRes.data.data.cart));
       setAddresses(addrRes.data.data.addresses || []);
-
       const defaultAddr = addrRes.data.data.addresses?.find((a) => a.isDefault);
       if (defaultAddr) setSelectedAddress(defaultAddr._id);
-      else if (addrRes.data.data.addresses?.length > 0) {
+      else if (addrRes.data.data.addresses?.length > 0)
         setSelectedAddress(addrRes.data.data.addresses[0]._id);
-      }
     } catch (error) {
       toast.error("Failed to load checkout data");
     } finally {
@@ -101,16 +99,13 @@ export default function CheckoutPage() {
     }
   };
 
-  // Prepares the order session and immediately bridges to the card info modal
   const handleProceedToPayment = async () => {
     if (!selectedAddress) {
       toast.error("Please select a shipping address");
       return;
     }
-
     setIsPreparingPayment(true);
     try {
-      // Creates the order session context on the backend (Pending Payment state)
       const { data } = await orderApi.create({
         shippingAddressId: selectedAddress,
         paymentMethod,
@@ -139,7 +134,6 @@ export default function CheckoutPage() {
       phone: addr.phone || "",
     });
   };
-
   const handleUpdateAddress = async (e) => {
     e.preventDefault();
     try {
@@ -152,17 +146,15 @@ export default function CheckoutPage() {
       toast.error(error.response?.data?.message || "Failed to update");
     }
   };
-
   const handleDeleteAddress = async (addressId) => {
     if (!window.confirm("Delete this address?")) return;
     try {
       await addressApi.delete(addressId);
       setAddresses((prev) => prev.filter((a) => a._id !== addressId));
-      if (selectedAddress === addressId) {
+      if (selectedAddress === addressId)
         setSelectedAddress(
           addresses.find((a) => a._id !== addressId)?._id || null,
         );
-      }
       toast.success("Address deleted");
     } catch (error) {
       toast.error("Failed to delete address");
@@ -172,62 +164,58 @@ export default function CheckoutPage() {
   const shippingCostDisplay =
     shippingCost === 0 ? "FREE" : `$${shippingCost?.toFixed(2)}`;
 
-  if (loading) {
+  if (loading)
     return (
-      <div className='flex flex-col justify-center items-center min-h-[60vh] gap-3'>
-        <Spinner size='md' className='text-slate-900' />
-        <p className='text-sm font-medium text-slate-500 animate-pulse'>
+      <div className='flex flex-col justify-center items-center min-h-[60vh] gap-3 bg-white dark:bg-gray-950'>
+        <Spinner size='md' className='text-slate-900 dark:text-white' />
+        <p className='text-sm font-medium text-slate-500 dark:text-gray-400 animate-pulse'>
           Setting up secure session...
         </p>
       </div>
     );
-  }
 
-  if (!items || items.length === 0) {
+  if (!items || items.length === 0)
     return (
-      <div className='max-w-2xl mx-auto px-4 py-16 text-center'>
-        <h1 className='text-2xl font-bold tracking-tight text-slate-900 mb-2'>
+      <div className='max-w-2xl mx-auto px-4 py-16 text-center bg-white dark:bg-gray-950 min-h-screen'>
+        <h1 className='text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-2'>
           Your cart is empty
         </h1>
-        <p className='text-sm text-slate-500 mb-8'>
+        <p className='text-sm text-slate-500 dark:text-gray-400 mb-8'>
           Add items to your cart before proceeding to checkout.
         </p>
         <Link to='/shop'>
           <Button
             variant='primary'
-            className='px-6 py-3 rounded-lg font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-md shadow-slate-900/10'
+            className='px-6 py-3 rounded-lg font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 transition-all'
           >
             Shop Now
           </Button>
         </Link>
       </div>
     );
-  }
 
   return (
-    <div className='max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-[#FAFAFA] min-h-screen text-slate-900 font-sans'>
+    <div className='max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-[#FAFAFA] dark:bg-gray-950 min-h-screen text-slate-900 dark:text-white font-sans'>
       <Link
         to='/cart'
-        className='group inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors mb-6'
+        className='group inline-flex items-center text-xs font-semibold text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-6'
       >
-        <HiChevronLeft className='w-3.5 h-3.5 mr-1 transition-transform group-hover:-translate-x-0.5' />
+        <HiChevronLeft className='w-3.5 h-3.5 mr-1 transition-transform group-hover:-translate-x-0.5' />{" "}
         Back to Cart
       </Link>
 
       <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 items-start'>
-        {/* Checkout Steps Form */}
         <div className='lg:col-span-8 space-y-4'>
-          {/* Step 1: Shipping Address */}
-          <div className='bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-slate-100'>
+          {/* Step 1: Shipping */}
+          <div className='bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] dark:shadow-none border border-slate-100 dark:border-gray-700'>
             <div className='flex items-center gap-2 mb-4'>
-              <div className='w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
+              <div className='w-5 h-5 rounded-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
                 1
               </div>
-              <h2 className='text-base font-bold text-slate-900 tracking-tight'>
+              <h2 className='text-base font-bold text-slate-900 dark:text-white tracking-tight'>
                 Shipping Address
               </h2>
             </div>
-
             {addresses.length > 0 ? (
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                 {addresses.map((addr) => (
@@ -235,11 +223,11 @@ export default function CheckoutPage() {
                     {editingAddress === addr._id ? (
                       <form
                         onSubmit={handleUpdateAddress}
-                        className='p-4 border border-slate-200 rounded-xl bg-slate-50/50 space-y-2.5 h-full'
+                        className='p-4 border border-slate-200 dark:border-gray-600 rounded-xl bg-slate-50/50 dark:bg-gray-700/50 space-y-2.5 h-full'
                       >
                         <div className='grid grid-cols-2 gap-2.5'>
                           <div>
-                            <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                            <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                               Label
                             </label>
                             <select
@@ -250,7 +238,7 @@ export default function CheckoutPage() {
                                   label: e.target.value,
                                 })
                               }
-                              className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                              className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                             >
                               <option>Home</option>
                               <option>Work</option>
@@ -258,7 +246,7 @@ export default function CheckoutPage() {
                             </select>
                           </div>
                           <div>
-                            <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                            <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                               Phone
                             </label>
                             <input
@@ -270,12 +258,12 @@ export default function CheckoutPage() {
                                   phone: e.target.value,
                                 })
                               }
-                              className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                              className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                             />
                           </div>
                         </div>
                         <div>
-                          <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                          <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                             Street *
                           </label>
                           <input
@@ -288,7 +276,7 @@ export default function CheckoutPage() {
                               })
                             }
                             required
-                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                           />
                         </div>
                         <div className='grid grid-cols-3 gap-2'>
@@ -300,7 +288,7 @@ export default function CheckoutPage() {
                               setEditForm({ ...editForm, city: e.target.value })
                             }
                             required
-                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                           />
                           <input
                             type='text'
@@ -313,7 +301,7 @@ export default function CheckoutPage() {
                               })
                             }
                             required
-                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                           />
                           <input
                             type='text'
@@ -326,20 +314,20 @@ export default function CheckoutPage() {
                               })
                             }
                             required
-                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                            className='w-full px-2.5 py-1.5 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                           />
                         </div>
                         <div className='flex gap-1.5 pt-1'>
                           <button
                             type='submit'
-                            className='px-3 py-1.5 bg-slate-950 text-white font-bold rounded-lg text-[11px]'
+                            className='px-3 py-1.5 bg-slate-950 dark:bg-white dark:text-slate-900 text-white font-bold rounded-lg text-[11px]'
                           >
                             Save
                           </button>
                           <button
                             type='button'
                             onClick={() => setEditingAddress(null)}
-                            className='px-3 py-1.5 border border-slate-200 text-slate-600 font-semibold rounded-lg text-[11px] bg-white'
+                            className='px-3 py-1.5 border border-slate-200 dark:border-gray-600 text-slate-600 dark:text-gray-300 font-semibold rounded-lg text-[11px] bg-white dark:bg-gray-800'
                           >
                             Cancel
                           </button>
@@ -347,11 +335,7 @@ export default function CheckoutPage() {
                       </form>
                     ) : (
                       <label
-                        className={`flex flex-col justify-between h-full p-3.5 rounded-xl border relative cursor-pointer transition-all ${
-                          selectedAddress === addr._id
-                            ? "border-slate-900 bg-slate-50/50"
-                            : "border-slate-100 bg-white hover:border-slate-300"
-                        }`}
+                        className={`flex flex-col justify-between h-full p-3.5 rounded-xl border relative cursor-pointer transition-all ${selectedAddress === addr._id ? "border-slate-900 dark:border-white bg-slate-50/50 dark:bg-gray-700/50" : "border-slate-100 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-slate-300 dark:hover:border-gray-500"}`}
                       >
                         <div>
                           <div className='flex items-center justify-between mb-1.5'>
@@ -361,30 +345,30 @@ export default function CheckoutPage() {
                                 name='address'
                                 checked={selectedAddress === addr._id}
                                 onChange={() => setSelectedAddress(addr._id)}
-                                className='w-3.5 h-3.5 text-slate-900 focus:ring-slate-900 border-slate-300'
+                                className='w-3.5 h-3.5 text-slate-900 dark:text-white'
                               />
-                              <span className='text-xs font-bold text-slate-900 uppercase tracking-wide'>
+                              <span className='text-xs font-bold text-slate-900 dark:text-white uppercase'>
                                 {addr.label}
                               </span>
                             </div>
                             {addr.isDefault && (
-                              <span className='text-[9px] font-bold tracking-wide bg-slate-100 text-slate-500 uppercase px-1.5 py-0.5 rounded-md'>
+                              <span className='text-[9px] font-bold bg-slate-100 dark:bg-gray-600 text-slate-500 dark:text-gray-300 uppercase px-1.5 py-0.5 rounded-md'>
                                 Default
                               </span>
                             )}
                           </div>
-                          <p className='text-xs font-medium text-slate-500 leading-relaxed pl-5'>
+                          <p className='text-xs font-medium text-slate-500 dark:text-gray-400 pl-5'>
                             {addr.street}, {addr.city}, {addr.state}{" "}
                             {addr.zipCode}
                           </p>
                         </div>
-                        <div className='flex gap-2.5 mt-3 pt-2.5 border-t border-slate-100/80 pl-5'>
+                        <div className='flex gap-2.5 mt-3 pt-2.5 border-t border-slate-100/80 dark:border-gray-700 pl-5'>
                           <button
                             onClick={(e) => {
                               e.preventDefault();
                               handleEditAddress(addr);
                             }}
-                            className='text-[11px] font-bold text-slate-400 hover:text-slate-900'
+                            className='text-[11px] font-bold text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white'
                           >
                             Edit
                           </button>
@@ -393,7 +377,7 @@ export default function CheckoutPage() {
                               e.preventDefault();
                               handleDeleteAddress(addr._id);
                             }}
-                            className='text-[11px] font-bold text-slate-400 hover:text-rose-600'
+                            className='text-[11px] font-bold text-slate-400 dark:text-gray-500 hover:text-rose-600 dark:hover:text-red-400'
                           >
                             Delete
                           </button>
@@ -404,7 +388,7 @@ export default function CheckoutPage() {
                 ))}
               </div>
             ) : (
-              <p className='text-xs font-medium text-slate-500 mb-2'>
+              <p className='text-xs font-medium text-slate-500 dark:text-gray-400 mb-2'>
                 No saved delivery addresses found.
               </p>
             )}
@@ -412,14 +396,14 @@ export default function CheckoutPage() {
             {showNewAddress ? (
               <form
                 onSubmit={handleAddAddress}
-                className='mt-4 border-t border-slate-100 pt-4 space-y-3'
+                className='mt-4 border-t border-slate-100 dark:border-gray-700 pt-4 space-y-3'
               >
-                <h3 className='text-xs font-bold text-slate-900 uppercase tracking-wider'>
+                <h3 className='text-xs font-bold text-slate-900 dark:text-white uppercase'>
                   New Address Details
                 </h3>
                 <div className='grid grid-cols-2 gap-3'>
                   <div>
-                    <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                    <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                       Label
                     </label>
                     <select
@@ -427,7 +411,7 @@ export default function CheckoutPage() {
                       onChange={(e) =>
                         setNewAddress({ ...newAddress, label: e.target.value })
                       }
-                      className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                      className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                     >
                       <option>Home</option>
                       <option>Work</option>
@@ -435,7 +419,7 @@ export default function CheckoutPage() {
                     </select>
                   </div>
                   <div>
-                    <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                    <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                       Phone
                     </label>
                     <input
@@ -444,13 +428,13 @@ export default function CheckoutPage() {
                       onChange={(e) =>
                         setNewAddress({ ...newAddress, phone: e.target.value })
                       }
-                      className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                      className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                       placeholder='Optional'
                     />
                   </div>
                 </div>
                 <div>
-                  <label className='block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1'>
+                  <label className='block text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1'>
                     Street *
                   </label>
                   <input
@@ -460,7 +444,7 @@ export default function CheckoutPage() {
                       setNewAddress({ ...newAddress, street: e.target.value })
                     }
                     required
-                    className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                    className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                   />
                 </div>
                 <div className='grid grid-cols-3 gap-3'>
@@ -472,7 +456,7 @@ export default function CheckoutPage() {
                       setNewAddress({ ...newAddress, city: e.target.value })
                     }
                     required
-                    className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                    className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                   />
                   <input
                     placeholder='State *'
@@ -482,7 +466,7 @@ export default function CheckoutPage() {
                       setNewAddress({ ...newAddress, state: e.target.value })
                     }
                     required
-                    className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                    className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                   />
                   <input
                     placeholder='Zip Code *'
@@ -492,14 +476,14 @@ export default function CheckoutPage() {
                       setNewAddress({ ...newAddress, zipCode: e.target.value })
                     }
                     required
-                    className='w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg focus:outline-none'
+                    className='w-full px-3 py-2 text-xs font-medium bg-white dark:bg-gray-800 dark:text-white border border-slate-200 dark:border-gray-600 rounded-lg'
                   />
                 </div>
                 <div className='flex gap-2 pt-1'>
                   <Button
                     type='submit'
                     variant='primary'
-                    className='px-4 py-2 text-xs font-bold rounded-lg bg-slate-900 text-white'
+                    className='px-4 py-2 text-xs font-bold rounded-lg bg-slate-900 dark:bg-white dark:text-slate-900 text-white'
                   >
                     Save Address
                   </Button>
@@ -507,7 +491,7 @@ export default function CheckoutPage() {
                     type='button'
                     variant='outline'
                     onClick={() => setShowNewAddress(false)}
-                    className='px-4 py-2 text-xs font-semibold rounded-lg border-slate-200'
+                    className='px-4 py-2 text-xs font-semibold rounded-lg border-slate-200 dark:border-gray-600 dark:text-gray-300'
                   >
                     Cancel
                   </Button>
@@ -516,20 +500,20 @@ export default function CheckoutPage() {
             ) : (
               <button
                 onClick={() => setShowNewAddress(true)}
-                className='mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-indigo-600 transition-colors'
+                className='mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors'
               >
                 <HiPlus className='w-3.5 h-3.5' /> Add New Address
               </button>
             )}
           </div>
 
-          {/* Step 2: Payment Selector */}
-          <div className='bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-slate-100'>
+          {/* Step 2: Payment */}
+          <div className='bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] dark:shadow-none border border-slate-100 dark:border-gray-700'>
             <div className='flex items-center gap-2 mb-4'>
-              <div className='w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
+              <div className='w-5 h-5 rounded-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
                 2
               </div>
-              <h2 className='text-base font-bold text-slate-900 tracking-tight'>
+              <h2 className='text-base font-bold text-slate-900 dark:text-white tracking-tight'>
                 Payment Method
               </h2>
             </div>
@@ -541,27 +525,23 @@ export default function CheckoutPage() {
               ].map((method) => (
                 <label
                   key={method.value}
-                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
-                    paymentMethod === method.value
-                      ? "border-slate-900 bg-slate-50/50 shadow-sm"
-                      : "border-slate-100 bg-white hover:border-slate-300"
-                  }`}
+                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${paymentMethod === method.value ? "border-slate-900 dark:border-white bg-slate-50/50 dark:bg-gray-700/50" : "border-slate-100 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-slate-300 dark:hover:border-gray-500"}`}
                 >
                   <input
                     type='radio'
                     name='payment'
                     checked={paymentMethod === method.value}
                     onChange={() => setPaymentMethod(method.value)}
-                    className='w-3.5 h-3.5 text-slate-900 focus:ring-slate-900 border-slate-300'
+                    className='w-3.5 h-3.5 text-slate-900 dark:text-white'
                   />
-                  <span className='text-base shrink-0 text-slate-700 flex items-center justify-center'>
+                  <span className='text-base shrink-0 text-slate-700 dark:text-gray-300'>
                     {typeof method.icon === "string" ? (
                       method.icon
                     ) : (
                       <method.icon className='w-4 h-4' />
                     )}
                   </span>
-                  <span className='text-xs font-bold text-slate-900 tracking-tight'>
+                  <span className='text-xs font-bold text-slate-900 dark:text-white'>
                     {method.label}
                   </span>
                 </label>
@@ -569,15 +549,15 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Step 3: Instructions Box */}
-          <div className='bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-slate-100'>
+          {/* Step 3: Notes */}
+          <div className='bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_2px_12px_rgb(0,0,0,0.02)] dark:shadow-none border border-slate-100 dark:border-gray-700'>
             <div className='flex items-center gap-2 mb-3'>
-              <div className='w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
+              <div className='w-5 h-5 rounded-full bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-[10px] font-bold flex items-center justify-center'>
                 3
               </div>
-              <h2 className='text-base font-bold text-slate-900 tracking-tight'>
+              <h2 className='text-base font-bold text-slate-900 dark:text-white tracking-tight'>
                 Order Notes{" "}
-                <span className='text-xs font-medium text-slate-400 lowercase'>
+                <span className='text-xs font-medium text-slate-400 dark:text-gray-500 lowercase'>
                   (optional)
                 </span>
               </h2>
@@ -585,21 +565,20 @@ export default function CheckoutPage() {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder='Add accurate delivery coordinates or structural drop-off directives here...'
-              className='w-full px-3 py-2.5 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 placeholder:text-slate-400 transition-all resize-none'
+              placeholder='Add delivery instructions...'
+              className='w-full px-3 py-2.5 text-xs font-medium text-slate-900 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white placeholder:text-slate-400 dark:placeholder:text-gray-500 resize-none'
               rows={2}
             />
           </div>
         </div>
 
-        {/* Sidebar Sticky Panel */}
+        {/* Sidebar */}
         <div className='lg:col-span-4'>
-          <div className='bg-white rounded-2xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-100 sticky top-6'>
-            <h2 className='text-sm font-bold text-slate-900 mb-4 uppercase tracking-wider'>
+          <div className='bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none border border-slate-100 dark:border-gray-700 sticky top-6'>
+            <h2 className='text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase'>
               Order Summary
             </h2>
-
-            <div className='max-h-36 overflow-y-auto space-y-2.5 mb-4 pr-1 border-b border-slate-100 pb-4'>
+            <div className='max-h-36 overflow-y-auto space-y-2.5 mb-4 pr-1 border-b border-slate-100 dark:border-gray-700 pb-4'>
               {items.map((item) => (
                 <div
                   key={item._id}
@@ -612,84 +591,78 @@ export default function CheckoutPage() {
                         "https://via.placeholder.com/50x50?text=No+Image"
                       }
                       alt={item.product?.name}
-                      className='w-9 h-9 object-cover rounded-lg bg-slate-50 border border-slate-100 shrink-0'
+                      className='w-9 h-9 object-cover rounded-lg bg-slate-50 dark:bg-gray-700 border border-slate-100 dark:border-gray-600 shrink-0'
                     />
                     <div className='min-w-0'>
-                      <p className='text-xs font-bold text-slate-900 truncate'>
+                      <p className='text-xs font-bold text-slate-900 dark:text-white truncate'>
                         {item.product?.name}
                       </p>
-                      <p className='text-[10px] font-medium text-slate-400 mt-0.5'>
+                      <p className='text-[10px] font-medium text-slate-400 dark:text-gray-500 mt-0.5'>
                         Qty: {item.quantity}
                       </p>
                     </div>
                   </div>
-                  <p className='text-xs font-bold text-slate-900 shrink-0'>
+                  <p className='text-xs font-bold text-slate-900 dark:text-white shrink-0'>
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
             </div>
-
-            <div className='space-y-2.5 text-xs font-medium border-b border-slate-100 pb-4 mb-4'>
-              <div className='flex justify-between text-slate-500'>
-                <span>Subtotal ({totalItems} elements)</span>
-                <span className='text-slate-900'>${subtotal?.toFixed(2)}</span>
+            <div className='space-y-2.5 text-xs font-medium border-b border-slate-100 dark:border-gray-700 pb-4 mb-4'>
+              <div className='flex justify-between text-slate-500 dark:text-gray-400'>
+                <span>Subtotal ({totalItems} items)</span>
+                <span className='text-slate-900 dark:text-white'>
+                  ${subtotal?.toFixed(2)}
+                </span>
               </div>
-              <div className='flex justify-between text-slate-500'>
+              <div className='flex justify-between text-slate-500 dark:text-gray-400'>
                 <span>Shipping</span>
                 <span
                   className={
                     shippingCost === 0
-                      ? "text-emerald-600 font-bold"
-                      : "text-slate-900"
+                      ? "text-emerald-600 dark:text-emerald-400 font-bold"
+                      : "text-slate-900 dark:text-white"
                   }
                 >
                   {shippingCostDisplay}
                 </span>
               </div>
               {discount > 0 && (
-                <div className='flex justify-between text-emerald-600 bg-emerald-50/70 px-2.5 py-1.5 rounded-lg font-semibold'>
-                  <span>Active Discount</span>
+                <div className='flex justify-between text-emerald-600 dark:text-emerald-400 bg-emerald-50/70 dark:bg-emerald-900/20 px-2.5 py-1.5 rounded-lg font-semibold'>
+                  <span>Discount</span>
                   <span className='font-bold'>-${discount?.toFixed(2)}</span>
                 </div>
               )}
             </div>
-
             <div className='flex justify-between items-end mb-5'>
-              <span className='text-xs font-bold text-slate-900 uppercase tracking-wide'>
+              <span className='text-xs font-bold text-slate-900 dark:text-white uppercase'>
                 Total
               </span>
-              <span className='text-xl font-extrabold tracking-tight text-slate-900'>
+              <span className='text-xl font-extrabold text-slate-900 dark:text-white'>
                 ${total?.toFixed(2)}
               </span>
             </div>
-
-            {/* Changed from "Place Order" to "Proceed to Payment" to accurately fit your checkout workflow */}
             <Button
               onClick={handleProceedToPayment}
               disabled={isPreparingPayment || !selectedAddress}
               variant='primary'
-              className='w-full py-3 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-900/10 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50'
+              className='w-full py-3 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 transition-all'
             >
               {isPreparingPayment ? (
-                "Connecting Securely..."
+                "Connecting..."
               ) : (
                 <>
-                  <HiShieldCheck className='w-4 h-4' />
-                  Proceed to Payment
+                  <HiShieldCheck className='w-4 h-4' /> Proceed to Payment
                 </>
               )}
             </Button>
-
-            <p className='text-[10px] text-slate-400 text-center mt-3 leading-normal px-2'>
-              Your transaction is secured with industry-standard end-to-end
-              encryption protocols.
+            <p className='text-[10px] text-slate-400 dark:text-gray-500 text-center mt-3'>
+              Secured with end-to-end encryption.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Payment Information Gateway Modal */}
       {placedOrder && (
         <PaymentModal
           isOpen={showPayment}

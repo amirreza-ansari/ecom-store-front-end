@@ -4,9 +4,8 @@ import { HiHome, HiShoppingBag } from "react-icons/hi2";
 
 export default function NotFoundPage() {
   return (
-    <div className='min-h-[80vh] flex items-center justify-center px-4'>
+    <div className='min-h-[80vh] flex items-center justify-center px-4 bg-white dark:bg-gray-950'>
       <div className='text-center max-w-md'>
-        {/* 404 Illustration */}
         <div className='mb-8'>
           <svg viewBox='0 0 400 200' className='w-64 h-32 mx-auto'>
             <text
@@ -45,10 +44,10 @@ export default function NotFoundPage() {
           </svg>
         </div>
 
-        <h1 className='text-2xl font-extrabold text-[#0F1111] mb-2'>
+        <h1 className='text-2xl font-extrabold text-[#0F1111] dark:text-white mb-2'>
           Page Not Found
         </h1>
-        <p className='text-[#565959] mb-8 leading-relaxed'>
+        <p className='text-[#565959] dark:text-gray-400 mb-8 leading-relaxed'>
           Oops! The page you're looking for doesn't exist or has been moved.
           Let's get you back on track.
         </p>

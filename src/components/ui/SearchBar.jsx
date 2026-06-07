@@ -34,16 +34,13 @@ export default function SearchBar() {
         setIsLoading(false);
       }
     }, 300);
-
     return () => clearTimeout(debounceRef.current);
   }, [query]);
 
-  // Outside click to close
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setIsOpen(false);
-      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -62,32 +59,31 @@ export default function SearchBar() {
     <div className='relative w-full' ref={dropdownRef}>
       <form
         onSubmit={handleSubmit}
-        className='flex items-center bg-[#F0F0F0] rounded-full px-4 py-2.5 focus-within:ring-2 focus-within:ring-[#FF4500] transition-all'
+        className='flex items-center bg-[#F0F0F0] dark:bg-gray-700 rounded-full px-4 py-2.5 focus-within:ring-2 focus-within:ring-[#FF4500] transition-all'
       >
-        <HiMagnifyingGlass className='w-5 h-5 text-gray-500 mr-2' />
+        <HiMagnifyingGlass className='w-5 h-5 text-gray-500 dark:text-gray-400 mr-2' />
         <input
           type='text'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder='Search for products...'
-          className='w-full bg-transparent text-sm text-gray-800 placeholder-gray-500 focus:outline-none'
+          className='w-full bg-transparent text-sm text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none'
         />
         {query && (
           <button
             type='button'
             onClick={() => setQuery("")}
-            className='text-gray-400 hover:text-black'
+            className='text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white'
           >
             <HiXMark className='w-5 h-5' />
           </button>
         )}
       </form>
 
-      {/* Dropdown */}
       {isOpen && (
-        <div className='absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50'>
+        <div className='absolute top-full left-0 right-0 mt-3 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50'>
           {isLoading ? (
-            <div className='p-6 text-center text-sm text-gray-500'>
+            <div className='p-6 text-center text-sm text-gray-500 dark:text-gray-400'>
               Searching...
             </div>
           ) : results.length > 0 ? (
@@ -100,7 +96,7 @@ export default function SearchBar() {
                     setQuery("");
                     setIsOpen(false);
                   }}
-                  className='flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors'
+                  className='flex items-center gap-4 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors'
                 >
                   <img
                     src={product.images?.[0]?.url || "/placeholder.jpg"}
@@ -108,12 +104,14 @@ export default function SearchBar() {
                     className='w-12 h-12 object-cover rounded-md'
                   />
                   <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-medium text-gray-900 truncate'>
+                    <p className='text-sm font-medium text-gray-900 dark:text-white truncate'>
                       {product.name}
                     </p>
-                    <p className='text-xs text-gray-500'>{product.brand}</p>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      {product.brand}
+                    </p>
                   </div>
-                  <span className='text-sm font-bold text-black'>
+                  <span className='text-sm font-bold text-black dark:text-white'>
                     ${product.price}
                   </span>
                 </Link>
@@ -121,13 +119,13 @@ export default function SearchBar() {
               <Link
                 to={`/shop?search=${encodeURIComponent(query.trim())}`}
                 onClick={() => setIsOpen(false)}
-                className='block text-center py-3 text-sm font-semibold text-[#FF4500] hover:bg-gray-50 border-t border-gray-50'
+                className='block text-center py-3 text-sm font-semibold text-[#FF4500] hover:bg-gray-50 dark:hover:bg-gray-700 border-t border-gray-50 dark:border-gray-700'
               >
                 View all results
               </Link>
             </div>
           ) : (
-            <div className='p-6 text-center text-sm text-gray-500'>
+            <div className='p-6 text-center text-sm text-gray-500 dark:text-gray-400'>
               No products found.
             </div>
           )}

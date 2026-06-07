@@ -51,24 +51,21 @@ export default function ForgotPasswordModal({
     >
       {emailSent ? (
         <div className='flex flex-col items-center justify-center py-6 text-center space-y-4'>
-          <div className='w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-2 shadow-inner border border-emerald-100/50'>
-            {/* <HiOutlineMail className='w-8 h-8 text-emerald-600' /> */}
-            {/* <HiIcons.HiOutlineMail className='w-8 h-8 text-emerald-600' /> */}
-            <HiEnvelope className='w-8 h-8 text-emerald-600' />
+          <div className='w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mb-2 shadow-inner border border-emerald-100/50 dark:border-emerald-900'>
+            <HiEnvelope className='w-8 h-8 text-emerald-600 dark:text-emerald-400' />
           </div>
           <div>
-            <h3 className='text-xl font-bold text-slate-900 tracking-tight mb-2'>
+            <h3 className='text-xl font-bold text-slate-900 dark:text-white mb-2'>
               Check your inbox
             </h3>
-            <p className='text-sm font-medium text-slate-500 leading-relaxed px-4'>
+            <p className='text-sm font-medium text-slate-500 dark:text-gray-400 leading-relaxed px-4'>
               We've sent password recovery instructions to your email address.
-              It might take a few minutes to arrive.
             </p>
           </div>
           <div className='w-full pt-4'>
             <Button
               variant='outline'
-              className='w-full py-3 rounded-xl text-sm font-bold border-slate-200 text-slate-700 hover:bg-slate-50 transition-all'
+              className='w-full py-3 rounded-xl text-sm font-bold border-slate-200 dark:border-gray-600 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-700'
               onClick={() => {
                 handleClose();
                 onSwitchToLogin?.();
@@ -80,9 +77,8 @@ export default function ForgotPasswordModal({
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6 pt-2'>
-          <p className='text-sm font-medium text-slate-500 leading-relaxed'>
-            Enter the email address associated with your account and we'll send
-            you a link to securely reset your password.
+          <p className='text-sm font-medium text-slate-500 dark:text-gray-400 leading-relaxed'>
+            Enter your email and we'll send you a reset link.
           </p>
 
           <Input
@@ -98,22 +94,20 @@ export default function ForgotPasswordModal({
               type='submit'
               variant='primary'
               size='lg'
-              className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all disabled:opacity-70'
+              className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 shadow-lg transition-all disabled:opacity-70'
               disabled={isLoading}
             >
               {isLoading ? "Sending..." : "Send Reset Link"}
             </Button>
-
             <button
               type='button'
               onClick={() => {
                 handleClose();
                 onSwitchToLogin?.();
               }}
-              className='w-full flex items-center justify-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors py-2'
+              className='w-full flex items-center justify-center gap-2 text-sm font-bold text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors py-2'
             >
-              <HiArrowLeft className='w-4 h-4' />
-              Back to Sign In
+              <HiArrowLeft className='w-4 h-4' /> Back to Sign In
             </button>
           </div>
         </form>

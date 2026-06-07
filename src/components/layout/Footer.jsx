@@ -101,7 +101,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className='bg-[#0A0F1C] text-white mt-auto font-sans w-full overflow-hidden'>
+    <footer className='bg-[#0A0F1C] dark:bg-black text-white mt-auto font-sans w-full overflow-hidden'>
       <div className='max-w-[1400px] mx-auto px-6 py-12 lg:py-16'>
         {/* Top Section: Links Grid Layout */}
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-y-6 lg:gap-8'>
@@ -133,7 +133,7 @@ export default function Footer() {
                 <a
                   key={idx}
                   href='#'
-                  className='w-10 h-10 rounded-full bg-[#111827] flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#FF6B00] transition-all duration-300'
+                  className='w-10 h-10 rounded-full bg-[#111827] dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#FF6B00] transition-all duration-300'
                 >
                   <Icon className='w-4 h-4' />
                 </a>
@@ -145,7 +145,7 @@ export default function Footer() {
           {footerLinks.map((section, idx) => (
             <div
               key={idx}
-              className='lg:col-span-2 border-b border-gray-800/60 lg:border-none py-4 lg:py-0'
+              className='lg:col-span-2 border-b border-gray-800/60 dark:border-gray-700 lg:border-none py-4 lg:py-0'
             >
               <button
                 className='w-full flex justify-between items-center lg:cursor-default lg:pointer-events-none'
@@ -164,9 +164,7 @@ export default function Footer() {
               </button>
 
               <ul
-                className={`${
-                  openSection === section.title ? "block" : "hidden"
-                } lg:block space-y-4 mt-6 text-sm text-gray-400`}
+                className={`${openSection === section.title ? "block" : "hidden"} lg:block space-y-4 mt-6 text-sm text-gray-400`}
               >
                 {section.links.map((link, linkIdx) => (
                   <li key={linkIdx}>
@@ -187,7 +185,7 @@ export default function Footer() {
         </div>
 
         {/* Middle Section: Newsletter & Payments Card */}
-        <div className='bg-[#111827] border border-gray-800/60 rounded-2xl p-6 lg:p-8 my-10 lg:my-14 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8'>
+        <div className='bg-[#111827] dark:bg-gray-900 border border-gray-800/60 dark:border-gray-700 rounded-2xl p-6 lg:p-8 my-10 lg:my-14 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8'>
           {/* Left Side: Newsletter Form */}
           <div className='w-full lg:max-w-md xl:max-w-lg'>
             <h4 className='font-bold text-white mb-2 uppercase tracking-wider text-sm'>
@@ -196,7 +194,7 @@ export default function Footer() {
             <p className='text-sm text-gray-400 mb-4 leading-relaxed'>
               Subscribe to get special offers and updates.
             </p>
-            <form className='flex flex-col sm:flex-row bg-[#0A0F1C] rounded-lg overflow-hidden border border-gray-700 focus-within:border-[#FF6B00] transition-colors duration-200'>
+            <form className='flex flex-col sm:flex-row bg-[#0A0F1C] dark:bg-black rounded-lg overflow-hidden border border-gray-700 dark:border-gray-600 focus-within:border-[#FF6B00] transition-colors duration-200'>
               <input
                 type='email'
                 placeholder='Enter your email address'
@@ -227,18 +225,10 @@ export default function Footer() {
               ].map((Icon, idx) => (
                 <div
                   key={idx}
-                  className='bg-white rounded-md px-3 py-2 h-10 flex items-center justify-center shadow-sm cursor-pointer'
+                  className='bg-white dark:bg-gray-200 rounded-md px-3 py-2 h-10 flex items-center justify-center shadow-sm cursor-pointer'
                 >
                   <Icon
-                    className={`w-10 h-6 ${
-                      idx === 0
-                        ? "text-[#1434CB]"
-                        : idx === 1
-                          ? "text-[#EB001B]"
-                          : idx === 2
-                            ? "text-[#00457C]"
-                            : "text-black"
-                    }`}
+                    className={`w-10 h-6 ${idx === 0 ? "text-[#1434CB]" : idx === 1 ? "text-[#EB001B]" : idx === 2 ? "text-[#00457C]" : "text-black"}`}
                   />
                 </div>
               ))}
@@ -246,9 +236,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar: Trust Badges & Copyright */}
-        <div className='pt-6 border-t border-gray-800/60 flex flex-col lg:flex-row justify-between items-center gap-8 text-sm text-gray-400'>
-          {/* Trust Badge Left */}
+        {/* Bottom Bar */}
+        <div className='pt-6 border-t border-gray-800/60 dark:border-gray-700 flex flex-col lg:flex-row justify-between items-center gap-8 text-sm text-gray-400'>
           <div className='flex items-center gap-3 w-full lg:w-auto justify-center lg:justify-start'>
             <div className='w-10 h-10 rounded-full bg-[#FF6B00]/10 flex items-center justify-center text-[#FF6B00]'>
               <FaShieldAlt className='w-5 h-5' />
@@ -261,7 +250,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Copyright & Links */}
           <div className='text-center order-last lg:order-none'>
             <p className='mb-2'>
               &copy; {new Date().getFullYear()} SHOP.CO. All rights reserved.
@@ -273,14 +261,14 @@ export default function Footer() {
               >
                 Sitemap
               </Link>
-              <span className='text-gray-700'>|</span>
+              <span className='text-gray-700 dark:text-gray-600'>|</span>
               <Link
                 to='/accessibility'
                 className='hover:text-white transition-colors'
               >
                 Accessibility
               </Link>
-              <span className='text-gray-700'>|</span>
+              <span className='text-gray-700 dark:text-gray-600'>|</span>
               <Link
                 to='/store-location'
                 className='hover:text-white transition-colors'
@@ -290,8 +278,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Trust Badges Right */}
-          <div className='flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto justify-center lg:justify-end hidden md:flex'>
+          <div className='hidden md:flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto justify-center lg:justify-end'>
             <div className='flex items-center gap-3'>
               <FaTruck className='text-gray-500 w-6 h-6' />
               <div className='text-left'>

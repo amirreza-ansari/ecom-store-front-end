@@ -8,7 +8,6 @@ export default function PriceDisplay({
   const discountPercent = hasDiscount
     ? Math.round(((comparePrice - price) / comparePrice) * 100)
     : 0;
-
   const sizes = {
     sm: { price: "text-base", compare: "text-xs", badge: "text-xs" },
     md: { price: "text-xl", compare: "text-sm", badge: "text-xs" },
@@ -17,13 +16,15 @@ export default function PriceDisplay({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className={`font-bold text-[#0F1111] ${sizes[size].price}`}>
+      <span
+        className={`font-bold text-[#0F1111] dark:text-white ${sizes[size].price}`}
+      >
         ${price.toFixed(2)}
       </span>
       {hasDiscount && (
         <>
           <span
-            className={`text-[#565959] line-through ${sizes[size].compare}`}
+            className={`text-[#565959] dark:text-gray-400 line-through ${sizes[size].compare}`}
           >
             ${comparePrice.toFixed(2)}
           </span>

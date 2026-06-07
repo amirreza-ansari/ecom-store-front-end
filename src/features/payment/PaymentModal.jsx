@@ -13,7 +13,7 @@ export default function PaymentModal({
   orderNumber,
   onSuccess,
 }) {
-  const [step, setStep] = useState(1); // 1: Card form, 2: Processing, 3: Success
+  const [step, setStep] = useState(1);
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [expiry, setExpiry] = useState("");
@@ -27,20 +27,15 @@ export default function PaymentModal({
     const groups = digits.match(/.{1,4}/g);
     return groups ? groups.join(" ") : digits;
   };
-
   const formatExpiry = (value) => {
     const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 3) {
-      return digits.slice(0, 2) + "/" + digits.slice(2);
-    }
+    if (digits.length >= 3) return digits.slice(0, 2) + "/" + digits.slice(2);
     return digits;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Validation
     const rawCard = cardNumber.replace(/\s/g, "");
     if (rawCard.length !== 16) {
       setError("Card number must be 16 digits");
@@ -59,24 +54,18 @@ export default function PaymentModal({
       return;
     }
 
-    // Step 1: Create payment
     setIsProcessing(true);
     setStep(2);
-
     try {
       const { data: createData } = await paymentApi.createPayment({
         orderId,
         paymentMethod: "mock_card",
       });
-
       setTransactionId(createData.data.transactionId);
-
-      // Step 2: Process payment
       const { data: processData } = await paymentApi.processPayment({
         transactionId: createData.data.transactionId,
         cardLast4: rawCard.slice(-4),
       });
-
       if (processData.status === "success") {
         setStep(3);
         toast.success("Payment successful!");
@@ -86,9 +75,7 @@ export default function PaymentModal({
         }, 2000);
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Payment failed. Please try again.",
-      );
+      setError(error.response?.data?.message || "Payment failed.");
       setStep(1);
       setIsProcessing(false);
     }
@@ -112,62 +99,58 @@ export default function PaymentModal({
       title='Secure Checkout'
       size='md'
     >
-      {/* Processing State */}
       {step === 2 && (
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='relative w-16 h-16 mb-6'>
-            <div className='absolute inset-0 border-4 border-slate-100 rounded-full'></div>
-            <div className='absolute inset-0 border-4 border-slate-900 rounded-full border-t-transparent animate-spin'></div>
+            <div className='absolute inset-0 border-4 border-slate-100 dark:border-gray-700 rounded-full'></div>
+            <div className='absolute inset-0 border-4 border-slate-900 dark:border-white rounded-full border-t-transparent animate-spin'></div>
           </div>
-          <h3 className='text-lg font-bold text-slate-900 mb-2 tracking-tight'>
+          <h3 className='text-lg font-bold text-slate-900 dark:text-white mb-2'>
             Processing Payment
           </h3>
-          <p className='text-sm text-slate-500 animate-pulse'>
+          <p className='text-sm text-slate-500 dark:text-gray-400 animate-pulse'>
             Contacting your bank securely...
           </p>
         </div>
       )}
 
-      {/* Success State */}
       {step === 3 && (
         <div className='flex flex-col items-center justify-center py-12'>
-          <div className='w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-6 shadow-inner'>
-            <HiCheck className='w-8 h-8 text-emerald-500' />
+          <div className='w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mb-6'>
+            <HiCheck className='w-8 h-8 text-emerald-500 dark:text-emerald-400' />
           </div>
-          <h3 className='text-xl font-bold text-slate-900 mb-2 tracking-tight'>
+          <h3 className='text-xl font-bold text-slate-900 dark:text-white mb-2'>
             Payment Successful!
           </h3>
-          <p className='text-sm font-medium text-slate-500'>
+          <p className='text-sm font-medium text-slate-500 dark:text-gray-400'>
             Transaction ID:{" "}
-            <span className='text-slate-900'>{transactionId}</span>
+            <span className='text-slate-900 dark:text-white'>
+              {transactionId}
+            </span>
           </p>
         </div>
       )}
 
-      {/* Card Form */}
       {step === 1 && (
         <form onSubmit={handleSubmit} className='space-y-6 pt-2'>
-          {/* Order Summary Header */}
-          <div className='flex justify-between items-end pb-4 border-b border-slate-100'>
+          <div className='flex justify-between items-end pb-4 border-b border-slate-100 dark:border-gray-700'>
             <div>
-              <p className='text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1'>
+              <p className='text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase mb-1'>
                 Order #{orderNumber}
               </p>
-              <p className='text-sm font-medium text-slate-900'>Total Amount</p>
+              <p className='text-sm font-medium text-slate-900 dark:text-white'>
+                Total Amount
+              </p>
             </div>
-            <p className='text-3xl font-extrabold text-slate-900 tracking-tight'>
+            <p className='text-3xl font-extrabold text-slate-900 dark:text-white'>
               ${orderTotal?.toFixed(2)}
             </p>
           </div>
 
-          {/* Dynamic Virtual Card Preview */}
-          <div className='relative w-full h-48 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-xl overflow-hidden p-6 flex flex-col justify-between'>
-            {/* Glassmorphism decorative elements */}
-            <div className='absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none'></div>
-            <div className='absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl -ml-5 -mb-5 pointer-events-none'></div>
-
+          <div className='relative w-full h-48 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-xl overflow-hidden p-6 flex flex-col justify-between'>
+            <div className='absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10'></div>
+            <div className='absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-xl -ml-5 -mb-5'></div>
             <div className='flex justify-between items-start relative z-10'>
-              {/* Microchip representation */}
               <div className='w-12 h-9 rounded bg-slate-300/80 flex flex-col justify-between p-1.5 opacity-80'>
                 <div className='w-full h-[1px] bg-slate-500/50'></div>
                 <div className='w-full h-[1px] bg-slate-500/50'></div>
@@ -175,47 +158,43 @@ export default function PaymentModal({
               </div>
               <HiCreditCard className='w-6 h-6 text-white/50' />
             </div>
-
             <div className='relative z-10'>
-              <p className='font-mono text-xl tracking-[0.15em] mb-2 opacity-90 h-7'>
+              <p className='font-mono text-xl tracking-[0.15em] mb-2 opacity-90'>
                 {cardNumber || "•••• •••• •••• ••••"}
               </p>
               <div className='flex justify-between items-end'>
                 <div className='max-w-[70%]'>
-                  <p className='text-[9px] uppercase tracking-widest text-slate-400 mb-0.5'>
+                  <p className='text-[9px] uppercase text-slate-400 mb-0.5'>
                     Cardholder
                   </p>
-                  <p className='text-sm font-medium tracking-wide truncate h-5'>
+                  <p className='text-sm font-medium truncate'>
                     {cardName ? cardName.toUpperCase() : "YOUR NAME"}
                   </p>
                 </div>
                 <div className='text-right'>
-                  <p className='text-[9px] uppercase tracking-widest text-slate-400 mb-0.5'>
+                  <p className='text-[9px] uppercase text-slate-400 mb-0.5'>
                     Expires
                   </p>
-                  <p className='text-sm font-medium tracking-wider h-5'>
-                    {expiry || "MM/YY"}
-                  </p>
+                  <p className='text-sm font-medium'>{expiry || "MM/YY"}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {error && (
-            <div className='p-3.5 bg-rose-50/50 border border-rose-200 rounded-xl text-sm font-medium text-rose-600 flex items-center gap-2'>
+            <div className='p-3.5 bg-rose-50/50 dark:bg-red-900/20 border border-rose-200 dark:border-red-800 rounded-xl text-sm font-medium text-rose-600 dark:text-red-400 flex items-center gap-2'>
               <div className='w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0'></div>
               {error}
             </div>
           )}
 
-          {/* Form Inputs Grid */}
           <div className='space-y-4'>
             <div>
-              <label className='block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5'>
+              <label className='block text-xs font-bold text-slate-700 dark:text-gray-300 uppercase mb-1.5'>
                 Card Number
               </label>
               <div className='relative'>
-                <HiCreditCard className='absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400' />
+                <HiCreditCard className='absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-gray-500' />
                 <input
                   type='text'
                   value={cardNumber}
@@ -224,33 +203,31 @@ export default function PaymentModal({
                   }
                   placeholder='4242 4242 4242 4242'
                   maxLength={19}
-                  className='w-full pl-11 pr-4 py-3 text-sm font-medium bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all placeholder:text-slate-300'
+                  className='w-full pl-11 pr-4 py-3 text-sm font-medium bg-slate-50/50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:bg-white dark:focus:bg-gray-600 transition-all placeholder:text-slate-300 dark:text-white'
                 />
               </div>
-              <p className='text-[10px] font-medium text-slate-400 mt-1.5 pl-1'>
-                Use test card:{" "}
-                <span className='font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-600'>
+              <p className='text-[10px] font-medium text-slate-400 dark:text-gray-500 mt-1.5 pl-1'>
+                Test card:{" "}
+                <span className='font-mono bg-slate-100 dark:bg-gray-700 px-1 py-0.5 rounded text-slate-600 dark:text-gray-300'>
                   4242 4242 4242 4242
                 </span>
               </p>
             </div>
-
             <div>
-              <label className='block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5'>
+              <label className='block text-xs font-bold text-slate-700 dark:text-gray-300 uppercase mb-1.5'>
                 Name on Card
               </label>
               <input
                 type='text'
                 value={cardName}
                 onChange={(e) => setCardName(e.target.value)}
-                placeholder='Nastaran Heidari'
-                className='w-full px-4 py-3 text-sm font-medium bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all placeholder:text-slate-300'
+                placeholder='Your Name'
+                className='w-full px-4 py-3 text-sm font-medium bg-slate-50/50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:bg-white dark:focus:bg-gray-600 transition-all placeholder:text-slate-300 dark:text-white'
               />
             </div>
-
             <div className='grid grid-cols-2 gap-4'>
               <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5'>
+                <label className='block text-xs font-bold text-slate-700 dark:text-gray-300 uppercase mb-1.5'>
                   Expiration
                 </label>
                 <input
@@ -259,11 +236,11 @@ export default function PaymentModal({
                   onChange={(e) => setExpiry(formatExpiry(e.target.value))}
                   placeholder='MM/YY'
                   maxLength={5}
-                  className='w-full px-4 py-3 text-sm font-medium bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all placeholder:text-slate-300'
+                  className='w-full px-4 py-3 text-sm font-medium bg-slate-50/50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:bg-white dark:focus:bg-gray-600 transition-all placeholder:text-slate-300 dark:text-white'
                 />
               </div>
               <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5'>
+                <label className='block text-xs font-bold text-slate-700 dark:text-gray-300 uppercase mb-1.5'>
                   CVV
                 </label>
                 <input
@@ -274,7 +251,7 @@ export default function PaymentModal({
                   }
                   placeholder='123'
                   maxLength={4}
-                  className='w-full px-4 py-3 text-sm font-medium tracking-widest bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all placeholder:text-slate-300'
+                  className='w-full px-4 py-3 text-sm font-medium tracking-widest bg-slate-50/50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:bg-white dark:focus:bg-gray-600 transition-all placeholder:text-slate-300 dark:text-white'
                 />
               </div>
             </div>
@@ -284,17 +261,16 @@ export default function PaymentModal({
             <Button
               type='submit'
               variant='primary'
-              className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all disabled:opacity-70 disabled:cursor-not-allowed'
+              className='w-full py-3.5 rounded-xl text-sm font-bold bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-slate-800 dark:hover:bg-gray-200 shadow-lg transition-all disabled:opacity-70'
               disabled={isProcessing}
             >
               {isProcessing
                 ? "Processing..."
                 : `Pay $${orderTotal?.toFixed(2)}`}
             </Button>
-
-            <div className='flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-400 mt-4'>
-              <HiLockClosed className='w-3.5 h-3.5 text-slate-400' />
-              <span>Payments are secure and encrypted via AES-256</span>
+            <div className='flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-400 dark:text-gray-500 mt-4'>
+              <HiLockClosed className='w-3.5 h-3.5' /> Payments are secure and
+              encrypted
             </div>
           </div>
         </form>

@@ -14,23 +14,23 @@ export default function QuantitySelector({
   };
 
   return (
-    <div className='flex items-center border border-[#D5D9D9] rounded-lg overflow-hidden'>
+    <div className='flex items-center border border-[#D5D9D9] dark:border-gray-600 rounded-lg overflow-hidden'>
       <button
         onClick={onDecrease}
         disabled={quantity <= min}
-        className={`${sizes[size]} flex items-center justify-center hover:bg-[#F7FAFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+        className={`${sizes[size]} flex items-center justify-center hover:bg-[#F7FAFA] dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-[#0F1111] dark:text-white`}
       >
         <HiMinus className='w-3 h-3' />
       </button>
       <span
-        className={`${sizes[size]} flex items-center justify-center font-medium text-[#0F1111] border-x border-[#D5D9D9] min-w-[40px]`}
+        className={`${sizes[size]} flex items-center justify-center font-medium text-[#0F1111] dark:text-white border-x border-[#D5D9D9] dark:border-gray-600 min-w-[40px]`}
       >
         {quantity}
       </span>
       <button
         onClick={onIncrease}
         disabled={quantity >= max}
-        className={`${sizes[size]} flex items-center justify-center hover:bg-[#F7FAFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+        className={`${sizes[size]} flex items-center justify-center hover:bg-[#F7FAFA] dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-[#0F1111] dark:text-white`}
       >
         <HiPlus className='w-3 h-3' />
       </button>

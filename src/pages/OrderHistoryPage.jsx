@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { orderApi } from "../features/orders/orderApi";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
-import Spinner from "../components/ui/Spinner";
 import Pagination from "../components/ui/Pagination";
 import { HiShoppingBag, HiChevronRight } from "react-icons/hi2";
 import OrderCardSkeleton from "../features/orders/OrderCardSkeleton";
@@ -63,7 +62,7 @@ export default function OrderHistoryPage() {
 
   if (loading && orders.length === 0) {
     return (
-      <div className='space-y-4'>
+      <div className='space-y-4 max-w-4xl mx-auto px-4 py-6'>
         {[...Array(5)].map((_, i) => (
           <OrderCardSkeleton key={i} />
         ))}
@@ -72,10 +71,11 @@ export default function OrderHistoryPage() {
   }
 
   return (
-    <div className='max-w-4xl mx-auto px-4 py-6'>
-      <h1 className='text-2xl font-bold text-[#0F1111] mb-6'>My Orders</h1>
+    <div className='max-w-4xl mx-auto px-4 py-6 min-h-screen'>
+      <h1 className='text-2xl font-bold text-[#0F1111] dark:text-white mb-6'>
+        My Orders
+      </h1>
 
-      {/* Status Filter */}
       <div className='flex gap-2 mb-6 overflow-x-auto pb-2'>
         {statuses.map((status) => (
           <button
@@ -87,7 +87,7 @@ export default function OrderHistoryPage() {
             className={`px-3 py-1.5 text-sm rounded-full whitespace-nowrap transition-colors ${
               statusFilter === status
                 ? "bg-[#FF9900] text-white font-medium"
-                : "bg-[#F7FAFA] text-[#565959] hover:bg-[#D5D9D9]"
+                : "bg-[#F7FAFA] dark:bg-gray-800 text-[#565959] dark:text-gray-400 hover:bg-[#D5D9D9] dark:hover:bg-gray-700"
             }`}
           >
             {status || "All Orders"}
@@ -95,14 +95,13 @@ export default function OrderHistoryPage() {
         ))}
       </div>
 
-      {/* Orders List */}
       {orders.length === 0 ? (
         <div className='text-center py-16'>
-          <HiShoppingBag className='w-20 h-20 text-[#D5D9D9] mx-auto mb-4' />
-          <h2 className='text-lg font-semibold text-[#0F1111] mb-2'>
+          <HiShoppingBag className='w-20 h-20 text-[#D5D9D9] dark:text-gray-600 mx-auto mb-4' />
+          <h2 className='text-lg font-semibold text-[#0F1111] dark:text-white mb-2'>
             No orders found
           </h2>
-          <p className='text-[#565959] mb-6'>
+          <p className='text-[#565959] dark:text-gray-400 mb-6'>
             Start shopping to see your orders here.
           </p>
           <Link to='/shop'>
@@ -115,14 +114,14 @@ export default function OrderHistoryPage() {
             <Link
               key={order._id}
               to={`/orders/${order._id}`}
-              className='block bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow border border-[#D5D9D9] hover:border-[#FF9900]'
+              className='block bg-white dark:bg-gray-800 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow border border-[#D5D9D9] dark:border-gray-700 hover:border-[#FF9900] dark:hover:border-[#FF9900]'
             >
               <div className='flex items-center justify-between mb-3'>
                 <div>
-                  <p className='text-xs text-[#565959]'>
+                  <p className='text-xs text-[#565959] dark:text-gray-400'>
                     Order #{order.orderNumber}
                   </p>
-                  <p className='text-sm text-[#565959]'>
+                  <p className='text-sm text-[#565959] dark:text-gray-400'>
                     {new Date(order.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -141,31 +140,26 @@ export default function OrderHistoryPage() {
                   </Badge>
                 </div>
               </div>
-
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='text-lg font-bold text-[#0F1111]'>
+                  <p className='text-lg font-bold text-[#0F1111] dark:text-white'>
                     ${order.total?.toFixed(2)}
                   </p>
-                  <p className='text-xs text-[#565959]'>
+                  <p className='text-xs text-[#565959] dark:text-gray-400'>
                     {order.items?.length || 0} item
                     {order.items?.length !== 1 ? "s" : ""}
                   </p>
                 </div>
-                <HiChevronRight className='w-5 h-5 text-[#565959]' />
+                <HiChevronRight className='w-5 h-5 text-[#565959] dark:text-gray-400' />
               </div>
-
-              {/* Tracking */}
               {order.trackingNumber && (
-                <p className='text-xs text-[#565959] mt-2'>
+                <p className='text-xs text-[#565959] dark:text-gray-400 mt-2'>
                   📦 Tracking:{" "}
                   <span className='font-medium'>{order.trackingNumber}</span>
                 </p>
               )}
             </Link>
           ))}
-
-          {/* Pagination */}
           {pagination && pagination.pages > 1 && (
             <div className='mt-6'>
               <Pagination

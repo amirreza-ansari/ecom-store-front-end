@@ -5,7 +5,6 @@ import {
   fetchProductBySlug,
   clearCurrentProduct,
 } from "../features/products/productSlice";
-import { useAppDispatch as useCartDispatch } from "../app/hooks";
 import { addToCart as addToCartApi } from "../features/cart/cartApi";
 import {
   addToWishlist as addToWishlistApi,
@@ -18,10 +17,10 @@ import {
 } from "../features/wishlist/wishlistSlice";
 import StarRating from "../components/ui/StarRating";
 import PriceDisplay from "../components/ui/PriceDisplay";
-import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import QuantitySelector from "../components/ui/QuantitySelector";
 import Spinner from "../components/ui/Spinner";
+import Pagination from "../components/ui/Pagination";
 import {
   HiShoppingCart,
   HiHeart,
@@ -57,7 +56,6 @@ export default function ProductPage() {
   const [reviewsPagination, setReviewsPagination] = useState(null);
   const [reviewsLoading, setReviewsLoading] = useState(false);
 
-  // Review form
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
@@ -65,7 +63,6 @@ export default function ProductPage() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
 
-  // Edit review
   const [editingReview, setEditingReview] = useState(null);
   const [editRating, setEditRating] = useState(5);
   const [editTitle, setEditTitle] = useState("");
@@ -77,7 +74,6 @@ export default function ProductPage() {
   }, [dispatch, slug]);
 
   const isInWishlist = product ? wishlistItems.includes(product._id) : false;
-
   const currentPrice = selectedVariant?.price || product?.price;
   const currentComparePrice =
     selectedVariant?.comparePrice || product?.comparePrice;
@@ -92,7 +88,6 @@ export default function ProductPage() {
       toast.error("Please sign in to add items to cart");
       return;
     }
-
     setAddingToCart(true);
     try {
       const { data } = await addToCartApi({
@@ -116,7 +111,6 @@ export default function ProductPage() {
       toast.error("Please sign in to use wishlist");
       return;
     }
-
     try {
       if (isInWishlist) {
         await removeFromWishlistApi(product._id);
@@ -220,7 +214,6 @@ export default function ProductPage() {
       toast.error("Failed to delete review");
     }
   };
-
   const handleHelpful = async (reviewId) => {
     try {
       await reviewApi.markHelpful(reviewId);
@@ -231,19 +224,18 @@ export default function ProductPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading)
     return (
       <div className='flex justify-center items-center min-h-[60vh]'>
         <Spinner size='lg' />
       </div>
     );
-  }
 
-  if (!product) {
+  if (!product)
     return (
       <div className='text-center py-16'>
         <div className='text-6xl mb-4'>😕</div>
-        <h2 className='text-xl font-semibold text-[#0F1111] mb-2'>
+        <h2 className='text-xl font-semibold text-[#0F1111] dark:text-white mb-2'>
           Product not found
         </h2>
         <Link to='/shop' className='text-[#FF9900] hover:underline'>
@@ -251,12 +243,10 @@ export default function ProductPage() {
         </Link>
       </div>
     );
-  }
 
   return (
     <div className='max-w-7xl mx-auto px-4 py-6'>
-      {/* Breadcrumb */}
-      <nav className='text-sm text-[#565959] mb-4'>
+      <nav className='text-sm text-[#565959] dark:text-gray-400 mb-4'>
         <Link to='/' className='hover:text-[#FF9900]'>
           Home
         </Link>
@@ -265,13 +255,12 @@ export default function ProductPage() {
           Shop
         </Link>
         <span className='mx-2'>/</span>
-        <span className='text-[#0F1111]'>{product.name}</span>
+        <span className='text-[#0F1111] dark:text-white'>{product.name}</span>
       </nav>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-        {/* Images */}
         <div>
-          <div className='bg-white rounded-lg overflow-hidden mb-4 aspect-square'>
+          <div className='bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-4 aspect-square'>
             {currentImages.length > 0 ? (
               <img
                 src={
@@ -282,23 +271,18 @@ export default function ProductPage() {
                 className='w-full h-full object-contain p-4'
               />
             ) : (
-              <div className='w-full h-full flex items-center justify-center text-[#D5D9D9] text-6xl'>
+              <div className='w-full h-full flex items-center justify-center text-[#D5D9D9] dark:text-gray-600 text-6xl'>
                 📷
               </div>
             )}
           </div>
-
           {currentImages.length > 1 && (
             <div className='flex gap-2 overflow-x-auto pb-2'>
               {currentImages.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`w-16 h-16 rounded-lg border-2 overflow-hidden shrink-0 transition-colors ${
-                    index === selectedImage
-                      ? "border-[#FF9900]"
-                      : "border-[#D5D9D9]"
-                  }`}
+                  className={`w-16 h-16 rounded-lg border-2 overflow-hidden shrink-0 transition-colors ${index === selectedImage ? "border-[#FF9900]" : "border-[#D5D9D9] dark:border-gray-600"}`}
                 >
                   <img
                     src={img.url}
@@ -311,59 +295,53 @@ export default function ProductPage() {
           )}
         </div>
 
-        {/* Product Info */}
         <div>
-          <p className='text-sm text-[#565959] mb-1'>
+          <p className='text-sm text-[#565959] dark:text-gray-400 mb-1'>
             {product.brand || "Generic"}
           </p>
-          <h1 className='text-2xl font-bold text-[#0F1111] mb-2'>
+          <h1 className='text-2xl font-bold text-[#0F1111] dark:text-white mb-2'>
             {product.name}
           </h1>
 
-          {/* Rating */}
           <div className='flex items-center gap-2 mb-4'>
             <StarRating rating={product.ratingsAverage} size='md' />
-            <span className='text-sm text-[#565959]'>
+            <span className='text-sm text-[#565959] dark:text-gray-400'>
               ({product.ratingsQuantity} reviews)
             </span>
           </div>
 
-          {/* Price */}
-          <div className='bg-[#F7FAFA] rounded-lg p-4 mb-4'>
+          <div className='bg-[#F7FAFA] dark:bg-gray-800 rounded-lg p-4 mb-4'>
             <PriceDisplay
               price={currentPrice}
               comparePrice={currentComparePrice}
               size='lg'
             />
             {currentStock > 0 ? (
-              <p className='text-sm text-[#067D62] mt-1 flex items-center gap-1'>
+              <p className='text-sm text-[#067D62] dark:text-green-400 mt-1 flex items-center gap-1'>
                 <HiCheck className='w-4 h-4' /> In Stock
                 {currentStock <= 10 && (
-                  <span className='text-[#B12704]'>
+                  <span className='text-[#B12704] dark:text-red-400'>
                     {" "}
                     - Only {currentStock} left
                   </span>
                 )}
               </p>
             ) : (
-              <p className='text-sm text-[#B12704] mt-1'>Out of Stock</p>
+              <p className='text-sm text-[#B12704] dark:text-red-400 mt-1'>
+                Out of Stock
+              </p>
             )}
           </div>
 
-          {/* Variants */}
           {product.variants?.length > 0 && (
             <div className='mb-4'>
-              <h3 className='text-sm font-bold text-[#0F1111] mb-2 uppercase'>
+              <h3 className='text-sm font-bold text-[#0F1111] dark:text-white mb-2 uppercase'>
                 Options
               </h3>
               <div className='flex flex-wrap gap-2'>
                 <button
                   onClick={() => setSelectedVariant(null)}
-                  className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    !selectedVariant
-                      ? "border-[#FF9900] bg-[#FFF8F0] text-[#FF9900] font-medium"
-                      : "border-[#D5D9D9] hover:border-[#FF9900]"
-                  }`}
+                  className={`px-3 py-2 text-sm rounded-lg border transition-colors ${!selectedVariant ? "border-[#FF9900] bg-[#FFF8F0] dark:bg-orange-900/20 text-[#FF9900] font-medium" : "border-[#D5D9D9] dark:border-gray-600 dark:text-gray-300 hover:border-[#FF9900]"}`}
                 >
                   Default
                 </button>
@@ -371,24 +349,18 @@ export default function ProductPage() {
                   <button
                     key={variant._id}
                     onClick={() => setSelectedVariant(variant)}
-                    className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                      selectedVariant?._id === variant._id
-                        ? "border-[#FF9900] bg-[#FFF8F0] text-[#FF9900] font-medium"
-                        : "border-[#D5D9D9] hover:border-[#FF9900]"
-                    }`}
+                    className={`px-3 py-2 text-sm rounded-lg border transition-colors ${selectedVariant?._id === variant._id ? "border-[#FF9900] bg-[#FFF8F0] dark:bg-orange-900/20 text-[#FF9900] font-medium" : "border-[#D5D9D9] dark:border-gray-600 dark:text-gray-300 hover:border-[#FF9900]"}`}
                   >
                     {variant.name}
                   </button>
                 ))}
               </div>
-
-              {/* Selected variant attributes */}
               {selectedVariant?.attributes && (
                 <div className='flex flex-wrap gap-2 mt-3'>
                   {selectedVariant.attributes.map((attr) => (
                     <span
                       key={attr._id}
-                      className='px-2 py-1 bg-[#F7FAFA] rounded text-xs text-[#565959]'
+                      className='px-2 py-1 bg-[#F7FAFA] dark:bg-gray-700 rounded text-xs text-[#565959] dark:text-gray-300'
                     >
                       {attr.name}: <strong>{attr.value}</strong>
                     </span>
@@ -398,7 +370,6 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Quantity & Add to Cart */}
           <div className='flex items-center gap-4 mb-4'>
             <QuantitySelector
               quantity={quantity}
@@ -432,18 +403,17 @@ export default function ProductPage() {
             </Button>
             <button
               onClick={handleWishlist}
-              className='p-3 border border-[#D5D9D9] rounded-lg hover:bg-[#F7FAFA] transition-colors'
+              className='p-3 border border-[#D5D9D9] dark:border-gray-600 rounded-lg hover:bg-[#F7FAFA] dark:hover:bg-gray-700 transition-colors'
             >
               {isInWishlist ? (
                 <HiHeart className='w-6 h-6 text-[#B12704]' />
               ) : (
-                <HiHeartOutline className='w-6 h-6 text-[#565959]' />
+                <HiHeartOutline className='w-6 h-6 text-[#565959] dark:text-gray-400' />
               )}
             </button>
           </div>
 
-          {/* Trust badges */}
-          <div className='flex gap-4 text-xs text-[#565959] border-t border-[#D5D9D9] pt-4'>
+          <div className='flex gap-4 text-xs text-[#565959] dark:text-gray-400 border-t border-[#D5D9D9] dark:border-gray-700 pt-4'>
             <span className='flex items-center gap-1'>
               <HiShieldCheck className='w-4 h-4' /> Secure Payment
             </span>
@@ -454,19 +424,14 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className='mt-12 bg-white rounded-lg'>
-        <div className='border-b border-[#D5D9D9]'>
+      <div className='mt-12 bg-white dark:bg-gray-800 rounded-lg'>
+        <div className='border-b border-[#D5D9D9] dark:border-gray-700'>
           <div className='flex gap-6 px-6'>
             {["description", "specifications", "reviews"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-3 text-sm font-medium border-b-2 transition-colors capitalize ${
-                  activeTab === tab
-                    ? "border-[#FF9900] text-[#FF9900]"
-                    : "border-transparent text-[#565959] hover:text-[#0F1111]"
-                }`}
+                className={`py-3 text-sm font-medium border-b-2 transition-colors capitalize ${activeTab === tab ? "border-[#FF9900] text-[#FF9900]" : "border-transparent text-[#565959] dark:text-gray-400 hover:text-[#0F1111] dark:hover:text-white"}`}
               >
                 {tab}
               </button>
@@ -476,7 +441,7 @@ export default function ProductPage() {
 
         <div className='p-6'>
           {activeTab === "description" && (
-            <p className='text-[#0F1111] leading-relaxed whitespace-pre-line'>
+            <p className='text-[#0F1111] dark:text-gray-200 leading-relaxed whitespace-pre-line'>
               {product.description}
             </p>
           )}
@@ -486,17 +451,24 @@ export default function ProductPage() {
               <table className='w-full text-sm'>
                 <tbody>
                   {product.specifications.map((spec) => (
-                    <tr key={spec._id} className='border-b border-[#D5D9D9]'>
-                      <td className='py-2 pr-4 font-medium text-[#0F1111] w-40'>
+                    <tr
+                      key={spec._id}
+                      className='border-b border-[#D5D9D9] dark:border-gray-700'
+                    >
+                      <td className='py-2 pr-4 font-medium text-[#0F1111] dark:text-white w-40'>
                         {spec.name}
                       </td>
-                      <td className='py-2 text-[#565959]'>{spec.value}</td>
+                      <td className='py-2 text-[#565959] dark:text-gray-400'>
+                        {spec.value}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <p className='text-[#565959]'>No specifications available.</p>
+              <p className='text-[#565959] dark:text-gray-400'>
+                No specifications available.
+              </p>
             ))}
 
           {activeTab === "reviews" && (
@@ -504,7 +476,7 @@ export default function ProductPage() {
               <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-4'>
                   <StarRating rating={product.ratingsAverage} size='lg' />
-                  <span className='text-sm text-[#565959]'>
+                  <span className='text-sm text-[#565959] dark:text-gray-400'>
                     {product.ratingsQuantity} review
                     {product.ratingsQuantity !== 1 ? "s" : ""}
                   </span>
@@ -516,22 +488,23 @@ export default function ProductPage() {
                 )}
               </div>
 
-              {/* New Review Form */}
               {showReviewForm && (
                 <form
                   onSubmit={handleSubmitReview}
-                  className='bg-[#F7FAFA] rounded-lg p-4 mb-4 space-y-4'
+                  className='bg-[#F7FAFA] dark:bg-gray-700 rounded-lg p-4 mb-4 space-y-4'
                 >
-                  <h3 className='font-semibold text-[#0F1111]'>
+                  <h3 className='font-semibold text-[#0F1111] dark:text-white'>
                     Write a Review
                   </h3>
                   {reviewError && (
-                    <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-[#B12704]'>
+                    <div className='p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-[#B12704] dark:text-red-400'>
                       {reviewError}
                     </div>
                   )}
                   <div>
-                    <label className='block text-sm mb-1'>Rating</label>
+                    <label className='block text-sm mb-1 dark:text-gray-300'>
+                      Rating
+                    </label>
                     <StarRating
                       rating={reviewRating}
                       interactive
@@ -540,7 +513,7 @@ export default function ProductPage() {
                     />
                   </div>
                   <div>
-                    <label className='block text-sm mb-1'>
+                    <label className='block text-sm mb-1 dark:text-gray-300'>
                       Title (optional)
                     </label>
                     <input
@@ -549,18 +522,20 @@ export default function ProductPage() {
                       onChange={(e) => setReviewTitle(e.target.value)}
                       placeholder='Summarize your review'
                       maxLength={100}
-                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg'
+                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg'
                     />
                   </div>
                   <div>
-                    <label className='block text-sm mb-1'>Review *</label>
+                    <label className='block text-sm mb-1 dark:text-gray-300'>
+                      Review *
+                    </label>
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder='Share your experience...'
                       rows={3}
                       maxLength={1000}
-                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] rounded-lg resize-none'
+                      className='w-full px-4 py-2.5 text-sm border border-[#D5D9D9] dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg resize-none'
                     />
                   </div>
                   <div className='flex gap-2'>
@@ -584,7 +559,6 @@ export default function ProductPage() {
                 </form>
               )}
 
-              {/* Reviews List */}
               {reviewsLoading ? (
                 <Spinner className='py-8' />
               ) : reviews.length > 0 ? (
@@ -592,16 +566,17 @@ export default function ProductPage() {
                   {reviews.map((review) => (
                     <div
                       key={review._id}
-                      className='border-b border-[#D5D9D9] pb-4 last:border-0'
+                      className='border-b border-[#D5D9D9] dark:border-gray-700 pb-4 last:border-0'
                     >
-                      {/* Edit Form */}
                       {editingReview === review._id ? (
                         <form
                           onSubmit={handleUpdateReview}
-                          className='bg-[#F7FAFA] rounded-lg p-4 space-y-3'
+                          className='bg-[#F7FAFA] dark:bg-gray-700 rounded-lg p-4 space-y-3'
                         >
                           <div>
-                            <label className='block text-sm mb-1'>Rating</label>
+                            <label className='block text-sm mb-1 dark:text-gray-300'>
+                              Rating
+                            </label>
                             <StarRating
                               rating={editRating}
                               interactive
@@ -613,13 +588,13 @@ export default function ProductPage() {
                             type='text'
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
-                            className='w-full px-3 py-2 text-sm border rounded-lg'
+                            className='w-full px-3 py-2 text-sm border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg'
                           />
                           <textarea
                             value={editComment}
                             onChange={(e) => setEditComment(e.target.value)}
                             rows={3}
-                            className='w-full px-3 py-2 text-sm border rounded-lg resize-none'
+                            className='w-full px-3 py-2 text-sm border dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg resize-none'
                           />
                           <div className='flex gap-2'>
                             <Button type='submit' variant='primary' size='sm'>
@@ -643,7 +618,7 @@ export default function ProductPage() {
                                 "?"}
                             </div>
                             <div className='flex-1'>
-                              <p className='text-sm font-medium text-[#0F1111]'>
+                              <p className='text-sm font-medium text-[#0F1111] dark:text-white'>
                                 {review.user?.name || "Anonymous"}
                               </p>
                               <StarRating
@@ -652,14 +627,14 @@ export default function ProductPage() {
                                 showValue={false}
                               />
                               {review.title && (
-                                <p className='text-sm font-medium text-[#0F1111] mt-1'>
+                                <p className='text-sm font-medium text-[#0F1111] dark:text-white mt-1'>
                                   {review.title}
                                 </p>
                               )}
-                              <p className='text-sm text-[#565959] mt-1'>
+                              <p className='text-sm text-[#565959] dark:text-gray-400 mt-1'>
                                 {review.comment}
                               </p>
-                              <p className='text-xs text-[#565959] mt-2'>
+                              <p className='text-xs text-[#565959] dark:text-gray-500 mt-2'>
                                 {new Date(
                                   review.createdAt,
                                 ).toLocaleDateString()}
@@ -667,7 +642,7 @@ export default function ProductPage() {
                               <div className='flex items-center gap-4 mt-2'>
                                 <button
                                   onClick={() => handleHelpful(review._id)}
-                                  className='flex items-center gap-1 text-xs text-[#565959] hover:text-[#FF9900]'
+                                  className='flex items-center gap-1 text-xs text-[#565959] dark:text-gray-400 hover:text-[#FF9900]'
                                 >
                                   <HiHandThumbUp className='w-3 h-3' /> Helpful
                                   ({review.helpfulCount || 0})
@@ -676,7 +651,7 @@ export default function ProductPage() {
                                   <>
                                     <button
                                       onClick={() => handleEditReview(review)}
-                                      className='text-xs text-[#565959] hover:text-[#FF9900]'
+                                      className='text-xs text-[#565959] dark:text-gray-400 hover:text-[#FF9900]'
                                     >
                                       <HiPencil className='w-3 h-3 inline mr-1' />{" "}
                                       Edit
@@ -685,7 +660,7 @@ export default function ProductPage() {
                                       onClick={() =>
                                         handleDeleteReview(review._id)
                                       }
-                                      className='text-xs text-[#565959] hover:text-[#B12704]'
+                                      className='text-xs text-[#565959] dark:text-gray-400 hover:text-[#B12704] dark:hover:text-red-400'
                                     >
                                       <HiTrash className='w-3 h-3 inline mr-1' />{" "}
                                       Delete
@@ -699,8 +674,6 @@ export default function ProductPage() {
                       )}
                     </div>
                   ))}
-
-                  {/* Pagination */}
                   {reviewsPagination && reviewsPagination.pages > 1 && (
                     <div className='mt-4'>
                       <Pagination
@@ -712,7 +685,7 @@ export default function ProductPage() {
                   )}
                 </div>
               ) : (
-                <p className='text-[#565959] text-sm text-center py-8'>
+                <p className='text-[#565959] dark:text-gray-400 text-sm text-center py-8'>
                   No reviews yet. Be the first to review!
                 </p>
               )}
