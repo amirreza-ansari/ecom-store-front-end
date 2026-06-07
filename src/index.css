@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
+/* Smooth theme transition */
+* {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.15s ease;
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
@@ -44,4 +54,25 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-float-delayed: float-delayed 5s ease-in-out infinite 1s;
   --animate-bounce-slow: bounce-slow 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
 }

@@ -9,6 +9,8 @@ import {
   HiXMark,
   HiChevronDown,
   HiChevronRight,
+  HiOutlineSun,
+  HiOutlineMoon,
 } from "react-icons/hi2";
 import SearchBar from "../ui/SearchBar";
 import { logoutUser } from "../../features/auth/authSlice";
@@ -16,6 +18,7 @@ import LoginModal from "../../features/auth/LoginModal";
 import RegisterModal from "../../features/auth/RegisterModal";
 import ForgotPasswordModal from "../../features/auth/ForgotPasswordModal";
 import { categoryApi } from "../../features/products/categoryApi";
+import { toggleTheme } from "../../features/theme/themeSlice";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,6 +40,7 @@ export default function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { totalItems } = useSelector((state) => state.cart);
   const { items: wishlistItems } = useSelector((state) => state.wishlist);
+  const { mode: themeMode } = useSelector((state) => state.theme);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,7 +64,7 @@ export default function Header() {
   useEffect(() => {
     setMobileMenuOpen(false);
     setMegaMenuOpen(false);
-    setExpandedMobileCategory(null); // Reset mobile accordion
+    setExpandedMobileCategory(null);
   }, [location.pathname, location.search]);
 
   // Close mega menu when clicking outside
@@ -83,7 +87,6 @@ export default function Header() {
   const activeCategory =
     categories.find((c) => c._id === activeCategoryId) || categories[0];
 
-  // Delay closing mega menu for better UX
   const handleMouseEnter = () => {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     setMegaMenuOpen(true);
@@ -93,7 +96,6 @@ export default function Header() {
     closeTimerRef.current = setTimeout(() => setMegaMenuOpen(false), 200);
   };
 
-  // Popular brands (can be replaced with API data)
   const popularBrands = [
     { name: "Apple", slug: "apple" },
     { name: "Samsung", slug: "samsung" },
@@ -115,7 +117,7 @@ export default function Header() {
         </button>
       </div>
 
-      <header className='bg-white sticky top-0 z-40 border-b border-gray-100 shadow-sm'>
+      <header className='bg-white dark:bg-gray-900 sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 shadow-sm'>
         <div className='flex items-center justify-between px-4 py-4 max-w-[1400px] mx-auto gap-4 md:gap-8 relative z-50'>
           {/* Left: Logo & Categories */}
           <div className='flex items-center gap-6 md:gap-10 shrink-0'>
@@ -123,7 +125,7 @@ export default function Header() {
             <button
               type='button'
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className='lg:hidden p-1 text-black'
+              className='lg:hidden p-1 text-black dark:text-white'
             >
               {mobileMenuOpen ? (
                 <HiXMark className='w-7 h-7' />
@@ -134,16 +136,16 @@ export default function Header() {
 
             <Link
               to='/'
-              className='text-3xl font-extrabold tracking-tighter text-black'
+              className='text-3xl font-extrabold tracking-tighter text-black dark:text-white'
             >
-              <span className='font-bold text-black'>ecom</span>
+              <span className='font-bold text-black dark:text-white'>ecom</span>
               <span className='font-bold text-[#FF9900]'>store</span>
             </Link>
 
             {/* Desktop Mega Menu */}
             <div
               ref={megaMenuRef}
-              className='hidden lg:flex items-center gap-2 cursor-pointer text-gray-700 hover:text-black transition-colors relative py-4'
+              className='hidden lg:flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors relative py-4'
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -155,12 +157,12 @@ export default function Header() {
 
               {/* Mega Menu Overlay */}
               <div
-                className={`absolute top-full -left-20 w-[950px] bg-white border border-gray-100 shadow-2xl rounded-xl transition-all duration-200 z-50 flex overflow-hidden ${
+                className={`absolute top-full -left-20 w-[950px] bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 shadow-2xl rounded-xl transition-all duration-200 z-50 flex overflow-hidden ${
                   megaMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
                 }`}
               >
                 {/* Left Sidebar - Main Categories */}
-                <div className='w-[260px] bg-white py-4 border-r border-gray-100 flex flex-col shrink-0'>
+                <div className='w-[260px] bg-white dark:bg-gray-900 py-4 border-r border-gray-100 dark:border-gray-700 flex flex-col shrink-0'>
                   {categories.map((cat) => (
                     <div
                       key={cat._id}
@@ -171,8 +173,8 @@ export default function Header() {
                       }}
                       className={`flex items-center justify-between px-6 py-3 cursor-pointer transition-colors ${
                         activeCategoryId === cat._id
-                          ? "text-[#FF4500] bg-orange-50/50 border-r-2 border-[#FF4500]"
-                          : "text-gray-700 hover:text-[#FF4500] hover:bg-gray-50"
+                          ? "text-[#FF4500] bg-orange-50/50 dark:bg-orange-900/20 border-r-2 border-[#FF4500]"
+                          : "text-gray-700 dark:text-gray-300 hover:text-[#FF4500] dark:hover:text-[#FF4500] hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
                       <span className='text-sm font-semibold'>{cat.name}</span>
@@ -183,18 +185,18 @@ export default function Header() {
                   ))}
 
                   {/* Quick Links */}
-                  <div className='mt-auto pt-4 border-t border-gray-100 px-6 space-y-3'>
+                  <div className='mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 px-6 space-y-3'>
                     <Link
                       to='/shop?isFeatured=true'
                       onClick={() => setMegaMenuOpen(false)}
-                      className='block text-sm font-medium text-gray-600 hover:text-[#FF4500]'
+                      className='block text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#FF4500] dark:hover:text-[#FF4500]'
                     >
                       🔥 Featured Deals
                     </Link>
                     <Link
                       to='/shop?sort=-createdAt'
                       onClick={() => setMegaMenuOpen(false)}
-                      className='block text-sm font-medium text-gray-600 hover:text-[#FF4500]'
+                      className='block text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#FF4500] dark:hover:text-[#FF4500]'
                     >
                       🆕 New Arrivals
                     </Link>
@@ -202,7 +204,7 @@ export default function Header() {
                 </div>
 
                 {/* Right Content - Subcategories & Brands */}
-                <div className='flex-1 p-8 bg-[#FAFAFA] flex flex-col'>
+                <div className='flex-1 p-8 bg-[#FAFAFA] dark:bg-gray-800 flex flex-col'>
                   <div className='flex gap-8 flex-1'>
                     {/* Subcategory Columns */}
                     <div className='grid grid-cols-3 gap-6 flex-1'>
@@ -214,7 +216,7 @@ export default function Header() {
                               onClick={() => setMegaMenuOpen(false)}
                               className='block'
                             >
-                              <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200 hover:opacity-80 transition-opacity'>
+                              <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 hover:opacity-80 transition-opacity'>
                                 {sub.name}
                               </h4>
                             </Link>
@@ -225,7 +227,7 @@ export default function Header() {
                                     <Link
                                       to={`/shop?category=${item._id}`}
                                       onClick={() => setMegaMenuOpen(false)}
-                                      className='text-sm font-medium text-gray-600 hover:text-[#FF4500] transition-colors'
+                                      className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#FF4500] dark:hover:text-[#FF4500] transition-colors'
                                     >
                                       {item.name}
                                     </Link>
@@ -236,7 +238,7 @@ export default function Header() {
                                   <Link
                                     to={`/shop?category=${sub._id}`}
                                     onClick={() => setMegaMenuOpen(false)}
-                                    className='text-sm font-medium text-gray-600 hover:text-[#FF4500] transition-colors'
+                                    className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#FF4500] dark:hover:text-[#FF4500] transition-colors'
                                   >
                                     View all {sub.name}
                                   </Link>
@@ -259,8 +261,8 @@ export default function Header() {
                     </div>
 
                     {/* Brands Sidebar */}
-                    <div className='w-[140px] border-l border-gray-200 pl-6 shrink-0'>
-                      <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200'>
+                    <div className='w-[140px] border-l border-gray-200 dark:border-gray-700 pl-6 shrink-0'>
+                      <h4 className='text-[#FF4500] font-bold text-sm mb-4 pb-2 border-b border-gray-200 dark:border-gray-700'>
                         Top Brands
                       </h4>
                       <ul className='space-y-4'>
@@ -271,10 +273,10 @@ export default function Header() {
                               onClick={() => setMegaMenuOpen(false)}
                               className='flex items-center gap-2 group'
                             >
-                              <div className='w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-800 group-hover:bg-[#FF4500] group-hover:text-white group-hover:border-[#FF4500] transition-colors'>
+                              <div className='w-6 h-6 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-800 dark:text-gray-200 group-hover:bg-[#FF4500] group-hover:text-white group-hover:border-[#FF4500] transition-colors'>
                                 {brand.name[0]}
                               </div>
-                              <span className='text-sm font-medium text-gray-600 group-hover:text-[#FF4500] transition-colors'>
+                              <span className='text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-[#FF4500] dark:group-hover:text-[#FF4500] transition-colors'>
                                 {brand.name}
                               </span>
                             </Link>
@@ -288,24 +290,24 @@ export default function Header() {
                   <Link
                     to={`/shop?category=${activeCategory?._id}`}
                     onClick={() => setMegaMenuOpen(false)}
-                    className='mt-8 bg-gradient-to-r from-[#FFF4ED] to-[#FFE8D6] rounded-xl p-6 flex items-center justify-between border border-orange-100 shadow-sm hover:shadow-md transition-shadow group'
+                    className='mt-8 bg-gradient-to-r from-[#FFF4ED] dark:from-orange-900/30 to-[#FFE8D6] dark:to-orange-800/20 rounded-xl p-6 flex items-center justify-between border border-orange-100 dark:border-orange-900/50 shadow-sm hover:shadow-md transition-shadow group'
                   >
                     <div>
-                      <h3 className='text-xl font-bold text-gray-900'>
+                      <h3 className='text-xl font-bold text-gray-900 dark:text-white'>
                         Latest {activeCategory?.name || "Arrivals"}
                       </h3>
-                      <p className='text-sm text-gray-600 mt-1 mb-4 font-medium'>
+                      <p className='text-sm text-gray-600 dark:text-gray-400 mt-1 mb-4 font-medium'>
                         Up to 40% off on top products
                       </p>
-                      <span className='inline-block bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold group-hover:bg-[#FF4500] transition-colors'>
+                      <span className='inline-block bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-bold group-hover:bg-[#FF4500] group-hover:text-white transition-colors'>
                         Shop Now →
                       </span>
                     </div>
                     <div className='flex gap-3'>
-                      <div className='w-20 h-24 bg-white/80 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
+                      <div className='w-20 h-24 bg-white/80 dark:bg-gray-700/50 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
                         🛍️
                       </div>
-                      <div className='w-20 h-24 bg-white/80 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
+                      <div className='w-20 h-24 bg-white/80 dark:bg-gray-700/50 rounded-lg shadow-sm flex items-center justify-center text-3xl'>
                         🎁
                       </div>
                     </div>
@@ -316,12 +318,29 @@ export default function Header() {
           </div>
 
           {/* Center: Search Bar */}
-          <div className='hidden md:block flex-1 max-w-2xl bg-[#F0F0F0] rounded-full'>
+          <div className='hidden md:block flex-1 max-w-2xl bg-[#F0F0F0] dark:bg-gray-800 rounded-full'>
             <SearchBar />
           </div>
 
           {/* Right: Actions */}
-          <div className='flex items-center gap-4 lg:gap-6 shrink-0 text-black'>
+          <div className='flex items-center gap-3 lg:gap-5 shrink-0 text-black dark:text-white'>
+            {/* Theme Toggle */}
+            <button
+              onClick={() => dispatch(toggleTheme())}
+              className='p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors'
+              title={
+                themeMode === "dark"
+                  ? "Switch to Light Mode"
+                  : "Switch to Dark Mode"
+              }
+            >
+              {themeMode === "dark" ? (
+                <HiOutlineSun className='w-5 h-5 text-yellow-400' />
+              ) : (
+                <HiOutlineMoon className='w-5 h-5' />
+              )}
+            </button>
+
             {/* Account */}
             <div className='relative group flex items-center gap-2 cursor-pointer hover:text-[#FF4500] transition-colors'>
               <HiOutlineUser className='w-6 h-6' />
@@ -329,43 +348,43 @@ export default function Header() {
                 Account
               </span>
 
-              <div className='absolute right-0 top-full mt-4 w-56 bg-white border border-gray-100 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden text-black'>
+              <div className='absolute right-0 top-full mt-4 w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden text-black dark:text-white'>
                 {isAuthenticated ? (
                   <>
-                    <div className='px-4 py-3 border-b border-gray-50 bg-gray-50/50'>
+                    <div className='px-4 py-3 border-b border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/30'>
                       <p className='text-sm font-semibold truncate'>
                         {user?.name}
                       </p>
-                      <p className='text-xs text-gray-500 truncate'>
+                      <p className='text-xs text-gray-500 dark:text-gray-400 truncate'>
                         {user?.email}
                       </p>
                     </div>
                     <div className='py-2'>
                       <Link
                         to='/profile'
-                        className='block px-4 py-2 text-sm hover:bg-gray-50 hover:text-[#FF4500]'
+                        className='block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#FF4500]'
                       >
                         Profile
                       </Link>
                       <Link
                         to='/orders'
-                        className='block px-4 py-2 text-sm hover:bg-gray-50 hover:text-[#FF4500]'
+                        className='block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#FF4500]'
                       >
                         Orders
                       </Link>
                       {user?.role === "admin" && (
                         <Link
                           to='/admin'
-                          className='block px-4 py-2 text-sm hover:bg-gray-50 hover:text-[#FF4500]'
+                          className='block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#FF4500]'
                         >
                           Admin Panel
                         </Link>
                       )}
                     </div>
-                    <div className='border-t border-gray-50 py-2'>
+                    <div className='border-t border-gray-50 dark:border-gray-700 py-2'>
                       <button
                         onClick={handleLogout}
-                        className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50'
+                        className='block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
                       >
                         Sign Out
                       </button>
@@ -375,13 +394,13 @@ export default function Header() {
                   <div className='py-2'>
                     <button
                       onClick={() => setLoginOpen(true)}
-                      className='block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 hover:text-[#FF4500]'
+                      className='block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#FF4500]'
                     >
                       Sign In
                     </button>
                     <button
                       onClick={() => setRegisterOpen(true)}
-                      className='block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 hover:text-[#FF4500]'
+                      className='block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#FF4500]'
                     >
                       Register
                     </button>
@@ -398,7 +417,7 @@ export default function Header() {
               <div className='relative'>
                 <HiOutlineHeart className='w-6 h-6 group-hover:scale-110 transition-transform' />
                 {wishlistItems.length > 0 && (
-                  <span className='absolute -top-1 -right-1 bg-[#FF4500] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 border-white'>
+                  <span className='absolute -top-1 -right-1 bg-[#FF4500] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 border-white dark:border-gray-900'>
                     {wishlistItems.length}
                   </span>
                 )}
@@ -416,7 +435,7 @@ export default function Header() {
               <div className='relative'>
                 <HiOutlineShoppingCart className='w-6 h-6 group-hover:scale-110 transition-transform' />
                 {totalItems > 0 && (
-                  <span className='absolute -top-1 -right-1 bg-[#FF4500] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 border-white'>
+                  <span className='absolute -top-1 -right-1 bg-[#FF4500] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 border-white dark:border-gray-900'>
                     {totalItems}
                   </span>
                 )}
@@ -428,29 +447,27 @@ export default function Header() {
 
         {/* --- MOBILE MENU --- */}
         <div
-          className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl transition-all duration-300 origin-top overflow-y-auto max-h-[calc(100vh-120px)] ${
+          className={`lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 shadow-xl transition-all duration-300 origin-top overflow-y-auto max-h-[calc(100vh-120px)] ${
             mobileMenuOpen
               ? "opacity-100 scale-y-100 visible"
               : "opacity-0 scale-y-95 invisible"
           }`}
         >
           <div className='px-4 py-5 flex flex-col gap-6'>
-            {/* Mobile Search */}
-            <div className='md:hidden bg-[#F0F0F0] rounded-full'>
+            <div className='md:hidden bg-[#F0F0F0] dark:bg-gray-800 rounded-full'>
               <SearchBar />
             </div>
 
             <nav className='flex flex-col'>
               <Link
                 to='/'
-                className='py-3 text-base font-bold text-gray-900 border-b border-gray-100'
+                className='py-3 text-base font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700'
               >
                 Home
               </Link>
 
-              {/* Dynamic Categories Accordion */}
-              <div className='py-4 border-b border-gray-100'>
-                <p className='text-xs font-bold text-gray-400 uppercase tracking-wider mb-3'>
+              <div className='py-4 border-b border-gray-100 dark:border-gray-700'>
+                <p className='text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3'>
                   Shop by Category
                 </p>
                 <div className='flex flex-col space-y-1'>
@@ -459,7 +476,7 @@ export default function Header() {
                       <div className='flex items-center justify-between'>
                         <Link
                           to={`/shop?category=${cat._id}`}
-                          className='flex-1 py-3 text-base font-semibold text-gray-800 hover:text-[#FF4500]'
+                          className='flex-1 py-3 text-base font-semibold text-gray-800 dark:text-gray-200 hover:text-[#FF4500]'
                         >
                           {cat.name}
                         </Link>
@@ -484,11 +501,9 @@ export default function Header() {
                           </button>
                         )}
                       </div>
-
-                      {/* Subcategories Dropdown */}
                       {cat.subcategories?.length > 0 &&
                         expandedMobileCategory === cat._id && (
-                          <div className='bg-gray-50 rounded-lg p-4 mt-1 mb-2 space-y-4 shadow-inner'>
+                          <div className='bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mt-1 mb-2 space-y-4 shadow-inner'>
                             {cat.subcategories.map((sub) => (
                               <div key={sub._id} className='flex flex-col'>
                                 <Link
@@ -498,12 +513,12 @@ export default function Header() {
                                   {sub.name}
                                 </Link>
                                 {sub.subcategories?.length > 0 && (
-                                  <div className='flex flex-col pl-3 border-l-2 border-orange-100 space-y-2.5'>
+                                  <div className='flex flex-col pl-3 border-l-2 border-orange-100 dark:border-orange-900 space-y-2.5'>
                                     {sub.subcategories.map((item) => (
                                       <Link
                                         key={item._id}
                                         to={`/shop?category=${item._id}`}
-                                        className='text-sm font-medium text-gray-600 hover:text-black'
+                                        className='text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
                                       >
                                         {item.name}
                                       </Link>
@@ -519,17 +534,16 @@ export default function Header() {
                 </div>
               </div>
 
-              {/* Quick Links Footer */}
               <div className='pt-4 space-y-1'>
                 <Link
                   to='/shop?isFeatured=true'
-                  className='block py-3 text-base font-semibold text-gray-800'
+                  className='block py-3 text-base font-semibold text-gray-800 dark:text-gray-200'
                 >
                   🔥 Featured Deals
                 </Link>
                 <Link
                   to='/orders'
-                  className='block py-3 text-base font-semibold text-gray-800'
+                  className='block py-3 text-base font-semibold text-gray-800 dark:text-gray-200'
                 >
                   📦 My Orders
                 </Link>
